@@ -18,7 +18,7 @@
  */
 package com.github.jonathanxd.wcommands.common.command;
 
-import com.github.jonathanxd.wcommands.command.Command;
+import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.text.Text;
 import com.github.jonathanxd.wcommands.util.Functions;
 
@@ -33,35 +33,35 @@ import java.util.Optional;
 /**
  * Created by jonathan on 23/02/16.
  */
-public class CommandList implements List<Command> {
+public class CommandList implements List<CommandSpec> {
 
-    private final List<Command> commands = new ArrayList<>();
+    private final List<CommandSpec> commandSpecs = new ArrayList<>();
 
-    public Optional<Command> getCommandOf(Collection<Text> namesAndAliases) {
-        for (Command command : this.commands) {
+    public Optional<CommandSpec> getCommandOf(Collection<Text> namesAndAliases) {
+        for (CommandSpec commandSpec : this.commandSpecs) {
 
-            Optional<Text> textOptional = Functions.return_(namesAndAliases, nameOrAlias -> command.getName().compareTo(nameOrAlias) == 0 || command.getAliases().contains(nameOrAlias));
+            Optional<Text> textOptional = Functions.return_(namesAndAliases, nameOrAlias -> commandSpec.getName().compareTo(nameOrAlias) == 0 || commandSpec.getAliases().contains(nameOrAlias));
 
             if (textOptional.isPresent())
-                return Optional.of(command);
+                return Optional.of(commandSpec);
 
         }
 
         return Optional.empty();
     }
 
-    public Optional<Command> getCommandOf(Text nameOrAlias) {
+    public Optional<CommandSpec> getCommandOf(Text nameOrAlias) {
 
-        for (Command command : this.commands) {
-            if (command.getName().compareTo(nameOrAlias) == 0 || command.getAliases().contains(nameOrAlias)) {
-                return Optional.of(command);
+        for (CommandSpec commandSpec : this.commandSpecs) {
+            if (commandSpec.getName().compareTo(nameOrAlias) == 0 || commandSpec.getAliases().contains(nameOrAlias)) {
+                return Optional.of(commandSpec);
             }
         }
 
         return Optional.empty();
     }
 
-    public Optional<Command> getCommandByAliasOrName(Text name, Collection<Text> aliases) {
+    public Optional<CommandSpec> getCommandByAliasOrName(Text name, Collection<Text> aliases) {
         return this.stream().filter(command -> {
             if (name != null && command.getName().equals(name)) {
                 return true;
@@ -72,77 +72,77 @@ public class CommandList implements List<Command> {
         }).findFirst();
     }
 
-    public Optional<Command> getCommandByAlias(Text alias) {
+    public Optional<CommandSpec> getCommandByAlias(Text alias) {
         return this.stream().filter(command -> command.getAliases().contains(alias)).findFirst();
     }
 
     @Override
     public int size() {
-        return commands.size();
+        return commandSpecs.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return commands.isEmpty();
+        return commandSpecs.isEmpty();
     }
 
     @Override
     public boolean contains(Object o) {
-        return commands.contains(o);
+        return commandSpecs.contains(o);
     }
 
     @Override
-    public Iterator<Command> iterator() {
-        return commands.iterator();
+    public Iterator<CommandSpec> iterator() {
+        return commandSpecs.iterator();
     }
 
     @Override
     public Object[] toArray() {
-        return commands.toArray();
+        return commandSpecs.toArray();
     }
 
     @Override
     public <E> E[] toArray(E[] a) {
-        return commands.toArray(a);
+        return commandSpecs.toArray(a);
     }
 
     @Override
     public boolean remove(Object o) {
-        return commands.remove(o);
+        return commandSpecs.remove(o);
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return commands.containsAll(c);
+        return commandSpecs.containsAll(c);
     }
 
     // FILTER
     @Override
-    public boolean add(Command command) {
-        int len = commands.size();
-        filter(Collections.singleton(command)).forEach(commands::add);
+    public boolean add(CommandSpec commandSpec) {
+        int len = commandSpecs.size();
+        filter(Collections.singleton(commandSpec)).forEach(commandSpecs::add);
 
-        return commands.size() != len;
+        return commandSpecs.size() != len;
     }
 
     // FILTER
     @Override
-    public boolean addAll(Collection<? extends Command> c) {
-        return commands.addAll(filter(c));
+    public boolean addAll(Collection<? extends CommandSpec> c) {
+        return commandSpecs.addAll(filter(c));
 
     }
 
     // FILTER
     @Override
-    public boolean addAll(int index, Collection<? extends Command> c) {
-        return commands.addAll(index, filter(c));
+    public boolean addAll(int index, Collection<? extends CommandSpec> c) {
+        return commandSpecs.addAll(index, filter(c));
     }
 
     // FILTER
     @Override
-    public Command set(int index, Command element) {
+    public CommandSpec set(int index, CommandSpec element) {
         if (filter(Collections.singleton(element)).size() == 1) {
-            return commands.set(index, element);
+            return commandSpecs.set(index, element);
         }
 
         return element;
@@ -150,79 +150,79 @@ public class CommandList implements List<Command> {
 
     // FILTER
     @Override
-    public void add(int index, Command element) {
+    public void add(int index, CommandSpec element) {
         if (filter(Collections.singleton(element)).size() == 1) {
-            commands.add(index, element);
+            commandSpecs.add(index, element);
         }
     }
 
-    private Collection<? extends Command> filter(Collection<? extends Command> commands) {
+    private Collection<? extends CommandSpec> filter(Collection<? extends CommandSpec> commands) {
 
-        Collection<Command> commandCollection = new ArrayList<>();
+        Collection<CommandSpec> commandSpecCollection = new ArrayList<>();
 
-        for (Command command : commands) {
+        for (CommandSpec commandSpec : commands) {
 
-            Optional<Command> commandOptional = getCommandOf(command.allTexts());
+            Optional<CommandSpec> commandOptional = getCommandOf(commandSpec.allTexts());
             if (!commandOptional.isPresent()) {
-                commandCollection.add(command);
+                commandSpecCollection.add(commandSpec);
             }
         }
 
-        if (commandCollection.size() == 0)
+        if (commandSpecCollection.size() == 0)
             throw new IllegalArgumentException("Already in list! : " + commands);
 
-        return commandCollection;
+        return commandSpecCollection;
     }
 
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return commands.removeAll(c);
+        return commandSpecs.removeAll(c);
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return commands.retainAll(c);
+        return commandSpecs.retainAll(c);
     }
 
     @Override
     public void clear() {
-        commands.clear();
+        commandSpecs.clear();
     }
 
     @Override
-    public Command get(int index) {
-        return commands.get(index);
+    public CommandSpec get(int index) {
+        return commandSpecs.get(index);
     }
 
     @Override
-    public Command remove(int index) {
-        return commands.remove(index);
+    public CommandSpec remove(int index) {
+        return commandSpecs.remove(index);
     }
 
     @Override
     public int indexOf(Object o) {
-        return commands.indexOf(o);
+        return commandSpecs.indexOf(o);
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        return commands.lastIndexOf(o);
+        return commandSpecs.lastIndexOf(o);
     }
 
     @Override
-    public ListIterator<Command> listIterator() {
-        return commands.listIterator();
+    public ListIterator<CommandSpec> listIterator() {
+        return commandSpecs.listIterator();
     }
 
     @Override
-    public ListIterator<Command> listIterator(int index) {
-        return commands.listIterator(index);
+    public ListIterator<CommandSpec> listIterator(int index) {
+        return commandSpecs.listIterator(index);
     }
 
     @Override
-    public List<Command> subList(int fromIndex, int toIndex) {
-        return commands.subList(fromIndex, toIndex);
+    public List<CommandSpec> subList(int fromIndex, int toIndex) {
+        return commandSpecs.subList(fromIndex, toIndex);
     }
 
     public CommandList copy() {

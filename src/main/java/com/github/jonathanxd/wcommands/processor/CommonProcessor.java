@@ -20,10 +20,10 @@ package com.github.jonathanxd.wcommands.processor;
 
 import com.github.jonathanxd.iutils.extra.Container;
 import com.github.jonathanxd.wcommands.WCommand;
-import com.github.jonathanxd.wcommands.arguments.Argument;
+import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentsHolder;
-import com.github.jonathanxd.wcommands.command.Command;
+import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.data.CommandData;
@@ -71,7 +71,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
             CommandHolder holder = data.getCommand();
             if (holder.isLastMatching()) {
-                Handler<CommandHolder> handler = holder.getCommand().getDefaultHandler();
+                Handler<CommandHolder> handler = holder.getCommandSpec().getDefaultHandler();
 
 
                 Container<Handler<CommandHolder>> handlerContainer = new Container<>(handler);
@@ -100,13 +100,13 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
         return last.getCommand().isLastMatching();
     }
 
-    public boolean findAny(List<CommandData<CommandHolder>> list, List<Command> commands) {
+    public boolean findAny(List<CommandData<CommandHolder>> list, List<CommandSpec> commandSpecs) {
         if (list.isEmpty())
             return false;
 
         for (CommandData<CommandHolder> c : list) {
             CommandHolder commandHolder = c.getCommand();
-            if (commands.contains(commandHolder.getCommand())) {
+            if (commandSpecs.contains(commandHolder.getCommandSpec())) {
                 return true;
             }
         }
@@ -120,16 +120,16 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
     private class Processing {
         private final ErrorHandler.Container handlerContainer;
         private final List<CommandData<CommandHolder>> commandDatas = new ArrayList<>();
-        private List<Command> main = null;
-        private Set<Command> processed = new HashSet<>();
+        private List<CommandSpec> main = null;
+        private Set<CommandSpec> processed = new HashSet<>();
 
         private Processing(ErrorHandler.Container handlerContainer) {
             this.handlerContainer = handlerContainer;
         }
 
-        public void process(ListIterator<String> argIter, List<Command> commands, CommandHolder parent) throws ArgumentProcessingError {
+        public void process(ListIterator<String> argIter, List<CommandSpec> commandSpecs, CommandHolder parent) throws ArgumentProcessingError {
             if (main == null) {
-                main = commands;
+                main = commandSpecs;
             }
             if (!argIter.hasNext()) {
                 handlerContainer.handle(new ArgumentProcessingError("No more elements!", ArgumentError.POSSIBLE_BUG));
@@ -142,7 +142,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
                 String argument = argIter.next();
 
-                if (commands.size() == 0) {
+                if (commandSpecs.size() == 0) {
                     // TODO revision, see 'if(!command.getSubCommands().isEmpty())' LINE, normally this operation will never be called
                     argIter.previous();
                     return;
@@ -150,12 +150,12 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
                 boolean matches = false;
 
-                for (Command command : commands) {
+                for (CommandSpec commandSpec : commandSpecs) {
 
-                    if (processed.contains(command))
+                    if (processed.contains(commandSpec))
                         continue;
 
-                    if (findLastSet(commandDatas) && (main != null && !main.contains(command))) {
+                    if (findLastSet(commandDatas) && (main != null && !main.contains(commandSpec))) {
                         // TODO revision, see 'if(matches && parent != null)' LINE, this operation will never be called
                         argIter.previous();
                         return;
@@ -163,28 +163,28 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
                     boolean last = !argIter.hasNext();
 
-                    if (command.matches(argument)) {
+                    if (commandSpec.matches(argument)) {
 
-                        ArgumentsHolder argumentHolders = parseArguments(argIter, command);
+                        ArgumentsHolder argumentHolders = parseArguments(argIter, commandSpec);
 
-                        CommandHolder holder = new CommandHolder(command, argumentHolders, true, last);
+                        CommandHolder holder = new CommandHolder(commandSpec, argumentHolders, true, last);
 
                         commandDatas.add(new CommandData<>(argument, holder, parent));
 
                         int size = commandDatas.size();
 
-                        if (!command.getSubCommands().isEmpty()) {
-                            process(argIter, command.getSubCommands(), holder);
+                        if (!commandSpec.getSubCommands().isEmpty()) {
+                            process(argIter, commandSpec.getSubCommands(), holder);
                         }
 
                         if (size == commandDatas.size()) {
                             commandDatas.remove(commandDatas.size() - 1);
-                            commandDatas.add(new CommandData<>(argument, new CommandHolder(command, argumentHolders, true, true), parent));
+                            commandDatas.add(new CommandData<>(argument, new CommandHolder(commandSpec, argumentHolders, true, true), parent));
                         }
-                        processed.add(command);
+                        processed.add(commandSpec);
                         matches = true;
                     } else {
-                        if (command.isOptional()) {
+                        if (commandSpec.isOptional()) {
                             //argIter.previous();
                             continue;
                         } else {
@@ -196,15 +196,15 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                     }
                     ////////////////////////////////
                     if (last) {
-                        List<Command> notOptional = command.getNotOptionalSubCommands();
+                        List<CommandSpec> notOptional = commandSpec.getNotOptionalSubCommands();
                         if (notOptional.size() > 0) {
                             if (!findAny(commandDatas, notOptional)) {
-                                handlerContainer.handle(new ArgumentProcessingError("Missing sub-command for command '" + command + "'", ArgumentError.MISSING_SUB_COMMAND));
+                                handlerContainer.handle(new ArgumentProcessingError("Missing sub-commandSpec for commandSpec '" + commandSpec + "'", ArgumentError.MISSING_SUB_COMMAND));
                             }
                         }
                     }
                     if (matches && parent != null) {
-                        // RETURN command loop for child
+                        // RETURN commandSpec loop for child
                         return;
                     } else if (matches) {
                         break;
@@ -222,14 +222,14 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
         // give item STONE | jump to 15
         //
-        private ArgumentsHolder parseArguments(ListIterator<String> argumentIter, Command command) throws ArgumentProcessingError {
+        private ArgumentsHolder parseArguments(ListIterator<String> argumentIter, CommandSpec commandSpec) throws ArgumentProcessingError {
             ArgumentsHolder argumentHolders = new ArgumentsHolder();
-            // Argument parsing
+            // ArgumentSpec parsing
 
-            for (Argument<?, ?> argumentParse : command.getArguments()) {
+            for (ArgumentSpec<?, ?> argumentSpecParse : commandSpec.getArguments()) {
 
                 if(!argumentIter.hasNext()) {
-                    ArgumentHolder argument = new ArgumentHolder<>(Text.of(null), argumentParse);
+                    ArgumentHolder argument = new ArgumentHolder<>(Text.of(null), argumentSpecParse);
                     argumentHolders.add(argument);
                 }
 
@@ -237,20 +237,20 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                     String sub = argumentIter.next();
                     Text text = Text.of(sub);
 
-                    if ((argumentParse.getChecker() == null || argumentParse.getChecker().get().matches(sub)) && (argumentParse.getPredicate() == null || argumentParse.getPredicate().test(text))) {
-                        ArgumentHolder argument = new ArgumentHolder<>(text, argumentParse);
+                    if ((argumentSpecParse.getChecker() == null || argumentSpecParse.getChecker().get().matches(sub)) && (argumentSpecParse.getPredicate() == null || argumentSpecParse.getPredicate().test(text))) {
+                        ArgumentHolder argument = new ArgumentHolder<>(text, argumentSpecParse);
                         argumentHolders.add(argument);
                         break;
                     } else {
-                        if (argumentParse.isOptional()) {
+                        if (argumentSpecParse.isOptional()) {
                             argumentIter.previous();
-                            ArgumentHolder argument = new ArgumentHolder<>(Text.of(null), argumentParse);
+                            ArgumentHolder argument = new ArgumentHolder<>(Text.of(null), argumentSpecParse);
                             argumentHolders.add(argument);
                             break;
                         } else {
                             handlerContainer.handle(
                                     new ArgumentProcessingError(
-                                            new IllegalArgumentException(String.format("Illegal argument '%s' for parser '%s'", sub, argumentParse)),
+                                            new IllegalArgumentException(String.format("Illegal argument '%s' for parser '%s'", sub, argumentSpecParse)),
                                             ArgumentError.MISSING_ARGUMENT));
 
                         }
@@ -262,12 +262,12 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
             }
 
             int pos = 0;
-            for (Argument argument : command.getArguments()) {
+            for (ArgumentSpec argumentSpec : commandSpec.getArguments()) {
                 if (argumentHolders.size() == 0) {
-                    if (!argument.isOptional()) {
+                    if (!argumentSpec.isOptional()) {
                         handlerContainer.handle(
                                 new ArgumentProcessingError(
-                                        new MissingArgumentException(String.format("Missing argument (id: '%s', %s). Probably is missing all arguments required...", argument.getId(), argument)),
+                                        new MissingArgumentException(String.format("Missing argumentSpec (id: '%s', %s). Probably is missing all arguments required...", argumentSpec.getId(), argumentSpec)),
                                         ArgumentError.MISSING_ARGUMENT));
                     } else {
                         continue;
@@ -276,12 +276,12 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                 while (pos < argumentHolders.size()) {
                     ArgumentHolder holder = argumentHolders.get(pos);
 
-                    if (argument != holder.getArgument()) {
-                        if (!argument.isOptional()) {
+                    if (argumentSpec != holder.getArgumentSpec()) {
+                        if (!argumentSpec.isOptional()) {
 
                             handlerContainer.handle(
                                     new ArgumentProcessingError(
-                                            new MissingArgumentException(String.format("Missing argument (id: '%s', %s)", argument.getId(), argument)),
+                                            new MissingArgumentException(String.format("Missing argumentSpec (id: '%s', %s)", argumentSpec.getId(), argumentSpec)),
                                             ArgumentError.MISSING_ARGUMENT));
                         } else {
                             ++pos;

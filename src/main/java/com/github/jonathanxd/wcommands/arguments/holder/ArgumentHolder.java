@@ -18,7 +18,7 @@
  */
 package com.github.jonathanxd.wcommands.arguments.holder;
 
-import com.github.jonathanxd.wcommands.arguments.Argument;
+import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.text.Text;
 
 /**
@@ -28,36 +28,36 @@ import com.github.jonathanxd.wcommands.text.Text;
 /**
  * ArgumentHolder
  *
- * Holds a Parsed Argument.
+ * Holds a Parsed ArgumentSpec.
  *
- * @param <ID> ID of argument
- * @param <T>  T type of argument value
+ * @param <ID> ID of argumentSpec
+ * @param <T>  T type of argumentSpec value
  */
 public class ArgumentHolder<ID, T> {
 
     /**
-     * Text representation of argument input value.
+     * Text representation of argumentSpec input value.
      */
     private final Text value;
 
     /**
-     * Argument instance
+     * ArgumentSpec instance
      */
-    private final Argument<ID, T> argument;
+    private final ArgumentSpec<ID, T> argumentSpec;
 
     /**
-     * Argument is present? (if Text.plain != null)
+     * ArgumentSpec is present? (if Text.plain != null)
      */
     private final boolean present;
 
-    public ArgumentHolder(Text value, Argument<ID, T> argument) {
+    public ArgumentHolder(Text value, ArgumentSpec<ID, T> argumentSpec) {
         this.value = value;
-        this.argument = argument;
+        this.argumentSpec = argumentSpec;
         this.present = value.getPlainString() != null;
     }
 
     /**
-     * Get Argument input string
+     * Get ArgumentSpec input string
      *
      * @return Text representation of input string
      */
@@ -66,13 +66,13 @@ public class ArgumentHolder<ID, T> {
     }
 
     /**
-     * Involved argument
+     * Involved argumentSpec
      *
      * @return Involved
-     * @see Argument
+     * @see ArgumentSpec
      */
-    public Argument<ID, T> getArgument() {
-        return argument;
+    public ArgumentSpec<ID, T> getArgumentSpec() {
+        return argumentSpec;
     }
 
     /**
@@ -81,13 +81,13 @@ public class ArgumentHolder<ID, T> {
      * @return Object representation
      */
     public T convertValue() {
-        return argument.getConverter().apply(value);
+        return argumentSpec.getConverter().apply(value);
     }
 
     /**
-     * True if the argument is present, else otherwise
+     * True if the argumentSpec is present, else otherwise
      *
-     * @return True if the argument is present, false otherwise
+     * @return True if the argumentSpec is present, false otherwise
      */
     public boolean isPresent() {
         return present;
@@ -95,6 +95,6 @@ public class ArgumentHolder<ID, T> {
 
     @Override
     public String toString() {
-        return "ArgumentHolder[value=" + value + ", argument=" + argument + ", isPresent=" + present + "]";
+        return "ArgumentHolder[value=" + value + ", argumentSpec=" + argumentSpec + ", isPresent=" + present + "]";
     }
 }

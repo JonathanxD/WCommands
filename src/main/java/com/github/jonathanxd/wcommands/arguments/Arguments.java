@@ -29,9 +29,9 @@ import java.util.Collection;
 /**
  * List of Arguemnts
  */
-public class Arguments extends ArrayList<Argument<?, ?>> {
+public class Arguments extends ArrayList<ArgumentSpec<?, ?>> {
 
-    public Arguments(Collection<? extends Argument<?, ?>> c) {
+    public Arguments(Collection<? extends ArgumentSpec<?, ?>> c) {
         super(c);
     }
 
@@ -39,7 +39,7 @@ public class Arguments extends ArrayList<Argument<?, ?>> {
         super();
     }
 
-    public static Arguments of(Argument<?, ?>... arguments) {
-        return new Arguments(Arrays.asList(arguments));
+    public static Arguments of(ArgumentSpec<?, ?>... argumentSpecs) {
+        return new Arguments(Arrays.asList(argumentSpecs));
     }
 }

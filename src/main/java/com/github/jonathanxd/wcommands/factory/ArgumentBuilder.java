@@ -18,7 +18,7 @@
  */
 package com.github.jonathanxd.wcommands.factory;
 
-import com.github.jonathanxd.wcommands.arguments.Argument;
+import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.text.Text;
 
@@ -69,8 +69,8 @@ public class ArgumentBuilder<ID, T> {
         return this;
     }
 
-    public Argument<ID, T> build() {
-        return new Argument<>(id, checker, predicate, optional, converter);
+    public ArgumentSpec<ID, T> build() {
+        return new ArgumentSpec<>(id, checker, predicate, optional, converter);
     }
 
     private static class All<T> implements Function<Text, Object> {

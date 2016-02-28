@@ -24,7 +24,7 @@ package com.github.jonathanxd.wcommands.data;
 public class CommandData<C> {
 
     private final String inputArgument;
-    //private final Command command;
+    //private final CommandSpec command;
     //private final Arguments arguments;
     private final C command;
     private final C parent;

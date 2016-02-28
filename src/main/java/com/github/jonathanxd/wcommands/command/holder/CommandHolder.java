@@ -20,7 +20,7 @@ package com.github.jonathanxd.wcommands.command.holder;
 
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentsHolder;
-import com.github.jonathanxd.wcommands.command.Command;
+import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.text.Text;
 
@@ -42,18 +42,18 @@ import java.util.stream.Collectors;
  */
 
 /**
- * {@link Command} command holder
+ * {@link CommandSpec} commandSpec holder
  *
- * Represents a Parsed Command.
+ * Represents a Parsed CommandSpec.
  */
 public class CommandHolder implements Matchable<String> {
 
     /**
-     * Related command
+     * Related commandSpec
      *
-     * @see Command
+     * @see CommandSpec
      */
-    private final Command command;
+    private final CommandSpec commandSpec;
 
     /**
      * Arguments
@@ -63,13 +63,13 @@ public class CommandHolder implements Matchable<String> {
     private final ArgumentsHolder argumentsHolder;
 
     /**
-     * Is Command present (always true)
+     * Is CommandSpec present (always true)
      */
     @Deprecated
     private final boolean isPresent;
 
     /**
-     * Last matching (indicates a last command matched for the group)
+     * Last matching (indicates a last commandSpec matched for the group)
      */
     private final boolean lastMatching;
 
@@ -88,16 +88,16 @@ public class CommandHolder implements Matchable<String> {
      */
     private final EachArguments eachArguments = new EachArguments();
 
-    public CommandHolder(Command command, ArgumentsHolder arguments) {
-        this(command, false, arguments);
+    public CommandHolder(CommandSpec commandSpec, ArgumentsHolder arguments) {
+        this(commandSpec, false, arguments);
     }
 
-    public CommandHolder(Command command, boolean isPresent, ArgumentsHolder arguments) {
-        this(command, arguments, isPresent, false);
+    public CommandHolder(CommandSpec commandSpec, boolean isPresent, ArgumentsHolder arguments) {
+        this(commandSpec, arguments, isPresent, false);
     }
 
-    public CommandHolder(Command command, ArgumentsHolder arguments, boolean isPresent, boolean lastMatching) {
-        this.command = command;
+    public CommandHolder(CommandSpec commandSpec, ArgumentsHolder arguments, boolean isPresent, boolean lastMatching) {
+        this.commandSpec = commandSpec;
         this.argumentsHolder = arguments;
         this.isPresent = isPresent;
         this.lastMatching = lastMatching;
@@ -106,7 +106,7 @@ public class CommandHolder implements Matchable<String> {
     /**
      * To String
      *
-     * @param holder Command Holder
+     * @param holder CommandSpec Holder
      * @return String Representation
      */
     public static String toString(CommandHolder holder) {
@@ -116,7 +116,7 @@ public class CommandHolder implements Matchable<String> {
     /**
      * To Appendable, performance improvement
      *
-     * @param holder     Command Holder
+     * @param holder     CommandSpec Holder
      * @param appendable Appendable
      * @return String Representation
      */
@@ -131,16 +131,16 @@ public class CommandHolder implements Matchable<String> {
     /**
      * Performance improvement
      *
-     * @param holder     Command Holder
+     * @param holder     CommandSpec Holder
      * @param appendable Appendable
      * @return Appendable
      */
     public static Appendable toAppendable(CommandHolder holder, Appendable appendable) throws IOException {
 
         appendable.append(holder.getClass().getSimpleName()).append('{')
-                .append("command=");
-        appendable.append(holder.getCommand().getName().getPlainString());
-        //Command.toAppendable(holder.getCommand(), appendable);
+                .append("commandSpec=");
+        appendable.append(holder.getCommandSpec().getName().getPlainString());
+        //CommandSpec.toAppendable(holder.getCommandSpec(), appendable);
         appendable.append(',')
                 .append("isPresent=").append(String.valueOf(holder.isPresent()))
                 .append(',')
@@ -158,11 +158,11 @@ public class CommandHolder implements Matchable<String> {
     }
 
     /**
-     * Recursive loop command holder and child command holder &amp; collect filtered CommandHolders
+     * Recursive loop commandSpec holder and child commandSpec holder &amp; collect filtered CommandHolders
      *
-     * @param main            Main command holder
+     * @param main            Main commandSpec holder
      * @param holderPredicate Holder predicate
-     * @param commandHolders  List of command Holders (Nullable)
+     * @param commandHolders  List of commandSpec Holders (Nullable)
      * @return Filtered set of CommandHolders
      */
     public static Set<CommandHolder> recursive(CommandHolder main, Predicate<CommandHolder> holderPredicate, Set<CommandHolder> commandHolders) {
@@ -189,12 +189,12 @@ public class CommandHolder implements Matchable<String> {
     }
 
     /**
-     * Get related command
+     * Get related commandSpec
      *
-     * @return related command
+     * @return related commandSpec
      */
-    public Command getCommand() {
-        return command;
+    public CommandSpec getCommandSpec() {
+        return commandSpec;
     }
 
     /**
@@ -214,7 +214,7 @@ public class CommandHolder implements Matchable<String> {
             if (holder.get() != null) {
                 return;
             }
-            if (c.getArgument().getId().equals(id)) {
+            if (c.getArgumentSpec().getId().equals(id)) {
                 holder.set(c);
             }
         });
@@ -271,7 +271,7 @@ public class CommandHolder implements Matchable<String> {
      * True if is present (always true)
      *
      * @return True if is present (always true)
-     * @deprecated Normally the List of command only contains Present commands
+     * @deprecated Normally the List of commandSpec only contains Present commands
      */
     @Deprecated
     public boolean isPresent() {
@@ -300,16 +300,16 @@ public class CommandHolder implements Matchable<String> {
 
     /**
      * Create a new CommandHolder with current CommandHolder child commands
-     * @param command             Command
-     * @param argumentHolders Argument holder
+     * @param commandSpec             CommandSpec
+     * @param argumentHolders ArgumentSpec holder
      * @param isPresent Is present?
      * @param lastMatching Last matching? (of the group)
      * @return new CommandHolder
      * @deprecated Old system part, no more child commands!
      */
     @Deprecated
-    public CommandHolder newWith(Command command, ArgumentsHolder argumentHolders, boolean isPresent, boolean lastMatching) {
-        CommandHolder holder = new CommandHolder(command, argumentHolders, isPresent, lastMatching);
+    public CommandHolder newWith(CommandSpec commandSpec, ArgumentsHolder argumentHolders, boolean isPresent, boolean lastMatching) {
+        CommandHolder holder = new CommandHolder(commandSpec, argumentHolders, isPresent, lastMatching);
 
         holder.subCommands.addAll(this.subCommands);
 
@@ -327,12 +327,12 @@ public class CommandHolder implements Matchable<String> {
 
     @Override
     public boolean matches(String other) {
-        return command.matches(other);
+        return commandSpec.matches(other);
     }
 
     @Override
     public boolean matchesIgnoreCase(String other) {
-        return command.matchesIgnoreCase(other);
+        return commandSpec.matchesIgnoreCase(other);
     }
 
     /**
@@ -340,15 +340,15 @@ public class CommandHolder implements Matchable<String> {
      */
     public class EachArguments {
         /**
-         * Consume all arguments as Plain Argument
-         * @param argumentConsumer Argument consumer
+         * Consume all arguments as Plain ArgumentSpec
+         * @param argumentConsumer ArgumentSpec consumer
          */
         public void plain(Consumer<Text> argumentConsumer) {
             holder(holder -> argumentConsumer.accept(holder.getValue()));
         }
 
         /**
-         * Consume all Argument holder
+         * Consume all ArgumentSpec holder
          * @param argumentConsumer ArgumentHolder consumer
          */
         public void holder(Consumer<ArgumentHolder> argumentConsumer) {

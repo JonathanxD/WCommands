@@ -21,7 +21,7 @@ package com.github.jonathanxd.wcommands.commandapi;
 import com.github.jonathanxd.wcommands.CommonHandler;
 import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
-import com.github.jonathanxd.wcommands.defaults.argument.BooleanArgument;
+import com.github.jonathanxd.wcommands.defaults.argument.BooleanArgumentSpec;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentError;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.factory.CommandBuilder;
@@ -39,13 +39,13 @@ public class TestLT {
     public static void main(String[] args) throws ArgumentProcessingError {
         WCommandCommon wCommandCommon = new WCommandCommon(new CommonProcessor(), new MyErrorHandler());
         /*wCommandCommon.addCommand(CommandFactory.create("allowUpper",
-                new BooleanArgument<IDs>(IDs.ALLOW_UPPER, false),
+                new BooleanArgumentSpec<IDs>(IDs.ALLOW_UPPER, false),
                 false,
                 "--"));*/
         wCommandCommon.addCommand(CommandBuilder.builder()
                 .withPrefix("--")
                 .withName(Text.of("allowUpper"))
-                .withArgument(new BooleanArgument<>(IDs.ALLOW_UPPER, false))
+                .withArgument(new BooleanArgumentSpec<>(IDs.ALLOW_UPPER, false))
                 .withCommonHandler(commandData -> {
                     CommandHolder holder = commandData.getCommand();
 
@@ -71,7 +71,7 @@ public class TestLT {
         wCommandCommon.addCommand(CommandBuilder.builder()
                 .withPrefix("--")
                 .withName(Text.of("rail"))
-                .withArgument(new BooleanArgument<>(IDs.RAIL, false))
+                .withArgument(new BooleanArgumentSpec<>(IDs.RAIL, false))
                 .withValueHandler(new CommonHandler.Value<IDs, Boolean>(IDs.RAIL) {
                     @Override
                     public void handle(Boolean value) {

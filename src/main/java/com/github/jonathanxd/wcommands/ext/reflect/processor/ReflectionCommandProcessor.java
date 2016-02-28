@@ -20,6 +20,8 @@ package com.github.jonathanxd.wcommands.ext.reflect.processor;
 
 import com.github.jonathanxd.iutils.data.ExtraData;
 import com.github.jonathanxd.wcommands.WCommandCommon;
+import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
+import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
@@ -112,8 +114,8 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
         commandContainers = commandContainers.stream().filter(d -> d != null).collect(Collectors.toList());
 
         commandContainers.forEach(commandContainer -> {
-            com.github.jonathanxd.wcommands.command.Command command = this.processCommand(commandContainer, new InstanceContainer(instance));
-            this.addCommand(command);
+            CommandSpec commandSpec = this.processCommand(commandContainer, new InstanceContainer(instance));
+            this.addCommand(commandSpec);
         });
     }
 
@@ -162,7 +164,7 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
     }
 
     @SuppressWarnings("unchecked")
-    private com.github.jonathanxd.wcommands.command.Command processCommand(CommandContainer command, InstanceContainer instance) {
+    private CommandSpec processCommand(CommandContainer command, InstanceContainer instance) {
 
         Command commandAnnotation = command.get();
         List<ArgumentContainer> arguments = command.getArgumentContainers();
@@ -226,18 +228,18 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
 
             argumentBuilder.withOptional(argument.isOptional());
 
-            com.github.jonathanxd.wcommands.arguments.Argument argument1 = argumentBuilder.build();
+            ArgumentSpec argumentSpec1 = argumentBuilder.build();
 
             if (argument.setFinal()) {
-                argument1.getData().registerData(Set.FINAL);
+                argumentSpec1.getData().registerData(Set.FINAL);
             }
 
-            commandBuilder.withArgument(argument1);
+            commandBuilder.withArgument(argumentSpec1);
         }
 
         command.getChild().forEach(commandContainer -> commandBuilder.withChild(processCommand(commandContainer, instance)));
 
-        com.github.jonathanxd.wcommands.command.Command cmd = commandBuilder.build();
+        CommandSpec cmd = commandBuilder.build();
 
         return cmd;
 

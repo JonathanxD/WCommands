@@ -57,7 +57,7 @@ public class ReflectionHandler implements CommonHandler {
 
             if(argumentHolder.isPresent()) {
                 try {
-                    boolean force = argumentHolder.get().getArgument().getData().findData(ReflectionCommandProcessor.Set.FINAL.getClass());
+                    boolean force = argumentHolder.get().getArgumentSpec().getData().findData(ReflectionCommandProcessor.Set.FINAL.getClass());
                     bridge.setValue(instance.get(), argumentHolder.get().convertValue(), true, force);
                 } catch (IllegalAccessException | NoSuchFieldException e) {
                     throw new RuntimeException(e);

@@ -18,7 +18,7 @@
  */
 package com.github.jonathanxd.wcommands;
 
-import com.github.jonathanxd.wcommands.command.Command;
+import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
@@ -54,11 +54,11 @@ public class WCommand<T> {
         interceptors.remove(invokeInterceptor);
     }
 
-    public void addCommand(Command... command) {
-        if (command.length == 1) {
-            commands.add(command[0]);
+    public void addCommand(CommandSpec... commandSpec) {
+        if (commandSpec.length == 1) {
+            commands.add(commandSpec[0]);
         } else {
-            commands.addAll(Arrays.asList(command));
+            commands.addAll(Arrays.asList(commandSpec));
         }
     }
 

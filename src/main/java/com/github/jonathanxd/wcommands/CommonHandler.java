@@ -61,7 +61,7 @@ public interface CommonHandler extends Handler<CommandHolder> {
         public void handle(CommandData<CommandHolder> commandData) {
 
             for(ArgumentHolder holder : commandData.getCommand().getArguments()) {
-                handleAny((ID) holder.getArgument().getId(), holder.convertValue());
+                handleAny((ID) holder.getArgumentSpec().getId(), holder.convertValue());
             }
 
         }

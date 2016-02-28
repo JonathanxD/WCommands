@@ -39,37 +39,37 @@ import java.util.stream.Collectors;
  */
 
 /**
- * Command Specification
+ * CommandSpec Specification
  *
  * A command have Child Commands and {@link Arguments} specification
  */
-public class Command implements Matchable<String> {
+public class CommandSpec implements Matchable<String> {
 
     /**
-     * Command Name
+     * CommandSpec Name
      */
     private final Text name;
     /**
-     * Command prefix
+     * CommandSpec prefix
      */
     private final String prefix;
     /**
-     * Command suffix
+     * CommandSpec suffix
      */
     private final String suffix;
     /**
-     * Is Optional Command?
+     * Is Optional CommandSpec?
      *
      * @deprecated OPTIONAL COMMAND???
      */
     @Deprecated
     private final boolean isOptional;
     /**
-     * Command Handler
+     * CommandSpec Handler
      */
     private final Handler defaultHandler;
     /**
-     * Argument specification list
+     * ArgumentSpec specification list
      *
      * @see Arguments
      */
@@ -86,16 +86,16 @@ public class Command implements Matchable<String> {
     private final CommandList subCommands = new CommandList();
 
     /**
-     * Create a new Command instance
+     * Create a new CommandSpec instance
      *
      * @param name           Name of command
      * @param arguments      Arguments
      * @param isOptional     Is Optional??
      * @param prefix         Prefix
      * @param suffix         Suffix
-     * @param defaultHandler Command handler
+     * @param defaultHandler CommandSpec handler
      */
-    public Command(Text name, Arguments arguments, @Deprecated boolean isOptional, String prefix, String suffix, Handler defaultHandler) {
+    public CommandSpec(Text name, Arguments arguments, @Deprecated boolean isOptional, String prefix, String suffix, Handler defaultHandler) {
         this.name = name;
         this.arguments = arguments;
         this.isOptional = isOptional;
@@ -104,112 +104,112 @@ public class Command implements Matchable<String> {
         this.defaultHandler = defaultHandler;
     }
 
-    public static String toString(Command command) {
+    public static String toString(CommandSpec commandSpec) {
         try {
-            return toString(command, new StringBuffer());
+            return toString(commandSpec, new StringBuffer());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static String toString(Command command, Appendable append) throws IOException {
-        return toAppendable(command, append).toString();
+    public static String toString(CommandSpec commandSpec, Appendable append) throws IOException {
+        return toAppendable(commandSpec, append).toString();
     }
 
-    public static Appendable toAppendable(Command command, Appendable append) throws IOException {
-        append.append(command.getClass().getSimpleName()).append("[")
-                .append("name=").append(command.getName().getPlainString())
+    public static Appendable toAppendable(CommandSpec commandSpec, Appendable append) throws IOException {
+        append.append(commandSpec.getClass().getSimpleName()).append("[")
+                .append("name=").append(commandSpec.getName().getPlainString())
                 .append(",")
-                .append("isOptional=").append(String.valueOf(command.isOptional()))
+                .append("isOptional=").append(String.valueOf(commandSpec.isOptional()))
                 .append(",")
-                .append("prefix=").append(command.getPrefix())
+                .append("prefix=").append(commandSpec.getPrefix())
                 .append(",")
-                .append("suffix=").append(command.getSuffix())
+                .append("suffix=").append(commandSpec.getSuffix())
                 .append(",")
-                .append("alias=").append(command.aliasList.toString())
+                .append("alias=").append(commandSpec.aliasList.toString())
                 .append(",")
                 .append("subCommands={");
-        for (Object subCommand : command.getSubCommands()) {
-            toAppendable((Command) subCommand, append);
+        for (Object subCommand : commandSpec.getSubCommands()) {
+            toAppendable((CommandSpec) subCommand, append);
         }
         append.append("}")
                 .append("]");
         return append;
     }
 
-    public static boolean matches(Command command, String other, boolean ignoreCase) {
+    public static boolean matches(CommandSpec commandSpec, String other, boolean ignoreCase) {
         String withoutPAS = other;
 
-        if (command.prefix != null) {
-            if (!other.startsWith(command.prefix))
+        if (commandSpec.prefix != null) {
+            if (!other.startsWith(commandSpec.prefix))
                 return false;
             else
-                withoutPAS = withoutPAS.substring(command.prefix.length());
+                withoutPAS = withoutPAS.substring(commandSpec.prefix.length());
         }
 
-        if (command.suffix != null) {
-            if (!other.endsWith(command.suffix))
+        if (commandSpec.suffix != null) {
+            if (!other.endsWith(commandSpec.suffix))
                 return false;
             else
-                withoutPAS = withoutPAS.substring(0, withoutPAS.length() - command.suffix.length());
+                withoutPAS = withoutPAS.substring(0, withoutPAS.length() - commandSpec.suffix.length());
         }
 
-        return Text.matches(command.getName(), withoutPAS, ignoreCase) || command.getAliases().anyMatches(withoutPAS, ignoreCase);
+        return Text.matches(commandSpec.getName(), withoutPAS, ignoreCase) || commandSpec.getAliases().anyMatches(withoutPAS, ignoreCase);
     }
 
     /**
-     * Add child command
+     * Add child commandSpec
      *
-     * @param command Command
+     * @param commandSpec CommandSpec
      * @return This
      */
-    public Command addSub(Command command) {
-        this.subCommands.add(command);
+    public CommandSpec addSub(CommandSpec commandSpec) {
+        this.subCommands.add(commandSpec);
         return this;
     }
 
     /**
-     * Add child commands*
+     * Add child commandSpecs*
      *
-     * @param commands Commands*
+     * @param commandSpecs Commands*
      * @return This
      */
-    public Command subCommands(Command... commands) {
-        addSubs(commands);
+    public CommandSpec subCommands(CommandSpec... commandSpecs) {
+        addSubs(commandSpecs);
         return this;
     }
 
     /**
-     * Add List of child commands
+     * Add List of child commandSpecs
      *
-     * @param commands Commands
+     * @param commandSpecs Commands
      * @return This
      */
-    public Command addSubs(List<Command> commands) {
-        if (commands.size() > 0)
-            this.subCommands.addAll(commands);
+    public CommandSpec addSubs(List<CommandSpec> commandSpecs) {
+        if (commandSpecs.size() > 0)
+            this.subCommands.addAll(commandSpecs);
         return this;
     }
 
     /**
-     * Add child commands*
+     * Add child commandSpecs*
      *
-     * @param commands Child commands
+     * @param commandSpecs Child commandSpecs
      * @return This
      */
-    public Command addSubs(Command... commands) {
-        this.subCommands.addAll(Arrays.asList(commands));
+    public CommandSpec addSubs(CommandSpec... commandSpecs) {
+        this.subCommands.addAll(Arrays.asList(commandSpecs));
         return this;
     }
 
     /**
-     * Remove child command
+     * Remove child commandSpec
      *
-     * @param command Command
+     * @param commandSpec CommandSpec
      * @return This
      */
-    public Command removeSub(Command command) {
-        this.subCommands.remove(command);
+    public CommandSpec removeSub(CommandSpec commandSpec) {
+        this.subCommands.remove(commandSpec);
         return this;
     }
 
@@ -219,7 +219,7 @@ public class Command implements Matchable<String> {
      * @param alias Alias
      * @return This
      */
-    public Command addAlias(Text alias) {
+    public CommandSpec addAlias(Text alias) {
         this.aliasList.add(alias);
         return this;
     }
@@ -230,7 +230,7 @@ public class Command implements Matchable<String> {
      * @param aliases Aliases
      * @return This
      */
-    public Command addAliases(Text... aliases) {
+    public CommandSpec addAliases(Text... aliases) {
         this.aliasList.addAll(Arrays.asList(aliases));
         return this;
     }
@@ -241,7 +241,7 @@ public class Command implements Matchable<String> {
      * @param alias Alias
      * @return This
      */
-    public Command removeAlias(Text alias) {
+    public CommandSpec removeAlias(Text alias) {
         this.aliasList.remove(alias);
         return this;
     }
@@ -265,7 +265,7 @@ public class Command implements Matchable<String> {
      * @return Sub Commands
      */
     @Immutable
-    public List<Command> getSubCommands() {
+    public List<CommandSpec> getSubCommands() {
         return Collections.unmodifiableList(subCommands);
     }
 
@@ -275,13 +275,13 @@ public class Command implements Matchable<String> {
      * @return Not optional sub commands
      */
     @Immutable
-    public List<Command> getNotOptionalSubCommands() {
+    public List<CommandSpec> getNotOptionalSubCommands() {
 
-        List<Command> notOptionalSubCommands;
+        List<CommandSpec> notOptionalSubCommandSpecs;
 
-        notOptionalSubCommands = subCommands.stream().filter(Command::notOptional).collect(Collectors.toList());
+        notOptionalSubCommandSpecs = subCommands.stream().filter(CommandSpec::notOptional).collect(Collectors.toList());
 
-        return Collections.unmodifiableList(notOptionalSubCommands);
+        return Collections.unmodifiableList(notOptionalSubCommandSpecs);
     }
 
     /**
@@ -325,16 +325,16 @@ public class Command implements Matchable<String> {
     /**
      * Get the command prefix
      *
-     * @return Command prefix
+     * @return CommandSpec prefix
      */
     public String getPrefix() {
         return prefix;
     }
 
     /**
-     * Get the Command suffix
+     * Get the CommandSpec suffix
      *
-     * @return Command suffix
+     * @return CommandSpec suffix
      */
     public String getSuffix() {
         return suffix;

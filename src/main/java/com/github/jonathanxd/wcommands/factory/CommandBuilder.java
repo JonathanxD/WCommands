@@ -19,9 +19,9 @@
 package com.github.jonathanxd.wcommands.factory;
 
 import com.github.jonathanxd.wcommands.CommonHandler;
-import com.github.jonathanxd.wcommands.arguments.Argument;
+import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.arguments.Arguments;
-import com.github.jonathanxd.wcommands.command.Command;
+import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.handler.Handler;
 import com.github.jonathanxd.wcommands.text.Text;
 
@@ -38,7 +38,7 @@ public class CommandBuilder<H> {
     private boolean isOptional = false;
     private Handler<H> handler;
     private Arguments arguments = new Arguments();
-    private List<Command> preChilds = new ArrayList<>();
+    private List<CommandSpec> preChilds = new ArrayList<>();
 
     private CommandBuilder() {
     }
@@ -96,18 +96,18 @@ public class CommandBuilder<H> {
         return this;
     }
 
-    public CommandBuilder<H> withArgument(Argument<?, ?> argument) {
-        this.arguments.add(argument);
+    public CommandBuilder<H> withArgument(ArgumentSpec<?, ?> argumentSpec) {
+        this.arguments.add(argumentSpec);
         return this;
     }
 
-    public CommandBuilder<H> withChild(Command child) {
+    public CommandBuilder<H> withChild(CommandSpec child) {
         this.preChilds.add(child);
         return this;
     }
 
 
-    public Command build() {
-        return new Command(name, arguments, isOptional, prefix, suffix, handler).addSubs(preChilds);
+    public CommandSpec build() {
+        return new CommandSpec(name, arguments, isOptional, prefix, suffix, handler).addSubs(preChilds);
     }
 }

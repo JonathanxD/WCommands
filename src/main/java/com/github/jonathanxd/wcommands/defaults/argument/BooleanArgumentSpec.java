@@ -18,7 +18,7 @@
  */
 package com.github.jonathanxd.wcommands.defaults.argument;
 
-import com.github.jonathanxd.wcommands.arguments.Argument;
+import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.text.Text;
 
@@ -27,11 +27,11 @@ import java.util.function.Supplier;
 /**
  * Created by jonathan on 27/02/16.
  */
-public class BooleanArgument<ID> extends Argument<ID, Boolean> {
+public class BooleanArgumentSpec<ID> extends ArgumentSpec<ID, Boolean> {
 
     private static final Supplier<Matchable<String>> BOOLEAN_CHECKER = () -> Text.of("(true|false)", true, true);
 
-    public BooleanArgument(ID id, boolean optional) {
+    public BooleanArgumentSpec(ID id, boolean optional) {
         super(id, BOOLEAN_CHECKER, s -> true, optional, text -> Boolean.valueOf(text.getPlainString()));
     }
 }

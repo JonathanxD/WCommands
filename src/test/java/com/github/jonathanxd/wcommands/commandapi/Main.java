@@ -19,23 +19,16 @@
 package com.github.jonathanxd.wcommands.commandapi;
 
 import com.github.jonathanxd.wcommands.WCommand;
-import com.github.jonathanxd.wcommands.arguments.Argument;
+import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.arguments.Arguments;
-import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
-import com.github.jonathanxd.wcommands.arguments.holder.ArgumentsHolder;
-import com.github.jonathanxd.wcommands.command.Command;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.common.Matchable;
-import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.factory.CommandFactory;
-import com.github.jonathanxd.wcommands.handler.Handler;
 import com.github.jonathanxd.wcommands.processor.CommonProcessor;
 import com.github.jonathanxd.wcommands.text.Text;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,9 +38,9 @@ public class Main {
         WCommand<List<CommandData<CommandHolder>>> wCommand = CommonProcessor.newWCommand((e) -> true);
 
         CommonProcessor.CommonHandler handler = data -> {
-            System.out.println("|Command|: " + data.getCommand());
+            System.out.println("|CommandSpec|: " + data.getCommand());
             data.getCommand().eachArguments().plain(arg -> {
-                System.out.println("Argument: " + arg);
+                System.out.println("ArgumentSpec: " + arg);
             });
             CommandHolder command = data.getCommand();
 
@@ -59,21 +52,21 @@ public class Main {
             }
         };
 
-        Argument argument = CommandFactory.create(ArgumentIDs.ITEM_ARGUMENT, () -> Text.of("(STONE)|(GOLD)|(AXE)", true, true));
-        Argument argumentXP = CommandFactory.create(ArgumentIDs.XP_ARGUMENT, Matchable::acceptAny);
-        Argument argumentName = CommandFactory.create(ArgumentIDs.REGION_NAME, Matchable::acceptAny);
-        Argument argumentRegionName = CommandFactory.createOptional(ArgumentIDs.REGION_NAME, () -> s -> !s.equals("allow"));
+        ArgumentSpec argumentSpec = CommandFactory.create(ArgumentIDs.ITEM_ARGUMENT, () -> Text.of("(STONE)|(GOLD)|(AXE)", true, true));
+        ArgumentSpec argumentSpecXP = CommandFactory.create(ArgumentIDs.XP_ARGUMENT, Matchable::acceptAny);
+        ArgumentSpec argumentSpecName = CommandFactory.create(ArgumentIDs.REGION_NAME, Matchable::acceptAny);
+        ArgumentSpec argumentSpecRegionName = CommandFactory.createOptional(ArgumentIDs.REGION_NAME, () -> s -> !s.equals("allow"));
 
         wCommand.addCommand(
                 CommandFactory.create("give", handler)
-                        .addSub(CommandFactory.create("xp", Arguments.of(argumentXP), handler))
-                        .addSub(CommandFactory.create("item", Arguments.of(argument), handler))
+                        .addSub(CommandFactory.create("xp", Arguments.of(argumentSpecXP), handler))
+                        .addSub(CommandFactory.create("item", Arguments.of(argumentSpec), handler))
         );
 
         wCommand.addCommand(
-                CommandFactory.create("region", Arguments.of(argumentRegionName), handler)
+                CommandFactory.create("region", Arguments.of(argumentSpecRegionName), handler)
                         .addSub(
-                                CommandFactory.createOptional("allow", Arguments.of(argumentName), handler)
+                                CommandFactory.createOptional("allow", Arguments.of(argumentSpecName), handler)
                         )
         );
 

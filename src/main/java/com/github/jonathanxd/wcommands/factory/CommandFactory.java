@@ -18,9 +18,9 @@
  */
 package com.github.jonathanxd.wcommands.factory;
 
-import com.github.jonathanxd.wcommands.arguments.Argument;
+import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.arguments.Arguments;
-import com.github.jonathanxd.wcommands.command.Command;
+import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.handler.Handler;
 import com.github.jonathanxd.wcommands.text.Text;
@@ -37,35 +37,35 @@ public class CommandFactory {
 
 
     @Deprecated
-    public static Command create(String name) {
+    public static CommandSpec create(String name) {
         return create(Text.of(name), new Arguments(), false, "", "", null);
     }
 
-    public static <H> Command create(String name, Handler<H> handler) {
+    public static <H> CommandSpec create(String name, Handler<H> handler) {
         return create(Text.of(name), new Arguments(), false, "", "", handler);
     }
 
-    public static <H> Command create(String name, Arguments arguments, Handler<H> handler) {
+    public static <H> CommandSpec create(String name, Arguments arguments, Handler<H> handler) {
         return create(Text.of(name), arguments, false, "", "", handler);
     }
 
     @Deprecated
-    public static Command createOptional(String name) {
+    public static CommandSpec createOptional(String name) {
         return create(Text.of(name), new Arguments(), true, "", "", null);
     }
 
-    public static <H> Command createOptional(String name, Handler<H> handler) {
+    public static <H> CommandSpec createOptional(String name, Handler<H> handler) {
         return create(Text.of(name), new Arguments(), true, "", "", handler);
     }
 
-    public static <H> Command createOptional(String name, Arguments arguments, Handler<H> handler) {
+    public static <H> CommandSpec createOptional(String name, Arguments arguments, Handler<H> handler) {
         return create(Text.of(name), arguments, true, "", "", handler);
     }
 
 
-    public static <H> Command create(Text name, Arguments arguments, boolean optional, String prefix, String suffix, Handler<H> handler) {
+    public static <H> CommandSpec create(Text name, Arguments arguments, boolean optional, String prefix, String suffix, Handler<H> handler) {
 
-        return new Command(
+        return new CommandSpec(
                 Objects.requireNonNull(name, "Name cannot be null"),
                 // Primitives cannot be null
                 arguments, optional,
@@ -75,24 +75,24 @@ public class CommandFactory {
                 handler);
     }
 
-    public static <ID> Argument<ID, String> create(ID id, Supplier<Matchable<String>> checker) {
+    public static <ID> ArgumentSpec<ID, String> create(ID id, Supplier<Matchable<String>> checker) {
         return create(id, checker, t -> true, false, new All());
     }
 
-    public static <ID> Argument<ID, String> createOptional(ID id, Supplier<Matchable<String>> checker) {
+    public static <ID> ArgumentSpec<ID, String> createOptional(ID id, Supplier<Matchable<String>> checker) {
         return create(id, checker, t -> true, true, new All());
     }
 
-    public static <ID> Argument<ID, String> create(ID id, Supplier<Matchable<String>> checker, Predicate<Text> postCheck) {
+    public static <ID> ArgumentSpec<ID, String> create(ID id, Supplier<Matchable<String>> checker, Predicate<Text> postCheck) {
         return create(id, checker, postCheck, false, new All());
     }
 
-    public static <ID> Argument<ID, String> createOptional(ID id, Supplier<Matchable<String>> checker, Predicate<Text> postCheck) {
+    public static <ID> ArgumentSpec<ID, String> createOptional(ID id, Supplier<Matchable<String>> checker, Predicate<Text> postCheck) {
         return create(id, checker, postCheck, true, new All());
     }
 
-    public static <ID, T> Argument<ID, T> create(ID id, Supplier<Matchable<String>> checker, Predicate<Text> predicate, boolean optional, Function<Text, T> converter) {
-        return new Argument<>(id, checker, predicate, optional, converter);
+    public static <ID, T> ArgumentSpec<ID, T> create(ID id, Supplier<Matchable<String>> checker, Predicate<Text> predicate, boolean optional, Function<Text, T> converter) {
+        return new ArgumentSpec<>(id, checker, predicate, optional, converter);
     }
 
     private static class All implements Function<Text, String> {

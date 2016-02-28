@@ -31,7 +31,7 @@ import java.util.function.Supplier;
  */
 
 /**
- * Argument specification.
+ * ArgumentSpec specification.
  *
  * Arguments is held in {@link com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder} and
  * stored in {@link Arguments}
@@ -45,17 +45,17 @@ import java.util.function.Supplier;
  * A Predicate, Predicate is a {@link Matchable} provider, normally Provided Matchable is {@link
  * Text}
  *
- * @param <ID> ID Type of Argument
+ * @param <ID> ID Type of ArgumentSpec
  * @param <T>  Value Type
  */
-public class Argument<ID, T> {
+public class ArgumentSpec<ID, T> {
 
     /**
-     * Argument ID to be retrieved later
+     * ArgumentSpec ID to be retrieved later
      */
     private final ID id;
     /**
-     * True if is an Optional Argument (not required)
+     * True if is an Optional ArgumentSpec (not required)
      */
     private final boolean optional;
     /**
@@ -75,7 +75,7 @@ public class Argument<ID, T> {
      */
     private final ExtraData data = new ExtraData();
 
-    public Argument(ID id, Supplier<Matchable<String>> checker, Predicate<Text> predicateChecker, boolean optional, Function<Text, T> converter) {
+    public ArgumentSpec(ID id, Supplier<Matchable<String>> checker, Predicate<Text> predicateChecker, boolean optional, Function<Text, T> converter) {
         this.id = id;
         this.checker = checker;
         this.predicate = predicateChecker;
@@ -108,8 +108,8 @@ public class Argument<ID, T> {
     }
 
     /**
-     * True if is a optional Argument, false otherwise
-     * @return True if is a optional Argument, false otherwise
+     * True if is a optional ArgumentSpec, false otherwise
+     * @return True if is a optional ArgumentSpec, false otherwise
      */
     public boolean isOptional() {
         return optional;
@@ -133,6 +133,6 @@ public class Argument<ID, T> {
 
     @Override
     public String toString() {
-        return "Argument[id="+id+", isOptional="+optional+"]";
+        return "ArgumentSpec[id="+id+", isOptional="+optional+"]";
     }
 }
