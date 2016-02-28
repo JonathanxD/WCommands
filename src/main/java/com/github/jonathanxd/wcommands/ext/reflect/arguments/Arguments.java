@@ -18,14 +18,10 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.arguments;
 
-import com.github.jonathanxd.wcommands.common.Matchable;
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.GlobalTypeTranslator;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.function.Predicate;
 
 /**
  * Created by jonathan on 27/02/16.

@@ -16,36 +16,29 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.arguments.enums;
-
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
-import com.github.jonathanxd.wcommands.text.Text;
+package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.exception;
 
 /**
  * Created by jonathan on 28/02/16.
  */
-public class EnumTranslator implements Translator<Object> {
-    private final Class<? extends Enum> enumClass;
-    private final EnumPredicate predicate;
-
-    public EnumTranslator(Class<? extends Enum> enumClass) {
-        this.enumClass = enumClass;
-        this.predicate = new EnumPredicate(enumClass);
+public class TranslateException extends RuntimeException {
+    public TranslateException() {
+        super();
     }
 
-    @Override
-    public boolean isAcceptable(Text text) {
-        return predicate.test(text);
+    public TranslateException(String message) {
+        super(message);
     }
 
-    @Override
-    public Object translate(Text text) {
+    public TranslateException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-        Enum e = predicate.get(text);
+    public TranslateException(Throwable cause) {
+        super(cause);
+    }
 
-        if(e == null && text.getPlainString() != null)
-            throw new IllegalStateException("Cannot get enum ("+enumClass.getCanonicalName()+") constant '"+text+"'");
-
-        return e;
+    protected TranslateException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

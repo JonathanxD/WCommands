@@ -16,16 +16,23 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.arguments;
+package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators;
 
-import com.github.jonathanxd.wcommands.text.Text;
+import java.util.TreeSet;
 
 /**
- * Created by jonathan on 27/02/16.
+ * Created by jonathan on 28/02/16.
  */
-public interface Translator<T> {
+public class TranslatorList extends TreeSet<TypeTranslator> {
 
-    boolean isAcceptable(Text text);
-    T translate(Text text);
+    public TranslatorList() {
+        super((o1, o2) -> {
+            if (o1.hashCode() == o2.hashCode())
+                return 0;
+
+            int compare = o1.getPriority().compareTo(o2.getPriority());
+            return compare == 0 ? compare + 1 : compare;
+        });
+    }
 
 }

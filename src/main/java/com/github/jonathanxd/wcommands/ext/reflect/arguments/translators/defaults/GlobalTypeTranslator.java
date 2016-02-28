@@ -16,13 +16,15 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators;
+package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults;
 
 import com.github.jonathanxd.iutils.caster.Caster;
+import com.github.jonathanxd.iutils.data.ExtraData;
 import com.github.jonathanxd.iutils.extra.Container;
 import com.github.jonathanxd.iutils.extra.primitivecontainers.BooleanContainer;
-import com.github.jonathanxd.iutils.map.Map;
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.Translator;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.exception.TranslateException;
 import com.github.jonathanxd.wcommands.text.Text;
 import com.github.jonathanxd.wcommands.util.reflection.Primitive;
 
@@ -32,18 +34,12 @@ import com.github.jonathanxd.wcommands.util.reflection.Primitive;
  */
 public class GlobalTypeTranslator implements Translator<Object> {
 
-    private static final Map<Class<?>, Translator<?>> translatorMap = new Map<>();
-
-    static {
-        translatorMap.put(Boolean.class, new BooleanTranslator());
-        translatorMap.put(Number.class, new NumberTranslator());
-        translatorMap.put(String.class, new StringTranslator());
-    }
-
     private final Class<?> type;
     private final boolean isPrimitive;
+    private final TranslatorSupport support;
 
-    public GlobalTypeTranslator(Class<?> type) {
+    public GlobalTypeTranslator(Class<?> type, TranslatorSupport support) {
+        this.support = support;
 
         Class<?> boxed = Primitive.asBoxed(type);
 
@@ -56,33 +52,13 @@ public class GlobalTypeTranslator implements Translator<Object> {
         }
     }
 
-    public static <T> void addTranslator(Class<T> type, Translator<T> translator) {
-        if (!translatorMap.containsKey(type))
-            translatorMap.put(type, translator);
-    }
-
-    public static <T> void removeTranslator(Class<T> type) {
-        translatorMap.remove(type);
-    }
-
     @Override
     public boolean isAcceptable(Text text) {
-        BooleanContainer container = new BooleanContainer(false);
-
-        translatorMap.forEach((aType, translator) -> {
-            if (container.isPresent()) {
-                return;
-            }
-            if (aType.isAssignableFrom(type)) {
-                container.set(true);
-            }
-        });
-
-        if (!container.toBoolean()) {
-            throw new IllegalArgumentException("Cannot translate type '" + type + "' with " + this.getClass().getSimpleName());
+        try{
+            return translate(text) != null;
+        }catch (Exception e){
+            return false;
         }
-
-        return container.toBoolean();
     }
 
     @Override
@@ -90,13 +66,12 @@ public class GlobalTypeTranslator implements Translator<Object> {
 
         Container<Object> objectContainer = new Container<>(null);
 
-        translatorMap.forEach((aType, translator) -> {
+        support.forEach((aType, translator) -> {
 
-            if (objectContainer.isPresent())
+            if (objectContainer.isPresent() && objectContainer.get() != null)
                 return;
 
             if (aType.isAssignableFrom(type)) {
-
                 Class<?> realType;
 
                 if (isPrimitive) {
@@ -106,15 +81,27 @@ public class GlobalTypeTranslator implements Translator<Object> {
                 } else
                     realType = type;
 
-                Object casted;
-                Object translated = translator.translate(text);
-                try {
-                    casted = realType.cast(translated);
-                } catch (ClassCastException e) {
-                    casted = Caster.cast(translated, realType);
-                }
+                ExtraData data = new ExtraData();
 
-                objectContainer.set(casted);
+                data.registerData(realType);
+                data.registerData(this);
+
+                Translator<?> aTranslator = (Translator<?>) data.construct(translator);
+                try{
+                    if(aTranslator.isAcceptable(text)) {
+                        Object casted;
+                        Object translated = aTranslator.translate(text);
+                        try {
+                            casted = realType.cast(translated);
+                        } catch (ClassCastException e) {
+                            casted = Caster.cast(translated, realType);
+                        }
+
+                        objectContainer.set(casted);
+                    }
+                }catch (Throwable t) {
+                    throw new TranslateException("Cannot translate type '"+realType+"'!", t);
+                }
             }
 
         });

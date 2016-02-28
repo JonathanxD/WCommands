@@ -35,7 +35,7 @@ public class ArgumentBuilder<ID, T> {
     @SuppressWarnings("unchecked")
     private Function<Text, T> converter = new All();
     private Supplier<Matchable<String>> checker = null;
-    private Predicate<Matchable<String>> predicate = null;
+    private Predicate<Text> predicate = null;
 
     private ArgumentBuilder() {
     }
@@ -64,7 +64,7 @@ public class ArgumentBuilder<ID, T> {
         return this;
     }
 
-    public ArgumentBuilder<ID, T> withPredicate(Predicate<Matchable<String>> predicate) {
+    public ArgumentBuilder<ID, T> withPredicate(Predicate<Text> predicate) {
         this.predicate = predicate;
         return this;
     }

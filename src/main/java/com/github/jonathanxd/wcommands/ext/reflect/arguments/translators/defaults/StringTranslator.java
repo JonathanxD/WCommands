@@ -16,36 +16,23 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.arguments.enums;
+package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults;
 
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 import com.github.jonathanxd.wcommands.text.Text;
 
 /**
- * Created by jonathan on 28/02/16.
+ * Created by jonathan on 27/02/16.
  */
-public class EnumTranslator implements Translator<Object> {
-    private final Class<? extends Enum> enumClass;
-    private final EnumPredicate predicate;
-
-    public EnumTranslator(Class<? extends Enum> enumClass) {
-        this.enumClass = enumClass;
-        this.predicate = new EnumPredicate(enumClass);
-    }
+public class StringTranslator implements Translator<String> {
 
     @Override
     public boolean isAcceptable(Text text) {
-        return predicate.test(text);
+        return true;
     }
 
     @Override
-    public Object translate(Text text) {
-
-        Enum e = predicate.get(text);
-
-        if(e == null && text.getPlainString() != null)
-            throw new IllegalStateException("Cannot get enum ("+enumClass.getCanonicalName()+") constant '"+text+"'");
-
-        return e;
+    public String translate(Text text) {
+        return text.getPlainString();
     }
 }

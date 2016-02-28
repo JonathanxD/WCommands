@@ -228,6 +228,11 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
             for (Argument<?, ?> argumentParse : command.getArguments()) {
 
+                if(!argumentIter.hasNext()) {
+                    ArgumentHolder argument = new ArgumentHolder<>(Text.of(null), argumentParse);
+                    argumentHolders.add(argument);
+                }
+
                 while (argumentIter.hasNext()) {
                     String sub = argumentIter.next();
                     Text text = Text.of(sub);

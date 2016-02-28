@@ -18,15 +18,14 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.arguments;
 
-import com.github.jonathanxd.wcommands.common.Matchable;
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.GlobalTypeTranslator;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.GlobalTypeTranslator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.function.Predicate;
 
 /**
  * Created by jonathan on 27/02/16.
@@ -41,8 +40,6 @@ public @interface Argument {
     boolean setFinal() default false;
 
     Class<? extends Translator<?>> translator() default GlobalTypeTranslator.class;
-
-    Class<? extends Predicate<Matchable<String>>> predicate() default AllPredicate.class;
 
     boolean isOptional() default false;
 }

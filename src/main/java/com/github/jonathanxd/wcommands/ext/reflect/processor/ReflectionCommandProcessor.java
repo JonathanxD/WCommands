@@ -21,11 +21,17 @@ package com.github.jonathanxd.wcommands.ext.reflect.processor;
 import com.github.jonathanxd.iutils.data.ExtraData;
 import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
-import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.ArgumentContainer;
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.Translator;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.enums.EnumTranslator;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorList;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.BooleanTranslator;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.NumberTranslator;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.StringTranslator;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TypeTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.CommandContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
@@ -33,6 +39,7 @@ import com.github.jonathanxd.wcommands.factory.ArgumentBuilder;
 import com.github.jonathanxd.wcommands.factory.CommandBuilder;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.handler.Handler;
+import com.github.jonathanxd.wcommands.interceptor.Priority;
 import com.github.jonathanxd.wcommands.processor.Processor;
 import com.github.jonathanxd.wcommands.text.Text;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
@@ -43,23 +50,52 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
  * Created by jonathan on 27/02/16.
  */
-public class ReflectionCommandProcessor extends WCommandCommon {
+public class ReflectionCommandProcessor extends WCommandCommon implements TranslatorSupport {
+
+    private final TranslatorList translatorList = new TranslatorList();
+
     public ReflectionCommandProcessor() {
         super();
+        initBasics();
+    }
+
+
+    private void initBasics() {
+        addGlobalTranslator(Boolean.class, BooleanTranslator.class);
+        addGlobalTranslator(Number.class, NumberTranslator.class);
+        addGlobalTranslator(String.class, StringTranslator.class);
+        addGlobalTranslator(Enum.class, EnumTranslator.class, Priority.LAST);
     }
 
     public ReflectionCommandProcessor(ErrorHandler errorHandler) {
         super(errorHandler);
+        initBasics();
     }
 
     public ReflectionCommandProcessor(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler handler) {
         super(processor, handler);
+        initBasics();
+    }
+
+    @Override
+    public <T>void addGlobalTranslator(Class<T> type, Class<? extends Translator<?>> translator, Priority priority) {
+        translatorList.add(new TypeTranslator<>(type, translator, priority));
+    }
+
+    @Override
+    public <T>void removeGlobalTranslator(Class<T> type) {
+        translatorList.removeIf(t -> t.getType() == type);
+    }
+
+    @Override
+    public void forEach(BiConsumer<Class<?>, Class<? extends Translator<?>>> consumer) {
+        translatorList.forEach(t -> consumer.accept(t.getType(), t.getTranslator()));
     }
 
     public void addCommands(Object instance, Class<?> clazz) {
@@ -163,40 +199,33 @@ public class ReflectionCommandProcessor extends WCommandCommon {
 
             argumentBuilder.withId(argumentContainer.getName());
 
-            Predicate<Matchable<String>> predicate = null;
 
             ExtraData data = new ExtraData();
 
+            Translator<?> translator = null;
             try {
+                data.registerData((TranslatorSupport) this);
+                data.registerData(command);
                 data.registerData(argumentContainer);
                 data.registerData(argumentContainer.getName());
                 data.registerData(argumentContainer.getType());
 
                 data.registerData(instance);
 
-                predicate = (Predicate<Matchable<String>>) data.construct(argument.predicate());
+                translator = (Translator<?>) data.construct(argument.translator());
             } catch (Throwable ignored) {
                 ignored.printStackTrace();
             }
 
-            if(predicate != null) {
-                data.registerData(predicate);
+
+            if (translator != null) {
+                argumentBuilder.withPredicate(translator::isAcceptable);
+                argumentBuilder.withConverter(translator::translate);
             }
 
-            argumentBuilder.withPredicate(predicate);
 
             argumentBuilder.withOptional(argument.isOptional());
 
-            Translator<?> translator = null;
-
-            try {
-                translator = (Translator<?>) data.construct(argument.translator());
-            } catch (Throwable ignored) {
-            }
-
-            if (translator != null) {
-                argumentBuilder.withConverter(translator::translate);
-            }
             com.github.jonathanxd.wcommands.arguments.Argument argument1 = argumentBuilder.build();
 
             if (argument.setFinal()) {

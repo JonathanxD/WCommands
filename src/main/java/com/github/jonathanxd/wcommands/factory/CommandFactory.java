@@ -83,15 +83,15 @@ public class CommandFactory {
         return create(id, checker, t -> true, true, new All());
     }
 
-    public static <ID> Argument<ID, String> create(ID id, Supplier<Matchable<String>> checker, Predicate<Matchable<String>> postCheck) {
+    public static <ID> Argument<ID, String> create(ID id, Supplier<Matchable<String>> checker, Predicate<Text> postCheck) {
         return create(id, checker, postCheck, false, new All());
     }
 
-    public static <ID> Argument<ID, String> createOptional(ID id, Supplier<Matchable<String>> checker, Predicate<Matchable<String>> postCheck) {
+    public static <ID> Argument<ID, String> createOptional(ID id, Supplier<Matchable<String>> checker, Predicate<Text> postCheck) {
         return create(id, checker, postCheck, true, new All());
     }
 
-    public static <ID, T> Argument<ID, T> create(ID id, Supplier<Matchable<String>> checker, Predicate<Matchable<String>> predicate, boolean optional, Function<Text, T> converter) {
+    public static <ID, T> Argument<ID, T> create(ID id, Supplier<Matchable<String>> checker, Predicate<Text> predicate, boolean optional, Function<Text, T> converter) {
         return new Argument<>(id, checker, predicate, optional, converter);
     }
 

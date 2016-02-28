@@ -18,17 +18,13 @@
  */
 package com.github.jonathanxd.wcommands.reflection;
 
-import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentError;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.enums.EnumPredicate;
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.enums.EnumTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
-import com.github.jonathanxd.wcommands.processor.CommonProcessor;
 
 public class TestCMD {
 
@@ -36,15 +32,15 @@ public class TestCMD {
 
         TestCMD testAnnotations = new TestCMD();
 
-        WCommandCommon commandCommon = ReflectionAPI.createWCommand(testAnnotations);
+        ReflectionCommandProcessor commandCommon = ReflectionAPI.createWCommand(testAnnotations);
 
         commandCommon.processAndInvoke("give", "xp", "14");
 
     }
 
     @Command
-    public void give(@Argument(predicate = EnumPredicate.class, translator = EnumTranslator.class) GiveType giveType,
-                     @Argument(predicate = EnumPredicate.class, translator = EnumTranslator.class, isOptional = true) Items what,
+    public void give(@Argument GiveType giveType,
+                     @Argument(isOptional = true) Items what,
                      @Argument int amount) {
 
         if (giveType == GiveType.ITEM) {

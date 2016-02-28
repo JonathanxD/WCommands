@@ -16,36 +16,40 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.arguments.enums;
+package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators;
 
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
-import com.github.jonathanxd.wcommands.text.Text;
+import com.github.jonathanxd.wcommands.interceptor.Priority;
+
+import java.util.Objects;
 
 /**
  * Created by jonathan on 28/02/16.
  */
-public class EnumTranslator implements Translator<Object> {
-    private final Class<? extends Enum> enumClass;
-    private final EnumPredicate predicate;
+public class TypeTranslator<T> {
+    private final Class<T> type;
+    private final Class<? extends Translator<?>> translator;
+    private final Priority priority;
 
-    public EnumTranslator(Class<? extends Enum> enumClass) {
-        this.enumClass = enumClass;
-        this.predicate = new EnumPredicate(enumClass);
+    public TypeTranslator(Class<T> type, Class<? extends Translator<?>> translator, Priority priority) {
+        this.type = type;
+        this.translator = translator;
+        this.priority = priority;
+    }
+
+    public Class<T> getType() {
+        return type;
+    }
+
+    public Class<? extends Translator<?>> getTranslator() {
+        return translator;
+    }
+
+    public Priority getPriority() {
+        return priority;
     }
 
     @Override
-    public boolean isAcceptable(Text text) {
-        return predicate.test(text);
-    }
-
-    @Override
-    public Object translate(Text text) {
-
-        Enum e = predicate.get(text);
-
-        if(e == null && text.getPlainString() != null)
-            throw new IllegalStateException("Cannot get enum ("+enumClass.getCanonicalName()+") constant '"+text+"'");
-
-        return e;
+    public int hashCode() {
+        return Objects.hash(type, translator);
     }
 }

@@ -41,36 +41,36 @@ import java.util.List;
  */
 public class ReflectionAPI extends Extension {
 
-    public static WCommandCommon createWCommand(Object instance) {
+    public static ReflectionCommandProcessor createWCommand(Object instance) {
         return createWCommand(instance, instance.getClass());
     }
 
 
-    public static WCommandCommon createWCommand(Object instance, Class<?> commandClass) {
+    public static ReflectionCommandProcessor createWCommand(Object instance, Class<?> commandClass) {
         ReflectionCommandProcessor commandProcessor = new ReflectionCommandProcessor();
         commandProcessor.addCommands(instance, commandClass);
         return commandProcessor;
     }
 
-    public static WCommandCommon createWCommand(ErrorHandler handler, Object instance) {
+    public static ReflectionCommandProcessor createWCommand(ErrorHandler handler, Object instance) {
         ReflectionCommandProcessor commandProcessor = new ReflectionCommandProcessor(handler);
         commandProcessor.addCommands(instance, instance.getClass());
         return commandProcessor;
     }
 
-    public static WCommandCommon createWCommand(ErrorHandler handler, Object instance, Class<?> commandClass) {
+    public static ReflectionCommandProcessor createWCommand(ErrorHandler handler, Object instance, Class<?> commandClass) {
         ReflectionCommandProcessor commandProcessor = new ReflectionCommandProcessor(handler);
         commandProcessor.addCommands(instance, commandClass);
         return commandProcessor;
     }
 
-    public static WCommandCommon createWCommand(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler handler, Object instance) {
+    public static ReflectionCommandProcessor createWCommand(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler handler, Object instance) {
         ReflectionCommandProcessor commandProcessor = new ReflectionCommandProcessor(processor, handler);
         commandProcessor.addCommands(instance, instance.getClass());
         return commandProcessor;
     }
 
-    public static WCommandCommon createWCommand(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler handler, Object instance, Class<?> commandClass) {
+    public static ReflectionCommandProcessor createWCommand(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler handler, Object instance, Class<?> commandClass) {
         ReflectionCommandProcessor commandProcessor = new ReflectionCommandProcessor(processor, handler);
         commandProcessor.addCommands(instance, commandClass);
         return commandProcessor;

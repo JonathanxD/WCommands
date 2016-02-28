@@ -69,13 +69,13 @@ public class Argument<ID, T> {
     /**
      * Predicate
      */
-    private final Predicate<Matchable<String>> predicate;
+    private final Predicate<Text> predicate;
     /**
      * Extra Data's, AdditionalData provided by {@link com.github.jonathanxd.wcommands.ext.Extension} and 2nd/3rd APIs
      */
     private final ExtraData data = new ExtraData();
 
-    public Argument(ID id, Supplier<Matchable<String>> checker, Predicate<Matchable<String>> predicateChecker, boolean optional, Function<Text, T> converter) {
+    public Argument(ID id, Supplier<Matchable<String>> checker, Predicate<Text> predicateChecker, boolean optional, Function<Text, T> converter) {
         this.id = id;
         this.checker = checker;
         this.predicate = predicateChecker;
@@ -103,7 +103,7 @@ public class Argument<ID, T> {
      * Get Predicate
      * @return Predicate
      */
-    public Predicate<Matchable<String>> getPredicate() {
+    public Predicate<Text> getPredicate() {
         return predicate;
     }
 
@@ -129,5 +129,10 @@ public class Argument<ID, T> {
      */
     public ExtraData getData() {
         return data;
+    }
+
+    @Override
+    public String toString() {
+        return "Argument[id="+id+", isOptional="+optional+"]";
     }
 }

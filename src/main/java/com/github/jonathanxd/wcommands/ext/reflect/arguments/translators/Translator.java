@@ -18,31 +18,15 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators;
 
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.Translator;
 import com.github.jonathanxd.wcommands.text.Text;
-
-import java.util.regex.Pattern;
 
 /**
  * Created by jonathan on 27/02/16.
  */
-public class BooleanTranslator implements Translator<Boolean> {
-    private static final Pattern BOOLEAN_REGEX = Pattern.compile("true|false|yes|no");
+public interface Translator<T> {
 
-    @Override
-    public boolean isAcceptable(Text text) {
-        return BOOLEAN_REGEX.matcher(text.getPlainString()).matches();
-    }
+    boolean isAcceptable(Text text);
 
-    @Override
-    public Boolean translate(Text text) {
+    T translate(Text text);
 
-        String plain = text.getPlainString();
-
-        if(!isAcceptable(text))
-            throw new IllegalArgumentException("Cannot translate '"+text+"' to Boolean");
-
-        return plain.equalsIgnoreCase("true") || plain.equalsIgnoreCase("yes");
-
-    }
 }
