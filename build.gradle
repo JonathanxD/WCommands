@@ -19,7 +19,7 @@ allprojects {
     }
 }
 
-defaultTasks 'licenseFormat', 'build', 'test', 'jar', 'shadowJar', 'uploadArchives'
+defaultTasks 'licenseFormat', 'build', 'test', 'jar', 'shadowJar'
 
 sourceCompatibility = 1.8
 
@@ -53,6 +53,7 @@ allprojects {
         }
     }
 }
+
 /*
 
 jar {
