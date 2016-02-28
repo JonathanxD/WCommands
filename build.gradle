@@ -18,10 +18,8 @@ allprojects {
         header rootProject.file("LICENSE_HEADER")
     }
 }
-//Sonatype upload
-//apply from: 'upload.gradle'
 
-defaultTasks 'licenseFormat', 'build', 'test', 'jar', 'shadowJar'
+defaultTasks 'licenseFormat', 'build', 'test', 'jar', 'shadowJar', 'uploadArchives'
 
 sourceCompatibility = 1.8
 
