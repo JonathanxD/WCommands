@@ -18,8 +18,10 @@
  */
 package com.github.jonathanxd.wcommands.reflection;
 
+import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentError;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
+import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.enums.EnumPredicate;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.enums.EnumTranslator;
@@ -32,11 +34,9 @@ public class TestCMD {
 
     public static void main(String[] args) throws ArgumentProcessingError {
 
-        ReflectionCommandProcessor commandCommon = new ReflectionCommandProcessor(new CommonProcessor(), new MyErrorHandler());
-
         TestCMD testAnnotations = new TestCMD();
 
-        commandCommon.addCommands(testAnnotations, TestCMD.class);
+        WCommandCommon commandCommon = ReflectionAPI.createWCommand(testAnnotations);
 
         commandCommon.processAndInvoke("give", "xp", "14");
 

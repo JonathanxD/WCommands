@@ -50,6 +50,13 @@ import java.util.stream.Collectors;
  * Created by jonathan on 27/02/16.
  */
 public class ReflectionCommandProcessor extends WCommandCommon {
+    public ReflectionCommandProcessor() {
+        super();
+    }
+
+    public ReflectionCommandProcessor(ErrorHandler errorHandler) {
+        super(errorHandler);
+    }
 
     public ReflectionCommandProcessor(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler handler) {
         super(processor, handler);
