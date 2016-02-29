@@ -209,7 +209,7 @@ it have methods like `exportTo` and `importFrom` these methods Exports and Impor
 
 Intercepting handlers is simple
 
-Using commands and arguments created in [#creating-a-argument](Creating a argument)
+Using commands and arguments created in [Creating a argument](#creating-a-argument)
 
 First, I will try to change the value of argument:
 
