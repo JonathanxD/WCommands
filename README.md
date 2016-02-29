@@ -1,4 +1,4 @@
-#WCommands
+# WCommands
 
 Yet Another Command API - This Project is and API that provides a Interface to create and handle commands,
  using Reflection to call methods and change Field values (see **Reflection API**) or Handler implementation to Handle commands created using
@@ -203,6 +203,46 @@ Output: `[SAY2] FOO` and `[SAY2] foo bar`
 
 You can Mix `Command API` with `Reflection API`, `ReflectionCommandProcessor` extends `WCommandCommon`, and
 it have methods like `exportTo` and `importFrom` these methods Exports and Imports commands and interceptors.
+
+
+### Intercept Handlers and change arguments
+
+Intercepting handlers is simple
+
+Using commands and arguments created in [#creating-a-argument](Creating a argument)
+
+First, I will try to change the value of argument:
+
+```java
+manager.addInterceptor((commandData, handler) -> {
+  // Find argument with ID.TEXT
+  Optional<ArgumentHolder<ID, Object>> argumentHolder = commandData.getCommand().getArgument(ID.TEXT);
+  // If present setValue
+  argumentHolder.ifPresent(v -> v.setValue("ad"));
+});
+```
+
+If you want to cancel command handling, you need to set handle as null like:
+
+```java
+handler.set(null);
+```
+
+Also you can 'replace' the handler
+
+```java
+handler.set(o -> System.out.println("hello from other handler!"));
+```
+
+
+
+##### Test
+
+```java
+commandProcessor.processAndInvoke("say", "foo bar");
+```
+Output: `[SAY] ad`
+
 
 ### More Examples
 

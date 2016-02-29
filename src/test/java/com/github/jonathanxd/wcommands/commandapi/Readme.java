@@ -19,6 +19,7 @@
 package com.github.jonathanxd.wcommands.commandapi;
 
 import com.github.jonathanxd.wcommands.WCommandCommon;
+import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
@@ -64,6 +65,15 @@ public class Readme {
                 ).build();
 
         manager.registerCommand(spec);
+
+        manager.processAndInvoke("say", "foo bar");
+
+        // Intercept handler
+
+        manager.addInterceptor((commandData, handler) -> {
+            Optional<ArgumentHolder<ID, Object>> argumentHolder = commandData.getCommand().getArgument(ID.TEXT);
+            argumentHolder.ifPresent(v -> v.setValue("ad"));
+        });
 
         manager.processAndInvoke("say", "foo bar");
     }

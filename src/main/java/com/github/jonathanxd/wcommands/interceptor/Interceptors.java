@@ -33,7 +33,7 @@ public class Interceptors extends TreeSet<InvokeInterceptor> {
 
     public Interceptors getPhase(Phase phase) {
         Interceptors invokeInterceptors = new Interceptors();
-        this.stream().filter(p -> p.phase() == phase).map(invokeInterceptors::add);
+        this.stream().filter(p -> p.phase() == phase).forEach(invokeInterceptors::add);
         return invokeInterceptors;
     }
 }

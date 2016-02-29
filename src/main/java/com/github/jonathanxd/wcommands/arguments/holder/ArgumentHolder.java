@@ -38,22 +38,16 @@ public class ArgumentHolder<ID, T> {
     /**
      * String representation of argumentSpec input value.
      */
-    private final String value;
+    private String value;
 
     /**
      * ArgumentSpec instance
      */
     private final ArgumentSpec<ID, T> argumentSpec;
 
-    /**
-     * ArgumentSpec is present? (if Text.plain != null)
-     */
-    private final boolean present;
-
     public ArgumentHolder(String value, ArgumentSpec<ID, T> argumentSpec) {
         this.value = value;
         this.argumentSpec = argumentSpec;
-        this.present = value != null;
     }
 
     /**
@@ -63,6 +57,15 @@ public class ArgumentHolder<ID, T> {
      */
     public String getValue() {
         return value;
+    }
+
+
+    /**
+     * Set ArgumentSpec value (input string)
+     * @param value Value
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 
     /**
@@ -81,7 +84,7 @@ public class ArgumentHolder<ID, T> {
      * @return Object representation
      */
     public T convertValue() {
-        return argumentSpec.getConverter().apply(value);
+        return argumentSpec.getConverter().apply(getValue());
     }
 
     /**
@@ -90,11 +93,11 @@ public class ArgumentHolder<ID, T> {
      * @return True if the argumentSpec is present, false otherwise
      */
     public boolean isPresent() {
-        return present;
+        return value != null;
     }
 
     @Override
     public String toString() {
-        return "ArgumentHolder[value=" + value + ", argumentSpec=" + argumentSpec + ", isPresent=" + present + "]";
+        return "ArgumentHolder[value=" + value + ", argumentSpec=" + argumentSpec + ", isPresent=" + isPresent() + "]";
     }
 }
