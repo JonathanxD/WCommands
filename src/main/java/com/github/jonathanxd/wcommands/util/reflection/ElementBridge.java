@@ -20,14 +20,13 @@ package com.github.jonathanxd.wcommands.util.reflection;
 
 import com.github.jonathanxd.iutils.object.Reference;
 
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 
 /**
  * Created by jonathan on 27/02/16.
@@ -76,15 +75,15 @@ public class ElementBridge implements AnnotatedElement {
 
                 Object result = method.invoke(element);
 
-                if (result instanceof ParameterizedTypeImpl) {
-                    ParameterizedTypeImpl type = (ParameterizedTypeImpl) result;
+                if (result instanceof ParameterizedType) {
+                    ParameterizedType type = (ParameterizedType) result;
 
                     try {
                         this.reference = TypeUtil.toReference(type);
                     } catch (Exception ignored) {
                     }
 
-                    return type.getRawType();
+                    return TypeUtil.from(type.getRawType());
                 }
 
                 return (Class<?>) result;

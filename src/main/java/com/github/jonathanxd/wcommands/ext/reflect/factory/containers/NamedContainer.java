@@ -16,57 +16,36 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.commands;
+package com.github.jonathanxd.wcommands.ext.reflect.factory.containers;
 
 import com.github.jonathanxd.iutils.extra.Container;
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.ArgumentContainer;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.annotation.Annotation;
 
 /**
  * Created by jonathan on 27/02/16.
  */
-public class CommandContainer extends Container<Command> {
+public class NamedContainer extends Container<Annotation> {
 
+    private final String name;
     private final ElementBridge bridge;
-    private final List<CommandContainer> child = new ArrayList<>();
-    private final List<ArgumentContainer> argumentContainers = new ArrayList<>();
 
-    public CommandContainer(Command value, ElementBridge bridge) {
+    public NamedContainer(String name, Annotation value, ElementBridge bridge) {
         super(value);
+        this.name = name;
         this.bridge = bridge;
-    }
-
-    public String getName() {
-
-        if (!this.get().name().trim().isEmpty()) {
-            return this.get().name();
-        }
-
-        return this.bridge.getName();
     }
 
     public ElementBridge getBridge() {
         return bridge;
     }
 
-    public boolean isMethod() {
-        return bridge.getMember() instanceof Method;
-    }
+    public String getName() {
 
-    public boolean isField() {
-        return bridge.getMember() instanceof Field;
-    }
+        if (!this.name.trim().isEmpty())
+            return this.name;
 
-    public List<CommandContainer> getChild() {
-        return child;
-    }
-
-    public List<ArgumentContainer> getArgumentContainers() {
-        return argumentContainers;
+        return this.bridge.getName();
     }
 }

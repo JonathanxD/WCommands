@@ -30,7 +30,7 @@ public class TranslatorList extends TreeSet<TypeTranslator> {
             if (o1.hashCode() == o2.hashCode())
                 return 0;
 
-            int compare = o1.getPriority().compareTo(o2.getPriority());
+            int compare = o1.getOrder().compareTo(o2.getOrder());
             return compare == 0 ? compare + 1 : compare;
         });
     }

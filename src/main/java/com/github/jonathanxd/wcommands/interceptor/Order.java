@@ -16,17 +16,27 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators;
+package com.github.jonathanxd.wcommands.interceptor;
 
-import com.github.jonathanxd.wcommands.text.Text;
+import java.util.Comparator;
 
 /**
  * Created by jonathan on 27/02/16.
  */
-public interface Translator<T> {
+public enum Order {
+    FIRST,
+    SECOND,
+    THIRD,
+    FOURTH,
+    FIFTH,
+    SIXTH,
+    SEVENTH,
+    EIGHTH,
+    NINITH,
+    TENTH;
 
-    boolean isAcceptable(String text);
-
-    T translate(String text);
+    public static Comparator<Order> comparator() {
+        return Enum::compareTo;
+    }
 
 }

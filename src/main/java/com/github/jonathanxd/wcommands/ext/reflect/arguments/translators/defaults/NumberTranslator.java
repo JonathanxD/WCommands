@@ -32,13 +32,13 @@ public class NumberTranslator implements Translator<Number> {
     public static final Pattern NUMBER_REGEX = Pattern.compile("-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?");
 
     @Override
-    public boolean isAcceptable(Text text) {
-        return NUMBER_REGEX.matcher(text.getPlainString()).matches();
+    public boolean isAcceptable(String text) {
+        return NUMBER_REGEX.matcher(text).matches();
     }
 
     @Override
-    public Number translate(Text text) {
-        return numberConversion(text.getPlainString());
+    public Number translate(String text) {
+        return numberConversion(text);
     }
 
 

@@ -19,7 +19,7 @@
 package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators;
 
 import com.github.jonathanxd.iutils.object.Reference;
-import com.github.jonathanxd.wcommands.interceptor.Priority;
+import com.github.jonathanxd.wcommands.interceptor.Order;
 
 import java.util.function.BiConsumer;
 
@@ -35,10 +35,10 @@ public interface TranslatorSupport {
      * @param translator Type Translator to Object
      * @param <T>        Type
      */
-    <T> void addGlobalTranslator(Reference<T> type, Class<? extends Translator<?>> translator, Priority priority);
+    <T> void addGlobalTranslator(Reference<T> type, Class<? extends Translator<?>> translator, Order order);
 
     default <T> void addGlobalTranslator(Reference<T> type, Class<? extends Translator<?>> translator) {
-        addGlobalTranslator(type, translator, Priority.LAST);
+        addGlobalTranslator(type, translator, Order.SEVENTH);
     }
 
     /**

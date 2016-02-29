@@ -27,12 +27,12 @@ import com.github.jonathanxd.wcommands.text.Text;
 public class StringTranslator implements Translator<String> {
 
     @Override
-    public boolean isAcceptable(Text text) {
+    public boolean isAcceptable(String text) {
         return true;
     }
 
     @Override
-    public String translate(Text text) {
-        return text.getPlainString();
+    public String translate(String text) {
+        return text;
     }
 }

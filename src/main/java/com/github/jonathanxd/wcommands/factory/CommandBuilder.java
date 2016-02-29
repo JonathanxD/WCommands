@@ -53,6 +53,26 @@ public class CommandBuilder<H> {
         return this;
     }
 
+    public CommandBuilder<H> withName(String name) {
+        this.name = Text.of(name);
+        return this;
+    }
+
+    public CommandBuilder<H> withRegexName(String name) {
+        this.name = Text.ofRegex(name);
+        return this;
+    }
+
+    public CommandBuilder<H> withIgnoreCaseName(String name) {
+        this.name = Text.ofIgnoreCase(name);
+        return this;
+    }
+
+    public CommandBuilder<H> withRegexIgnoreCaseName(String name) {
+        this.name = Text.ofRegexIgnoreCase(name);
+        return this;
+    }
+
     public CommandBuilder<H> withPrefix(String prefix) {
         this.prefix = prefix;
         return this;

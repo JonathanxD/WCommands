@@ -42,8 +42,7 @@ import java.util.function.Supplier;
  *
  * A Checker, Checker is a {@link Matchable} supplier, normally Supplied Matchable is {@link Text}.
  *
- * A Predicate, Predicate is a {@link Matchable} provider, normally Provided Matchable is {@link
- * Text}
+ * A Predicate, Predicate is a {@link String} provider
  *
  * @param <ID> ID Type of ArgumentSpec
  * @param <T>  Value Type
@@ -61,7 +60,7 @@ public class ArgumentSpec<ID, T> {
     /**
      * Converter
      */
-    private final Function<Text, T> converter;
+    private final Function<String, T> converter;
     /**
      * Checker
      */
@@ -69,13 +68,13 @@ public class ArgumentSpec<ID, T> {
     /**
      * Predicate
      */
-    private final Predicate<Text> predicate;
+    private final Predicate<String> predicate;
     /**
      * Extra Data's, AdditionalData provided by {@link com.github.jonathanxd.wcommands.ext.Extension} and 2nd/3rd APIs
      */
     private final ExtraData data = new ExtraData();
 
-    public ArgumentSpec(ID id, Supplier<Matchable<String>> checker, Predicate<Text> predicateChecker, boolean optional, Function<Text, T> converter) {
+    public ArgumentSpec(ID id, Supplier<Matchable<String>> checker, Predicate<String> predicateChecker, boolean optional, Function<String, T> converter) {
         this.id = id;
         this.checker = checker;
         this.predicate = predicateChecker;
@@ -103,7 +102,7 @@ public class ArgumentSpec<ID, T> {
      * Get Predicate
      * @return Predicate
      */
-    public Predicate<Text> getPredicate() {
+    public Predicate<String> getPredicate() {
         return predicate;
     }
 
@@ -119,7 +118,7 @@ public class ArgumentSpec<ID, T> {
      * {@link Text} representation to {@link Object} representation converter
      * @return {@link Text} representation to {@link Object} representation converter
      */
-    public Function<Text, T> getConverter() {
+    public Function<String, T> getConverter() {
         return converter;
     }
 

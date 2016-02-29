@@ -18,11 +18,9 @@
  */
 package com.github.jonathanxd.wcommands.commandapi;
 
-import com.github.jonathanxd.iutils.extra.BaseContainer;
 import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
-import com.github.jonathanxd.wcommands.common.enums.EnumPredicate;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.factory.ArgumentBuilder;
 import com.github.jonathanxd.wcommands.factory.CommandBuilder;
@@ -59,8 +57,8 @@ public class Readme {
                         ArgumentBuilder
                                 .<ID, String>builder()
                                 .withId(ID.TEXT)
-                                .withPredicate(text->true)
-                                .withConverter(Text::getPlainString)
+                                .withTextPredicate(text->true)
+                                .withConverter(String::toString)
                                 .setOptional(true)
                                 .build()
                 ).build();

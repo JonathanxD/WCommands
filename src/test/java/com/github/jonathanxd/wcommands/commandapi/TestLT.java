@@ -38,7 +38,7 @@ public class TestLT {
 
     public static void main(String[] args) throws ArgumentProcessingError {
         WCommandCommon wCommandCommon = new WCommandCommon(new CommonProcessor(), new MyErrorHandler());
-        /*wCommandCommon.registerCommand(CommandFactory.create("allowUpper",
+        /*wCommandCommon.registerCommand(CommandVisitor.create("allowUpper",
                 new BooleanArgumentSpec<IDs>(IDs.ALLOW_UPPER, false),
                 false,
                 "--"));*/

@@ -30,19 +30,17 @@ public class BooleanTranslator implements Translator<Boolean> {
     private static final Pattern BOOLEAN_REGEX = Pattern.compile("true|false|yes|no");
 
     @Override
-    public boolean isAcceptable(Text text) {
-        return BOOLEAN_REGEX.matcher(text.getPlainString()).matches();
+    public boolean isAcceptable(String text) {
+        return BOOLEAN_REGEX.matcher(text).matches();
     }
 
     @Override
-    public Boolean translate(Text text) {
-
-        String plain = text.getPlainString();
+    public Boolean translate(String text) {
 
         if(!isAcceptable(text))
             throw new IllegalArgumentException("Cannot translate '"+text+"' to Boolean");
 
-        return plain.equalsIgnoreCase("true") || plain.equalsIgnoreCase("yes");
+        return text.equalsIgnoreCase("true") || text.equalsIgnoreCase("yes");
 
     }
 }

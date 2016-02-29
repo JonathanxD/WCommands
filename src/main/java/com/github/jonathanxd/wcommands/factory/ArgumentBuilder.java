@@ -33,9 +33,9 @@ public class ArgumentBuilder<ID, T> {
     private ID id;
     private boolean optional = false;
     @SuppressWarnings("unchecked")
-    private Function<Text, T> converter = new All();
+    private Function<String, T> converter = new All();
     private Supplier<Matchable<String>> checker = null;
-    private Predicate<Text> predicate = null;
+    private Predicate<String> predicate = null;
 
     private ArgumentBuilder() {
     }
@@ -54,7 +54,7 @@ public class ArgumentBuilder<ID, T> {
         return this;
     }
 
-    public ArgumentBuilder<ID, T> withConverter(Function<Text, T> converter) {
+    public ArgumentBuilder<ID, T> withConverter(Function<String, T> converter) {
         this.converter = converter;
         return this;
     }
@@ -64,10 +64,23 @@ public class ArgumentBuilder<ID, T> {
         return this;
     }
 
-    public ArgumentBuilder<ID, T> withPredicate(Predicate<Text> predicate) {
+    /**
+     * COMPATIBILITY
+     * @param predicate COMPATIBILITY
+     * @return COMPATIBILITY
+     * @see #withPredicate(Predicate)
+     */
+    public ArgumentBuilder<ID, T> withTextPredicate(Predicate<Text> predicate) {
+        this.predicate = t -> predicate.test(Text.of(t));
+        return this;
+    }
+
+    public ArgumentBuilder<ID, T> withPredicate(Predicate<String> predicate) {
         this.predicate = predicate;
         return this;
     }
+
+
 
     public ArgumentSpec<ID, T> build() {
         return new ArgumentSpec<>(id, checker, predicate, optional, converter);

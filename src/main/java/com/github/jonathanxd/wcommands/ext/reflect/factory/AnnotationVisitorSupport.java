@@ -16,17 +16,26 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators;
+package com.github.jonathanxd.wcommands.ext.reflect.factory;
 
-import com.github.jonathanxd.wcommands.text.Text;
+import com.github.jonathanxd.wcommands.ext.reflect.factory.containers.NamedContainer;
+
+import java.lang.annotation.Annotation;
+import java.util.Optional;
 
 /**
- * Created by jonathan on 27/02/16.
+ * Created by jonathan on 29/02/16.
  */
-public interface Translator<T> {
+public interface AnnotationVisitorSupport {
 
-    boolean isAcceptable(String text);
+    boolean registerVisitor(AnnotationVisitor<?, ?, ?> annotationVisitor);
 
-    T translate(String text);
+    boolean overrideVisitor(AnnotationVisitor<?, ?, ?> annotationVisitor);
+
+    boolean removeVisitor(AnnotationVisitor<?, ?, ?> annotationVisitor);
+
+    boolean removeVisitor(Class<?> annotationType);
+
+    <T extends Annotation, C extends NamedContainer, R> Optional<AnnotationVisitor<T, C, R>> getVisitorFor(Class<? extends Annotation> clazz);
 
 }

@@ -83,22 +83,22 @@ public class CommandFactory {
         return create(id, checker, t -> true, true, new All());
     }
 
-    public static <ID> ArgumentSpec<ID, String> create(ID id, Supplier<Matchable<String>> checker, Predicate<Text> postCheck) {
+    public static <ID> ArgumentSpec<ID, String> create(ID id, Supplier<Matchable<String>> checker, Predicate<String> postCheck) {
         return create(id, checker, postCheck, false, new All());
     }
 
-    public static <ID> ArgumentSpec<ID, String> createOptional(ID id, Supplier<Matchable<String>> checker, Predicate<Text> postCheck) {
+    public static <ID> ArgumentSpec<ID, String> createOptional(ID id, Supplier<Matchable<String>> checker, Predicate<String> postCheck) {
         return create(id, checker, postCheck, true, new All());
     }
 
-    public static <ID, T> ArgumentSpec<ID, T> create(ID id, Supplier<Matchable<String>> checker, Predicate<Text> predicate, boolean optional, Function<Text, T> converter) {
+    public static <ID, T> ArgumentSpec<ID, T> create(ID id, Supplier<Matchable<String>> checker, Predicate<String> predicate, boolean optional, Function<String, T> converter) {
         return new ArgumentSpec<>(id, checker, predicate, optional, converter);
     }
 
-    private static class All implements Function<Text, String> {
+    private static class All implements Function<String, String> {
         @Override
-        public String apply(Text text) {
-            return text.getPlainString();
+        public String apply(String text) {
+            return text;
         }
     }
 

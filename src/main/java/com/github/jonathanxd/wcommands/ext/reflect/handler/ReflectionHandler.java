@@ -23,7 +23,7 @@ import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentsHolder;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.data.CommandData;
-import com.github.jonathanxd.wcommands.ext.reflect.commands.CommandContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.factory.containers.TreeNamedContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
@@ -39,9 +39,9 @@ import java.util.Optional;
 public class ReflectionHandler implements CommonHandler {
 
     private final InstanceContainer instance;
-    private final CommandContainer commandContainer;
+    private final TreeNamedContainer commandContainer;
 
-    public ReflectionHandler(InstanceContainer instance, CommandContainer commandContainer) {
+    public ReflectionHandler(InstanceContainer instance, TreeNamedContainer commandContainer) {
         this.instance = instance;
         this.commandContainer = commandContainer;
     }

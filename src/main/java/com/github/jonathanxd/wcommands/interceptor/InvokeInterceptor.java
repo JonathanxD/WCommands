@@ -34,8 +34,8 @@ public interface InvokeInterceptor {
         return Phase.PRE_CALL;
     }
 
-    default Priority priority() {
-        return Priority.NORMAL;
+    default Order priority() {
+        return Order.FOURTH;
     }
 
 }

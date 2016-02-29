@@ -22,10 +22,11 @@ import com.github.jonathanxd.iutils.caster.Caster;
 import com.github.jonathanxd.iutils.data.ExtraData;
 import com.github.jonathanxd.iutils.extra.Container;
 import com.github.jonathanxd.iutils.object.Reference;
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.ArgumentContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.IsOptional;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.exception.TranslateException;
+import com.github.jonathanxd.wcommands.ext.reflect.factory.containers.SingleNamedContainer;
 import com.github.jonathanxd.wcommands.text.Text;
 import com.github.jonathanxd.wcommands.util.reflection.Primitive;
 
@@ -40,15 +41,20 @@ public class GlobalTypeTranslator implements Translator<Object> {
     private final Reference<?> type;
     private final boolean isPrimitive;
     private final TranslatorSupport support;
-    private final ArgumentContainer container;
+    private final SingleNamedContainer container;
 
-    public GlobalTypeTranslator(Reference<?> type, ArgumentContainer container, TranslatorSupport support) {
+    private final boolean isOptional;
+
+    public GlobalTypeTranslator(Reference<?> type, SingleNamedContainer container, TranslatorSupport support, IsOptional isOptional) {
         this.support = support;
 
         this.container = container;
 
         Class<?> aType = type.getAClass();
-        if (container.get().isOptional()) {
+
+        this.isOptional = isOptional != null && isOptional == IsOptional.TRUE;
+
+        if (this.isOptional) {
             if (type.getAClass() == Optional.class) {
                 aType = type.getRelated()[0].getAClass();
             }
@@ -69,7 +75,7 @@ public class GlobalTypeTranslator implements Translator<Object> {
     }
 
     @Override
-    public boolean isAcceptable(Text text) {
+    public boolean isAcceptable(String text) {
 
         try {
             return translate(text) != null;
@@ -79,7 +85,7 @@ public class GlobalTypeTranslator implements Translator<Object> {
     }
 
     @Override
-    public Object translate(Text text) {
+    public Object translate(String text) {
 
         Container<Object> objectContainer = new Container<>(null);
 
@@ -91,7 +97,7 @@ public class GlobalTypeTranslator implements Translator<Object> {
             Class<?> testType = null;
             if ((aType.getAClass().isAssignableFrom((testType = type.getAClass())) || aType.compareTo(type) == 0)
                     || (type.getRelated().length > 0
-                    && container.get().isOptional()
+                    && this.isOptional
                     && type.getAClass() == Optional.class
                     && aType.getAClass().isAssignableFrom((testType = type.getRelated()[0].getAClass())))) {
 

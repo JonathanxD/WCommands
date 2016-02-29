@@ -46,4 +46,5 @@ public @interface Argument {
     Class<?> type() default PR.class;
 
     final class PR {}
+
 }

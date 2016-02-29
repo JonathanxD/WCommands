@@ -16,24 +16,32 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.interceptor;
+package com.github.jonathanxd.wcommands.ext.reflect.factory.containers;
 
-import java.util.Comparator;
+import com.github.jonathanxd.iutils.data.ExtraData;
+import com.github.jonathanxd.iutils.extra.Container;
+import com.github.jonathanxd.iutils.object.Reference;
+import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
+
+import java.lang.annotation.Annotation;
 
 /**
  * Created by jonathan on 27/02/16.
  */
-public enum Priority {
-    FIRST,
-    LOWEST,
-    LOW,
-    NORMAL,
-    HIGH,
-    HIGHEST,
-    LAST;
+public class SingleNamedContainer extends NamedContainer {
 
-    public static Comparator<Priority> comparator() {
-        return Enum::compareTo;
+
+    public SingleNamedContainer(String name, Annotation value, ElementBridge bridge) {
+        super(name, value, bridge);
+        try{
+            bridge.getParameterizedReference();
+        }catch (Throwable t) {
+            throw new IllegalArgumentException("Unsupported element! Type: "+bridge.getMember().getClass(), t);
+        }
+    }
+
+    public Reference<?> getTypes() {
+        return getBridge().getParameterizedReference();
     }
 
 }

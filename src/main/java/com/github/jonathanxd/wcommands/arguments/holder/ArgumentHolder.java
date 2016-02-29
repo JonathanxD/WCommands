@@ -36,9 +36,9 @@ import com.github.jonathanxd.wcommands.text.Text;
 public class ArgumentHolder<ID, T> {
 
     /**
-     * Text representation of argumentSpec input value.
+     * String representation of argumentSpec input value.
      */
-    private final Text value;
+    private final String value;
 
     /**
      * ArgumentSpec instance
@@ -50,10 +50,10 @@ public class ArgumentHolder<ID, T> {
      */
     private final boolean present;
 
-    public ArgumentHolder(Text value, ArgumentSpec<ID, T> argumentSpec) {
+    public ArgumentHolder(String value, ArgumentSpec<ID, T> argumentSpec) {
         this.value = value;
         this.argumentSpec = argumentSpec;
-        this.present = value.getPlainString() != null;
+        this.present = value != null;
     }
 
     /**
@@ -61,7 +61,7 @@ public class ArgumentHolder<ID, T> {
      *
      * @return Text representation of input string
      */
-    public Text getValue() {
+    public String getValue() {
         return value;
     }
 

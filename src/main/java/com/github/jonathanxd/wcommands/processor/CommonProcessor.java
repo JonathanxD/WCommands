@@ -229,22 +229,21 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
             for (ArgumentSpec<?, ?> argumentSpecParse : commandSpec.getArguments()) {
 
                 if(!argumentIter.hasNext()) {
-                    ArgumentHolder argument = new ArgumentHolder<>(Text.of(null), argumentSpecParse);
+                    ArgumentHolder argument = new ArgumentHolder<>(null, argumentSpecParse);
                     argumentHolders.add(argument);
                 }
 
                 while (argumentIter.hasNext()) {
                     String sub = argumentIter.next();
-                    Text text = Text.of(sub);
 
-                    if ((argumentSpecParse.getChecker() == null || argumentSpecParse.getChecker().get().matches(sub)) && (argumentSpecParse.getPredicate() == null || argumentSpecParse.getPredicate().test(text))) {
-                        ArgumentHolder argument = new ArgumentHolder<>(text, argumentSpecParse);
+                    if ((argumentSpecParse.getChecker() == null || argumentSpecParse.getChecker().get().matches(sub)) && (argumentSpecParse.getPredicate() == null || argumentSpecParse.getPredicate().test(sub))) {
+                        ArgumentHolder argument = new ArgumentHolder<>(sub, argumentSpecParse);
                         argumentHolders.add(argument);
                         break;
                     } else {
                         if (argumentSpecParse.isOptional()) {
                             argumentIter.previous();
-                            ArgumentHolder argument = new ArgumentHolder<>(Text.of(null), argumentSpecParse);
+                            ArgumentHolder argument = new ArgumentHolder<>(null, argumentSpecParse);
                             argumentHolders.add(argument);
                             break;
                         } else {

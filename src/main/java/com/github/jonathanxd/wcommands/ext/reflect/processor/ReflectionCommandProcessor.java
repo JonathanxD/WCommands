@@ -18,16 +18,13 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.processor;
 
-import com.github.jonathanxd.iutils.data.DataProvider;
-import com.github.jonathanxd.iutils.data.ExtraData;
+import com.github.jonathanxd.iutils.extra.Container;
 import com.github.jonathanxd.iutils.object.Reference;
 import com.github.jonathanxd.wcommands.WCommandCommon;
-import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.ArgumentContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.enums.EnumTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorList;
@@ -37,15 +34,16 @@ import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.default
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.NumberTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.StringTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
-import com.github.jonathanxd.wcommands.ext.reflect.commands.CommandContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.factory.AnnotationVisitor;
+import com.github.jonathanxd.wcommands.ext.reflect.factory.AnnotationVisitorSupport;
+import com.github.jonathanxd.wcommands.ext.reflect.factory.AnnotationVisitors;
+import com.github.jonathanxd.wcommands.ext.reflect.factory.containers.NamedContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.factory.defaults.ArgumentVisitor;
+import com.github.jonathanxd.wcommands.ext.reflect.factory.defaults.CommandVisitor;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
-import com.github.jonathanxd.wcommands.factory.ArgumentBuilder;
-import com.github.jonathanxd.wcommands.factory.CommandBuilder;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
-import com.github.jonathanxd.wcommands.handler.Handler;
-import com.github.jonathanxd.wcommands.interceptor.Priority;
+import com.github.jonathanxd.wcommands.interceptor.Order;
 import com.github.jonathanxd.wcommands.processor.Processor;
-import com.github.jonathanxd.wcommands.text.Text;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.annotation.Annotation;
@@ -62,32 +60,10 @@ import java.util.stream.Collectors;
  * Created by jonathan on 27/02/16.
  */
 
-/**
- * data.registerData((TranslatorSupport) this); data.registerData(command);
- * data.registerData(argumentContainer); data.registerData(argumentContainer.getName());
- * data.registerData(argumentContainer.getTypes());
- *
- * data.registerData(instance);
- */
-
-@DataProvider(
-        value = {
-                TranslatorSupport.class,
-                CommandSpec.class,
-                ArgumentContainer.class,
-                String.class,
-                Reference.class,
-                InstanceContainer.class},
-        description = {
-                "Can retrieve and add Translators",
-                "Can inspect and Modify CommandSpec related",
-                "Container of Argument",
-                "Name of Argument",
-                "Reference to Types & generics",
-                "Container of Object instance"})
-public class ReflectionCommandProcessor extends WCommandCommon implements TranslatorSupport {
+public class ReflectionCommandProcessor extends WCommandCommon implements TranslatorSupport, AnnotationVisitorSupport {
 
     private final TranslatorList translatorList = new TranslatorList();
+    private final AnnotationVisitors annotationVisitors = new AnnotationVisitors();
 
     public ReflectionCommandProcessor() {
         super();
@@ -109,18 +85,23 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
         addGlobalTranslator(Reference.aEnd(Boolean.class), BooleanTranslator.class);
         addGlobalTranslator(Reference.aEnd(Number.class), NumberTranslator.class);
         addGlobalTranslator(Reference.aEnd(String.class), StringTranslator.class);
-        addGlobalTranslator(Reference.aEnd(Enum.class), EnumTranslator.class, Priority.LAST);
+        addGlobalTranslator(Reference.aEnd(Enum.class), EnumTranslator.class, Order.SEVENTH);
+
+        registerVisitor(new CommandVisitor(Command.class));
+        registerVisitor(new ArgumentVisitor(Argument.class));
+
     }
 
     @Override
-    public <T> void addGlobalTranslator(Reference<T> type, Class<? extends Translator<?>> translator, Priority priority) {
-        translatorList.add(new TypeTranslator<>(type, translator, priority));
+    public <T> void addGlobalTranslator(Reference<T> type, Class<? extends Translator<?>> translator, Order order) {
+        translatorList.add(new TypeTranslator<>(type, translator, order));
     }
 
     @Override
     public <T> void removeGlobalTranslator(Reference<T> type) {
         translatorList.removeIf(t -> t.getType() == type);
     }
+
 
     @SuppressWarnings("unchecked")
     @Override
@@ -129,40 +110,37 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
     }
 
     public void addCommands(Object instance, Class<?> clazz) {
-        List<CommandContainer> commandContainers = new LinkedList<>();
+        List<NamedContainer> namedContainers = new LinkedList<>();
 
         for (Field field : clazz.getDeclaredFields()) {
-            commandContainers.add(processWrapper(new ElementBridge(field)));
+            namedContainers.add(processWrapper(new ElementBridge(field)));
         }
 
         for (Method method : clazz.getDeclaredMethods()) {
-            commandContainers.add(processWrapper(new ElementBridge(method)));
+            namedContainers.add(processWrapper(new ElementBridge(method)));
         }
 
-        commandContainers = commandContainers.stream().filter(d -> d != null).collect(Collectors.toList());
+        namedContainers = namedContainers.stream().filter(d -> d != null).collect(Collectors.toList());
 
-        commandContainers.forEach(commandContainer -> {
-            CommandSpec commandSpec = this.processCommand(commandContainer, new InstanceContainer(instance));
+        namedContainers.forEach(namedContainer -> {
+            CommandSpec commandSpec = this.processCommand(namedContainer, new InstanceContainer(instance));
             this.registerCommand(commandSpec);
         });
     }
 
-    private CommandContainer processWrapper(ElementBridge bridge) {
+    private NamedContainer processWrapper(ElementBridge bridge) {
         Annotation[] annotations = bridge.getDeclaredAnnotations();
 
-        CommandContainer commandContainer = null;
-        CommandContainer last = null;
+        Container<NamedContainer> theContainer = new Container<>(null);
+        Container<NamedContainer> last = new Container<>(null);
 
         for (Annotation annotation : annotations) {
-            if (annotation instanceof Command) {
-                if (commandContainer == null) {
-                    last = (commandContainer = new CommandContainer((Command) annotation, bridge));
-                } else {
-                    last = new CommandContainer((Command) annotation, bridge);
-                    commandContainer.getChild().add(last);
-                }
+
+            Optional<AnnotationVisitor<Annotation, NamedContainer, Object>> factory = annotationVisitors.<Annotation, NamedContainer, Object>getFor(annotation.annotationType());
+
+            if (factory.isPresent()) {
+                factory.get().visitElementAnnotation(annotation, theContainer, last, bridge);
             }
-            processAnnotation(last, annotation, bridge);
         }
 
         if (bridge.isMethod()) {
@@ -173,117 +151,70 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
                 ElementBridge annotatedTypeBridge = new ElementBridge(annotatedType);
 
                 for (Annotation annotation : annotatedType.getDeclaredAnnotations()) {
-                    processAnnotation(last, annotation, annotatedTypeBridge);
-                }
-            }
 
-        }
+                    Optional<AnnotationVisitor<Annotation, NamedContainer, Object>> factory = annotationVisitors.<Annotation, NamedContainer, Object>getFor(annotation.annotationType());
 
-        return commandContainer;
-    }
-
-    private void processAnnotation(CommandContainer container, Annotation annotation, ElementBridge bridge) {
-        if (annotation instanceof Argument) {
-            Argument argument = (Argument) annotation;
-            if (container != null) {
-                if (argument.isOptional()) {
-
-                    if (bridge.getType() == Optional.class && (argument.type() == null || argument.type() == Argument.PR.class) && bridge.directReference() == null) {
-                        throw new RuntimeException("Cannot handle Optional, impossible to determine the Type, use: 'Argument.type()'!");
-                    } else {
-                        if (bridge.directReference() == null) {
-                            if(argument.type() != Argument.PR.class) {
-                                bridge = new ElementBridge(bridge.getMember(), Reference.aEnd(argument.type()));
-                            }
-                        }
+                    if (factory.isPresent()) {
+                        factory.get().visitElementAnnotation(annotation, theContainer, last, annotatedTypeBridge);
                     }
+
                 }
-                container.getArgumentContainers().add(new ArgumentContainer(argument, bridge));
             }
+
         }
+
+        return theContainer.get();
     }
 
     @SuppressWarnings("unchecked")
-    private CommandSpec processCommand(CommandContainer command, InstanceContainer instance) {
+    private <C extends NamedContainer, T> T helpTo(AnnotationVisitor<?, C, T> t, NamedContainer named, InstanceContainer instance) {
+        return t.process((C) named, instance, this, this, Optional.empty());
+    }
 
-        Command commandAnnotation = command.get();
-        List<ArgumentContainer> arguments = command.getArgumentContainers();
+    @SuppressWarnings("unchecked")
+    private CommandSpec processCommand(NamedContainer namedContainer, InstanceContainer instance) {
 
+        Optional<AnnotationVisitor<Annotation, NamedContainer, CommandSpec>> visitorOptional = annotationVisitors.<Annotation, NamedContainer, CommandSpec>getFor(namedContainer.get().annotationType());
 
-        CommandBuilder<CommandHolder> commandBuilder = CommandBuilder.builder();
-
-        commandBuilder.withName(Text.of(command.getName()));
-        commandBuilder.withPrefix(commandAnnotation.prefix());
-        commandBuilder.withSuffix(commandAnnotation.suffix());
-
-        Handler<CommandHolder> handler = null;
-
-        try {
-            ExtraData data = new ExtraData();
-
-            data.registerData(command);
-            data.registerData(command.getBridge());
-            data.registerData(command.getName());
-
-            data.registerData(instance);
-
-            handler = (Handler<CommandHolder>) data.construct(commandAnnotation.handler());
-        } catch (Throwable ignore) {
+        if (visitorOptional.isPresent()) {
+            return helpTo(visitorOptional.get(), namedContainer, instance);
         }
 
-        commandBuilder.withHandler(handler);
-
-        for (ArgumentContainer argumentContainer : arguments) {
-            // ARGUMENTS
-            Argument argument = argumentContainer.get();
-
-            ArgumentBuilder<String, Object> argumentBuilder = ArgumentBuilder.builder();
-
-            argumentBuilder.withId(argumentContainer.getName());
+        return null;
 
 
-            ExtraData data = new ExtraData();
+    }
 
-            Translator<?> translator = null;
-            try {
-                data.registerData((TranslatorSupport) this);
-                data.registerData(command);
-                data.registerData(argumentContainer);
-                data.registerData(argumentContainer.getName());
-                data.registerData(argumentContainer.getTypes());
+    @Override
+    public boolean registerVisitor(AnnotationVisitor<?, ?, ?> annotationVisitor) {
+        if (annotationVisitors.contains(annotationVisitor))
+            return false;
+        annotationVisitors.add(annotationVisitor);
+        return true;
+    }
 
-                data.registerData(instance);
+    @Override
+    public boolean overrideVisitor(AnnotationVisitor<?, ?, ?> annotationVisitor) {
+        if (!annotationVisitors.contains(annotationVisitor))
+            return false;
+        annotationVisitors.removeIf(a -> a.getAnnotationClass() == annotationVisitor.getAnnotationClass());
+        annotationVisitors.add(annotationVisitor);
+        return true;
+    }
 
-                translator = (Translator<?>) data.construct(argument.translator());
-            } catch (Throwable ignored) {
-                ignored.printStackTrace();
-            }
+    @Override
+    public boolean removeVisitor(AnnotationVisitor<?, ?, ?> annotationVisitor) {
+        return annotationVisitors.remove(annotationVisitor);
+    }
 
+    @Override
+    public boolean removeVisitor(Class<?> annotationType) {
+        return annotationVisitors.removeIf(a -> a.getAnnotationClass() == annotationType);
+    }
 
-            if (translator != null) {
-                argumentBuilder.withPredicate(translator::isAcceptable);
-                argumentBuilder.withConverter(translator::translate);
-            }
-
-
-            argumentBuilder.setOptional(argument.isOptional());
-
-            ArgumentSpec argumentSpec1 = argumentBuilder.build();
-
-            if (argument.setFinal()) {
-                argumentSpec1.getData().registerData(Set.FINAL);
-            }
-
-            commandBuilder.withArgument(argumentSpec1);
-        }
-
-        command.getChild().forEach(commandContainer -> commandBuilder.withChild(processCommand(commandContainer, instance)));
-
-        CommandSpec cmd = commandBuilder.build();
-
-        return cmd;
-
-
+    @Override
+    public <T extends Annotation, C extends NamedContainer, R> Optional<AnnotationVisitor<T, C, R>> getVisitorFor(Class<? extends Annotation> clazz) {
+        return annotationVisitors.<T, C, R>getFor(clazz);
     }
 
     public enum Set {

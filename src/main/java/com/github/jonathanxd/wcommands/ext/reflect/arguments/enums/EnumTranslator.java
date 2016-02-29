@@ -35,16 +35,16 @@ public class EnumTranslator implements Translator<Object> {
     }
 
     @Override
-    public boolean isAcceptable(Text text) {
+    public boolean isAcceptable(String text) {
         return predicate.test(text);
     }
 
     @Override
-    public Object translate(Text text) {
+    public Object translate(String text) {
 
         Enum e = predicate.get(text);
 
-        if(e == null && text.getPlainString() != null)
+        if(e == null && text != null)
             throw new IllegalStateException("Cannot get enum ("+enumClass.getCanonicalName()+") constant '"+text+"'");
 
         return e;

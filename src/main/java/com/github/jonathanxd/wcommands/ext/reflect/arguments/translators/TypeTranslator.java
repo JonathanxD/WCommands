@@ -19,7 +19,7 @@
 package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators;
 
 import com.github.jonathanxd.iutils.object.Reference;
-import com.github.jonathanxd.wcommands.interceptor.Priority;
+import com.github.jonathanxd.wcommands.interceptor.Order;
 
 import java.util.Objects;
 
@@ -29,12 +29,12 @@ import java.util.Objects;
 public class TypeTranslator<T> {
     private final Reference<T> type;
     private final Class<? extends Translator<?>> translator;
-    private final Priority priority;
+    private final Order order;
 
-    public TypeTranslator(Reference<T> type, Class<? extends Translator<?>> translator, Priority priority) {
+    public TypeTranslator(Reference<T> type, Class<? extends Translator<?>> translator, Order order) {
         this.type = type;
         this.translator = translator;
-        this.priority = priority;
+        this.order = order;
     }
 
     public Reference<T> getType() {
@@ -45,8 +45,8 @@ public class TypeTranslator<T> {
         return translator;
     }
 
-    public Priority getPriority() {
-        return priority;
+    public Order getOrder() {
+        return order;
     }
 
     @Override

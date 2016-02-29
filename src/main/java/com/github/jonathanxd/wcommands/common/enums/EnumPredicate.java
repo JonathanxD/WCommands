@@ -18,14 +18,12 @@
  */
 package com.github.jonathanxd.wcommands.common.enums;
 
-import com.github.jonathanxd.wcommands.text.Text;
-
 import java.util.function.Predicate;
 
 /**
  * Created by jonathan on 28/02/16.
  */
-public class EnumPredicate implements Predicate<Text> {
+public class EnumPredicate implements Predicate<String> {
     private final Class<? extends Enum> enumClass;
 
     public EnumPredicate(Class<? extends Enum> enumClass) {
@@ -33,14 +31,17 @@ public class EnumPredicate implements Predicate<Text> {
     }
 
     @Override
-    public boolean test(Text stringMatchable) {
+    public boolean test(String stringMatchable) {
 
         return get(stringMatchable) != null;
     }
 
-    public Enum get(Text stringMatchable) {
+    public Enum get(String stringMatchable) {
+        if (stringMatchable == null)
+            return null;
+
         for (Enum constant : enumClass.getEnumConstants()) {
-            if (stringMatchable.matchesIgnoreCase(constant.name())) {
+            if (stringMatchable.equalsIgnoreCase(constant.name())) {
                 return constant;
             }
         }

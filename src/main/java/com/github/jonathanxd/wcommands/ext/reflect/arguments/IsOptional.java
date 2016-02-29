@@ -16,17 +16,20 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators;
-
-import com.github.jonathanxd.wcommands.text.Text;
+package com.github.jonathanxd.wcommands.ext.reflect.arguments;
 
 /**
- * Created by jonathan on 27/02/16.
+ * Created by jonathan on 29/02/16.
  */
-public interface Translator<T> {
 
-    boolean isAcceptable(String text);
+/**
+ * Representation to "Optional" arguments
+ */
+public final class IsOptional {
 
-    T translate(String text);
+    public static final IsOptional TRUE = new IsOptional();
+    public static final IsOptional FALSE = new IsOptional();
+
+    protected IsOptional() {}
 
 }

@@ -32,6 +32,6 @@ public class BooleanArgumentSpec<ID> extends ArgumentSpec<ID, Boolean> {
     private static final Supplier<Matchable<String>> BOOLEAN_CHECKER = () -> Text.of("(true|false)", true, true);
 
     public BooleanArgumentSpec(ID id, boolean optional) {
-        super(id, BOOLEAN_CHECKER, s -> true, optional, text -> Boolean.valueOf(text.getPlainString()));
+        super(id, BOOLEAN_CHECKER, s -> true, optional, text -> Boolean.valueOf(text));
     }
 }

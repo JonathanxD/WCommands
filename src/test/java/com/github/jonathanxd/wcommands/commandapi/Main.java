@@ -44,7 +44,7 @@ public class Main {
             });
             CommandHolder command = data.getCommand();
 
-            Optional<Text> xPArgOpt = command.getPlainArgument(ArgumentIDs.XP_ARGUMENT);
+            Optional<String> xPArgOpt = command.getPlainArgument(ArgumentIDs.XP_ARGUMENT);
             xPArgOpt.ifPresent(System.out::println);
 
             if(data.getParent() != null) {
