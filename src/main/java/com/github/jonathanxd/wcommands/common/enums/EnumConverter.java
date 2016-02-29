@@ -16,33 +16,33 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.arguments.enums;
+package com.github.jonathanxd.wcommands.common.enums;
 
-import com.github.jonathanxd.wcommands.common.Matchable;
+import com.github.jonathanxd.wcommands.text.Text;
 
-import java.util.function.Predicate;
+import java.util.function.Function;
 
 /**
  * Created by jonathan on 28/02/16.
  */
-public class EnumPredicate implements Predicate<Matchable<String>> {
-    private final Class<? extends Enum> enumClass;
 
-    public EnumPredicate(Class<? extends Enum> enumClass) {
+/**
+ * Convert enums
+ *
+ * CASE INSENSITIVE
+ */
+public class EnumConverter<T extends Enum> implements Function<Text, T> {
+    private final Class<T> enumClass;
+
+    public EnumConverter(Class<T> enumClass) {
         this.enumClass = enumClass;
     }
 
     @Override
-    public boolean test(Matchable<String> stringMatchable) {
-
-        return get(stringMatchable) != null;
-    }
-
-    public Enum get(Matchable<String> stringMatchable) {
-        for (Enum constant : enumClass.getEnumConstants()) {
-            if(stringMatchable.matchesIgnoreCase(constant.name())) {
-                return constant;
-            }
+    public T apply(Text text) {
+        for (T ts : enumClass.getEnumConstants()) {
+            if (ts.name().equalsIgnoreCase(text.getPlainString()))
+                return ts;
         }
         return null;
     }

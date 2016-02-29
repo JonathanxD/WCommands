@@ -38,11 +38,11 @@ public class TestLT {
 
     public static void main(String[] args) throws ArgumentProcessingError {
         WCommandCommon wCommandCommon = new WCommandCommon(new CommonProcessor(), new MyErrorHandler());
-        /*wCommandCommon.addCommand(CommandFactory.create("allowUpper",
+        /*wCommandCommon.registerCommand(CommandFactory.create("allowUpper",
                 new BooleanArgumentSpec<IDs>(IDs.ALLOW_UPPER, false),
                 false,
                 "--"));*/
-        wCommandCommon.addCommand(CommandBuilder.builder()
+        wCommandCommon.registerCommand(CommandBuilder.builder()
                 .withPrefix("--")
                 .withName(Text.of("allowUpper"))
                 .withArgument(new BooleanArgumentSpec<>(IDs.ALLOW_UPPER, false))
@@ -62,13 +62,13 @@ public class TestLT {
                 })
                 .build()
         );
-        wCommandCommon.addCommand(CommandBuilder.builder()
+        wCommandCommon.registerCommand(CommandBuilder.builder()
                 .withPrefix("--")
                 .withName(Text.of("daemon"))
                 .withCommonHandler(commandData -> System.out.println("Start Daemon"))
                 .build());
 
-        wCommandCommon.addCommand(CommandBuilder.builder()
+        wCommandCommon.registerCommand(CommandBuilder.builder()
                 .withPrefix("--")
                 .withName(Text.of("rail"))
                 .withArgument(new BooleanArgumentSpec<>(IDs.RAIL, false))

@@ -18,6 +18,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators;
 
+import com.github.jonathanxd.iutils.object.Reference;
 import com.github.jonathanxd.wcommands.interceptor.Priority;
 
 import java.util.Objects;
@@ -26,17 +27,17 @@ import java.util.Objects;
  * Created by jonathan on 28/02/16.
  */
 public class TypeTranslator<T> {
-    private final Class<T> type;
+    private final Reference<T> type;
     private final Class<? extends Translator<?>> translator;
     private final Priority priority;
 
-    public TypeTranslator(Class<T> type, Class<? extends Translator<?>> translator, Priority priority) {
+    public TypeTranslator(Reference<T> type, Class<? extends Translator<?>> translator, Priority priority) {
         this.type = type;
         this.translator = translator;
         this.priority = priority;
     }
 
-    public Class<T> getType() {
+    public Reference<T> getType() {
         return type;
     }
 

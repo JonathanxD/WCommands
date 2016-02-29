@@ -19,6 +19,7 @@
 package com.github.jonathanxd.wcommands.ext.reflect.arguments;
 
 import com.github.jonathanxd.iutils.extra.Container;
+import com.github.jonathanxd.iutils.object.Reference;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 /**
@@ -32,7 +33,7 @@ public class ArgumentContainer extends Container<Argument> {
         super(value);
         this.bridge = bridge;
         try{
-            bridge.getType();
+            bridge.getParameterizedReference();
         }catch (Throwable t) {
             throw new IllegalArgumentException("Unsupported element!", t);
         }
@@ -46,8 +47,8 @@ public class ArgumentContainer extends Container<Argument> {
         return this.bridge.getName();
     }
 
-    public Class<?> getType() {
-        return this.bridge.getType();
+    public Reference<?> getTypes() {
+        return this.bridge.getParameterizedReference();
     }
 
 }

@@ -49,7 +49,7 @@ public class ArgumentBuilder<ID, T> {
         return this;
     }
 
-    public ArgumentBuilder<ID, T> withOptional(boolean optional) {
+    public ArgumentBuilder<ID, T> setOptional(boolean optional) {
         this.optional = optional;
         return this;
     }

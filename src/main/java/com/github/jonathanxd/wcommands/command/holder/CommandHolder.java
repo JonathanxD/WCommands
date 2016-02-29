@@ -18,6 +18,8 @@
  */
 package com.github.jonathanxd.wcommands.command.holder;
 
+import com.github.jonathanxd.iutils.extra.IMutableContainer;
+import com.github.jonathanxd.iutils.extra.MutableContainer;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentsHolder;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
@@ -206,20 +208,24 @@ public class CommandHolder implements Matchable<String> {
      * @return Optional of argument holder
      */
     @SuppressWarnings("unchecked")
-    public <ID, R> Optional<ArgumentHolder<ID, R>> getArgument(ID id) {
+    public <ID, R> Optional<ArgumentHolder<ID, R>> getArgument(ID id, boolean acceptNotPresent) {
 
-        AtomicReference<ArgumentHolder<ID, R>> holder = new AtomicReference<>();
+        IMutableContainer<ArgumentHolder<ID, R>> holder = new MutableContainer<>();
 
         eachArguments().holder(c -> {
-            if (holder.get() != null) {
+            if (holder.isPresent()) {
                 return;
             }
-            if (c.getArgumentSpec().getId().equals(id)) {
+            if (c.getArgumentSpec().getId().equals(id) && (acceptNotPresent || c.isPresent())) {
                 holder.set(c);
             }
         });
 
         return Optional.ofNullable(holder.get());
+    }
+
+    public <ID, R> Optional<ArgumentHolder<ID, R>> getArgument(ID id) {
+        return getArgument(id, false);
     }
 
     /**

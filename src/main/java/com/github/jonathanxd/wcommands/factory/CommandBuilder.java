@@ -27,6 +27,7 @@ import com.github.jonathanxd.wcommands.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by jonathan on 27/02/16.
@@ -108,6 +109,11 @@ public class CommandBuilder<H> {
 
 
     public CommandSpec build() {
-        return new CommandSpec(name, arguments, isOptional, prefix, suffix, handler).addSubs(preChilds);
+        return new CommandSpec(Objects.requireNonNull(name),
+                Objects.requireNonNull(arguments),
+                isOptional,
+                Objects.requireNonNull(prefix),
+                Objects.requireNonNull(suffix),
+                Objects.requireNonNull(handler)).addSubs(preChilds);
     }
 }

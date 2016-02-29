@@ -52,37 +52,63 @@ public class ReflectionHandler implements CommonHandler {
         CommandHolder holder = commandData.getCommand();
         ElementBridge bridge = commandContainer.getBridge();
 
-        if(bridge.isField()) {
-            Optional<ArgumentHolder<String, Object>> argumentHolder = holder.getArgument(bridge.getName());
+        if (bridge.isField()) {
+            Optional<ArgumentHolder<String, Object>> argumentHolder = holder.getArgument(bridge.getName(), true);
 
-            if(argumentHolder.isPresent()) {
-                try {
-                    boolean force = argumentHolder.get().getArgumentSpec().getData().findData(ReflectionCommandProcessor.Set.FINAL.getClass());
-                    bridge.setValue(instance.get(), argumentHolder.get().convertValue(), true, force);
-                } catch (IllegalAccessException | NoSuchFieldException e) {
-                    throw new RuntimeException(e);
+            try {
+                if (argumentHolder.isPresent()) {
+
+                    ArgumentHolder<String, Object> arg = argumentHolder.get();
+
+                    Object value = null;
+
+                    if (arg.getArgumentSpec().isOptional() && bridge.getType() == Optional.class) {
+                        if(!arg.isPresent())
+                            value = Optional.empty();
+                        else
+                            value = Optional.of(arg.convertValue());
+                    }else{
+                        if(arg.isPresent())
+                            value = arg.convertValue();
+                    }
+
+                    if(arg.isPresent()) {
+                        boolean force = argumentHolder.get().getArgumentSpec().getData().findData(ReflectionCommandProcessor.Set.FINAL.getClass());
+                        bridge.setValue(instance.get(), value, true, force);
+                    }
                 }
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                throw new RuntimeException(e);
             }
         } else if (bridge.isMethod()) {
 
             List<Object> methodArguments = new ArrayList<>();
             List<Class<?>> methodParamTypes = new ArrayList<>();
 
-            Class<?>[] paramTypes = ((Method)bridge.getMember()).getParameterTypes();
+            Class<?>[] paramTypes = ((Method) bridge.getMember()).getParameterTypes();
 
             ArgumentsHolder arguments = holder.getArguments();
 
-            for(int x = 0; x < arguments.size(); ++x) {
+            for (int x = 0; x < arguments.size(); ++x) {
 
                 ArgumentHolder argument = arguments.get(x);
 
                 Object value = argument.convertValue();
-                methodArguments.add(value);
 
                 if (value == null) {
+                    if (paramTypes[x] == Optional.class && argument.getArgumentSpec().isOptional()) {
+                        methodArguments.add(Optional.empty());
+                    } else {
+                        methodArguments.add(/*value*/null);
+                    }
                     methodParamTypes.add(paramTypes[x]);
                 } else {
-                    methodParamTypes.add(value.getClass());
+                    if (paramTypes[x] == Optional.class && argument.getArgumentSpec().isOptional()) {
+                        methodArguments.add(Optional.of(value));
+                    }else{
+                        methodArguments.add(value);
+                        methodParamTypes.add(value.getClass());
+                    }
                 }
             }
 

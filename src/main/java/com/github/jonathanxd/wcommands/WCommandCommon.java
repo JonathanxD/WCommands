@@ -18,10 +18,12 @@
  */
 package com.github.jonathanxd.wcommands;
 
+import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentError;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
+import com.github.jonathanxd.wcommands.interceptor.InvokeInterceptor;
 import com.github.jonathanxd.wcommands.processor.CommonProcessor;
 import com.github.jonathanxd.wcommands.processor.Processor;
 
@@ -33,7 +35,7 @@ import java.util.List;
 public class WCommandCommon extends WCommand<List<CommandData<CommandHolder>>> {
 
     public WCommandCommon() {
-        this(new CommonProcessor(), e -> !(e.getType().getExceptionType() == ArgumentError.Type.ERROR));
+        this(new CommonProcessor(), e -> e.getType().getExceptionType() != ArgumentError.Type.ERROR);
     }
 
     public WCommandCommon(ErrorHandler errorHandler) {
@@ -42,5 +44,26 @@ public class WCommandCommon extends WCommand<List<CommandData<CommandHolder>>> {
 
     public WCommandCommon(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler errorHandler) {
         super(processor, errorHandler);
+    }
+
+    /**
+     * Export settings to other {@link WCommandCommon}
+     */
+    public void exportTo(WCommandCommon wCommandCommon) {
+        wCommandCommon.importFrom(this);
+    }
+
+    /**
+     * Import commands and interceptors from another {@link WCommandCommon}
+     * @param commandCommon {@link WCommandCommon} to import
+     */
+    public void importFrom(WCommandCommon commandCommon) {
+
+        if(commandCommon == this)
+            throw new UnsupportedOperationException("Cannot import from same WCommandCommon");
+
+        commandCommon.getCommands().stream().filter(spec -> !this.getCommands().contains(spec)).forEach(spec -> this.getCommands().add(spec));
+        commandCommon.getInterceptors().stream().filter(invokeInterceptor -> !this.getInterceptors().contains(invokeInterceptor)).forEach(invokeInterceptor -> this.getInterceptors().add(invokeInterceptor));
+
     }
 }

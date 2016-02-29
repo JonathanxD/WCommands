@@ -54,7 +54,7 @@ public class WCommand<T> {
         interceptors.remove(invokeInterceptor);
     }
 
-    public void addCommand(CommandSpec... commandSpec) {
+    public void registerCommand(CommandSpec... commandSpec) {
         if (commandSpec.length == 1) {
             commands.add(commandSpec[0]);
         } else {
@@ -67,7 +67,15 @@ public class WCommand<T> {
     }
 
     public void processAndInvoke(List<String> arguments) throws ArgumentProcessingError {
-        processor.invokeCommands(processor.process(arguments, commands, errorHandler), interceptors);
+        invoke(process(arguments));
+    }
+
+    public T process(List<String> arguments) throws ArgumentProcessingError {
+        return processor.process(arguments, commands, errorHandler);
+    }
+
+    public void invoke(T object) {
+        processor.invokeCommands(object, interceptors);
     }
 
     public Handler<T> createHandler(Handler<T> handler) {
@@ -76,5 +84,17 @@ public class WCommand<T> {
 
     public Processor<T> getProcessor() {
         return processor;
+    }
+
+    protected CommandList getCommands() {
+        return commands;
+    }
+
+    protected ErrorHandler getErrorHandler() {
+        return errorHandler;
+    }
+
+    protected Interceptors getInterceptors() {
+        return interceptors;
     }
 }

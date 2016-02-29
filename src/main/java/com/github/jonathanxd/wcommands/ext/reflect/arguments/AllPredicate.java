@@ -18,16 +18,16 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.arguments;
 
-import com.github.jonathanxd.wcommands.common.Matchable;
+import com.github.jonathanxd.wcommands.text.Text;
 
 import java.util.function.Predicate;
 
 /**
  * Created by jonathan on 27/02/16.
  */
-public class AllPredicate implements Predicate<Matchable<String>> {
+public class AllPredicate implements Predicate<Text> {
     @Override
-    public boolean test(Matchable<String> stringMatchable) {
+    public boolean test(Text stringMatchable) {
         return true;
     }
 }

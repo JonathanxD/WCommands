@@ -42,4 +42,8 @@ public @interface Argument {
     Class<? extends Translator<?>> translator() default GlobalTypeTranslator.class;
 
     boolean isOptional() default false;
+
+    Class<?> type() default PR.class;
+
+    final class PR {}
 }

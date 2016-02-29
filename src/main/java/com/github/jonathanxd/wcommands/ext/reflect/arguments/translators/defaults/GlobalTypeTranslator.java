@@ -21,12 +21,15 @@ package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaul
 import com.github.jonathanxd.iutils.caster.Caster;
 import com.github.jonathanxd.iutils.data.ExtraData;
 import com.github.jonathanxd.iutils.extra.Container;
-import com.github.jonathanxd.iutils.extra.primitivecontainers.BooleanContainer;
+import com.github.jonathanxd.iutils.object.Reference;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.ArgumentContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.exception.TranslateException;
 import com.github.jonathanxd.wcommands.text.Text;
 import com.github.jonathanxd.wcommands.util.reflection.Primitive;
+
+import java.util.Optional;
 
 
 /**
@@ -34,29 +37,43 @@ import com.github.jonathanxd.wcommands.util.reflection.Primitive;
  */
 public class GlobalTypeTranslator implements Translator<Object> {
 
-    private final Class<?> type;
+    private final Reference<?> type;
     private final boolean isPrimitive;
     private final TranslatorSupport support;
+    private final ArgumentContainer container;
 
-    public GlobalTypeTranslator(Class<?> type, TranslatorSupport support) {
+    public GlobalTypeTranslator(Reference<?> type, ArgumentContainer container, TranslatorSupport support) {
         this.support = support;
 
-        Class<?> boxed = Primitive.asBoxed(type);
+        this.container = container;
+
+        Class<?> aType = type.getAClass();
+        if (container.get().isOptional()) {
+            if (type.getAClass() == Optional.class) {
+                aType = type.getRelated()[0].getAClass();
+            }
+        }
+
+        Class<?> boxed = Primitive.asBoxed(aType);
 
         if (boxed != null) {
             this.isPrimitive = true;
-            this.type = boxed;
+            @SuppressWarnings("unchecked") Reference<?> initChange = Reference.a(aType).of(type.getRelated()).build();
+            this.type = initChange;
         } else {
             this.isPrimitive = false;
             this.type = type;
         }
+
+
     }
 
     @Override
     public boolean isAcceptable(Text text) {
-        try{
+
+        try {
             return translate(text) != null;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
@@ -71,36 +88,38 @@ public class GlobalTypeTranslator implements Translator<Object> {
             if (objectContainer.isPresent() && objectContainer.get() != null)
                 return;
 
-            if (aType.isAssignableFrom(type)) {
-                Class<?> realType;
+            Class<?> testType = null;
+            if ((aType.getAClass().isAssignableFrom((testType = type.getAClass())) || aType.compareTo(type) == 0)
+                    || (type.getRelated().length > 0
+                    && container.get().isOptional()
+                    && type.getAClass() == Optional.class
+                    && aType.getAClass().isAssignableFrom((testType = type.getRelated()[0].getAClass())))) {
 
-                if (isPrimitive) {
-                    realType = Primitive.asUnboxed(type);
-                    if (realType == null)
-                        realType = type;
-                } else
-                    realType = type;
+                if(testType == null) {
+                    return;
+                }
 
                 ExtraData data = new ExtraData();
 
-                data.registerData(realType);
+                data.registerData(type);
+                data.registerData(testType);
                 data.registerData(this);
 
                 Translator<?> aTranslator = (Translator<?>) data.construct(translator);
-                try{
-                    if(aTranslator.isAcceptable(text)) {
+                try {
+                    if (aTranslator.isAcceptable(text)) {
                         Object casted;
                         Object translated = aTranslator.translate(text);
                         try {
-                            casted = realType.cast(translated);
+                            casted = testType.cast(translated);
                         } catch (ClassCastException e) {
-                            casted = Caster.cast(translated, realType);
+                            casted = Caster.cast(translated, testType);
                         }
 
                         objectContainer.set(casted);
                     }
-                }catch (Throwable t) {
-                    throw new TranslateException("Cannot translate type '"+realType+"'!", t);
+                } catch (Throwable t) {
+                    throw new TranslateException("Cannot translate type '" + type + "'!", t);
                 }
             }
 

@@ -16,37 +16,34 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.arguments.enums;
+package com.github.jonathanxd.wcommands.common.enums;
 
-import com.github.jonathanxd.wcommands.common.enums.EnumPredicate;
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 import com.github.jonathanxd.wcommands.text.Text;
+
+import java.util.function.Predicate;
 
 /**
  * Created by jonathan on 28/02/16.
  */
-public class EnumTranslator implements Translator<Object> {
+public class EnumPredicate implements Predicate<Text> {
     private final Class<? extends Enum> enumClass;
-    private final EnumPredicate predicate;
 
-    public EnumTranslator(Class<? extends Enum> enumClass) {
+    public EnumPredicate(Class<? extends Enum> enumClass) {
         this.enumClass = enumClass;
-        this.predicate = new EnumPredicate(enumClass);
     }
 
     @Override
-    public boolean isAcceptable(Text text) {
-        return predicate.test(text);
+    public boolean test(Text stringMatchable) {
+
+        return get(stringMatchable) != null;
     }
 
-    @Override
-    public Object translate(Text text) {
-
-        Enum e = predicate.get(text);
-
-        if(e == null && text.getPlainString() != null)
-            throw new IllegalStateException("Cannot get enum ("+enumClass.getCanonicalName()+") constant '"+text+"'");
-
-        return e;
+    public Enum get(Text stringMatchable) {
+        for (Enum constant : enumClass.getEnumConstants()) {
+            if (stringMatchable.matchesIgnoreCase(constant.name())) {
+                return constant;
+            }
+        }
+        return null;
     }
 }

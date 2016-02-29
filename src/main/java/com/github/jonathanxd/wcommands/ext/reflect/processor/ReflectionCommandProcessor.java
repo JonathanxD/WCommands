@@ -18,7 +18,9 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.processor;
 
+import com.github.jonathanxd.iutils.data.DataProvider;
 import com.github.jonathanxd.iutils.data.ExtraData;
+import com.github.jonathanxd.iutils.object.Reference;
 import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
@@ -30,10 +32,10 @@ import com.github.jonathanxd.wcommands.ext.reflect.arguments.enums.EnumTranslato
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorList;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TypeTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.BooleanTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.NumberTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.StringTranslator;
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TypeTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.CommandContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
@@ -52,12 +54,37 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
  * Created by jonathan on 27/02/16.
  */
+
+/**
+ * data.registerData((TranslatorSupport) this); data.registerData(command);
+ * data.registerData(argumentContainer); data.registerData(argumentContainer.getName());
+ * data.registerData(argumentContainer.getTypes());
+ *
+ * data.registerData(instance);
+ */
+
+@DataProvider(
+        value = {
+                TranslatorSupport.class,
+                CommandSpec.class,
+                ArgumentContainer.class,
+                String.class,
+                Reference.class,
+                InstanceContainer.class},
+        description = {
+                "Can retrieve and add Translators",
+                "Can inspect and Modify CommandSpec related",
+                "Container of Argument",
+                "Name of Argument",
+                "Reference to Types & generics",
+                "Container of Object instance"})
 public class ReflectionCommandProcessor extends WCommandCommon implements TranslatorSupport {
 
     private final TranslatorList translatorList = new TranslatorList();
@@ -67,13 +94,6 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
         initBasics();
     }
 
-
-    private void initBasics() {
-        addGlobalTranslator(Boolean.class, BooleanTranslator.class);
-        addGlobalTranslator(Number.class, NumberTranslator.class);
-        addGlobalTranslator(String.class, StringTranslator.class);
-        addGlobalTranslator(Enum.class, EnumTranslator.class, Priority.LAST);
-    }
 
     public ReflectionCommandProcessor(ErrorHandler errorHandler) {
         super(errorHandler);
@@ -85,18 +105,26 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
         initBasics();
     }
 
+    private void initBasics() {
+        addGlobalTranslator(Reference.aEnd(Boolean.class), BooleanTranslator.class);
+        addGlobalTranslator(Reference.aEnd(Number.class), NumberTranslator.class);
+        addGlobalTranslator(Reference.aEnd(String.class), StringTranslator.class);
+        addGlobalTranslator(Reference.aEnd(Enum.class), EnumTranslator.class, Priority.LAST);
+    }
+
     @Override
-    public <T>void addGlobalTranslator(Class<T> type, Class<? extends Translator<?>> translator, Priority priority) {
+    public <T> void addGlobalTranslator(Reference<T> type, Class<? extends Translator<?>> translator, Priority priority) {
         translatorList.add(new TypeTranslator<>(type, translator, priority));
     }
 
     @Override
-    public <T>void removeGlobalTranslator(Class<T> type) {
+    public <T> void removeGlobalTranslator(Reference<T> type) {
         translatorList.removeIf(t -> t.getType() == type);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void forEach(BiConsumer<Class<?>, Class<? extends Translator<?>>> consumer) {
+    public void forEach(BiConsumer<Reference<?>, Class<? extends Translator<?>>> consumer) {
         translatorList.forEach(t -> consumer.accept(t.getType(), t.getTranslator()));
     }
 
@@ -115,7 +143,7 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
 
         commandContainers.forEach(commandContainer -> {
             CommandSpec commandSpec = this.processCommand(commandContainer, new InstanceContainer(instance));
-            this.addCommand(commandSpec);
+            this.registerCommand(commandSpec);
         });
     }
 
@@ -140,11 +168,11 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
         if (bridge.isMethod()) {
             Method executable = (Method) bridge.getMember();
 
-            for(AnnotatedType annotatedType : executable.getAnnotatedParameterTypes()) {
+            for (AnnotatedType annotatedType : executable.getAnnotatedParameterTypes()) {
 
                 ElementBridge annotatedTypeBridge = new ElementBridge(annotatedType);
 
-                for(Annotation annotation : annotatedType.getDeclaredAnnotations()) {
+                for (Annotation annotation : annotatedType.getDeclaredAnnotations()) {
                     processAnnotation(last, annotation, annotatedTypeBridge);
                 }
             }
@@ -158,6 +186,18 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
         if (annotation instanceof Argument) {
             Argument argument = (Argument) annotation;
             if (container != null) {
+                if (argument.isOptional()) {
+
+                    if (bridge.getType() == Optional.class && (argument.type() == null || argument.type() == Argument.PR.class) && bridge.directReference() == null) {
+                        throw new RuntimeException("Cannot handle Optional, impossible to determine the Type, use: 'Argument.type()'!");
+                    } else {
+                        if (bridge.directReference() == null) {
+                            if(argument.type() != Argument.PR.class) {
+                                bridge = new ElementBridge(bridge.getMember(), Reference.aEnd(argument.type()));
+                            }
+                        }
+                    }
+                }
                 container.getArgumentContainers().add(new ArgumentContainer(argument, bridge));
             }
         }
@@ -210,7 +250,7 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
                 data.registerData(command);
                 data.registerData(argumentContainer);
                 data.registerData(argumentContainer.getName());
-                data.registerData(argumentContainer.getType());
+                data.registerData(argumentContainer.getTypes());
 
                 data.registerData(instance);
 
@@ -226,7 +266,7 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
             }
 
 
-            argumentBuilder.withOptional(argument.isOptional());
+            argumentBuilder.setOptional(argument.isOptional());
 
             ArgumentSpec argumentSpec1 = argumentBuilder.build();
 

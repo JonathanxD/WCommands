@@ -57,13 +57,13 @@ public class Main {
         ArgumentSpec argumentSpecName = CommandFactory.create(ArgumentIDs.REGION_NAME, Matchable::acceptAny);
         ArgumentSpec argumentSpecRegionName = CommandFactory.createOptional(ArgumentIDs.REGION_NAME, () -> s -> !s.equals("allow"));
 
-        wCommand.addCommand(
+        wCommand.registerCommand(
                 CommandFactory.create("give", handler)
                         .addSub(CommandFactory.create("xp", Arguments.of(argumentSpecXP), handler))
                         .addSub(CommandFactory.create("item", Arguments.of(argumentSpec), handler))
         );
 
-        wCommand.addCommand(
+        wCommand.registerCommand(
                 CommandFactory.create("region", Arguments.of(argumentSpecRegionName), handler)
                         .addSub(
                                 CommandFactory.createOptional("allow", Arguments.of(argumentSpecName), handler)
