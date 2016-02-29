@@ -9,7 +9,7 @@ Yet Another Command API - This Project is and API that provides a Interface to c
 #### Creating a Manager
 
 ```java
-WCommandCommon manager = new WCommandCommon
+WCommandCommon manager = new WCommandCommon();
 ```
 
 #### Creating a simple command
