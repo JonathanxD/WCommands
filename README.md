@@ -183,7 +183,7 @@ Also you can use `Optional<String>`, but, you can only use `Optional` if you dec
 // Defines command named 'say2'
 @Command
 public void say2(/* Defines a optional argument*/ @Argument(isOptional = true) Optional<String> text) {
-  // If you define an argument as optional, it will be null if not present.
+  // If you define an argument as optional and argument type is Optional, it will be empty if not present.
   System.out.println("[SAY2] "+ text.orElse("foo");
 }
 ```
