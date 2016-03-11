@@ -94,8 +94,12 @@ public class GlobalTypeTranslator implements Translator<Object> {
             if (objectContainer.isPresent() && objectContainer.get() != null)
                 return;
 
-            Class<?> testType = null;
-            if ((aType.getAClass().isAssignableFrom((testType = type.getAClass())) || aType.compareTo(type) == 0)
+            Class<?> testType = type.getAClass();
+            Class<?> original = testType;
+            if(Primitive.asBoxed(testType) != null) {
+                testType = Primitive.asBoxed(testType);
+            }
+            if ((aType.getAClass().isAssignableFrom(testType) || aType.compareTo(type) == 0)
                     || (type.getRelated().length > 0
                     && this.isOptional
                     && type.getAClass() == Optional.class
@@ -117,9 +121,14 @@ public class GlobalTypeTranslator implements Translator<Object> {
                         Object casted;
                         Object translated = aTranslator.translate(text);
                         try {
-                            casted = testType.cast(translated);
+                            casted = original.cast(translated);
                         } catch (ClassCastException e) {
-                            casted = Caster.cast(translated, testType);
+                            try{
+                                casted = Caster.cast(translated, original);
+                            }catch (Throwable t) {
+                                casted = translated;
+                            }
+
                         }
 
                         objectContainer.set(casted);

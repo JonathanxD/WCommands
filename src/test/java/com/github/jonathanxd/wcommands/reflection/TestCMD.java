@@ -41,7 +41,7 @@ public class TestCMD {
     @Command
     public void give(@Argument GiveType giveType,
                      @Argument(isOptional = true) Items what,
-                     @Argument int amount) {
+                     @Argument(id = "INT") int amount) {
 
         if (giveType == GiveType.ITEM) {
             System.out.println("Giving item name: '" + what + "', amount: " + amount);
