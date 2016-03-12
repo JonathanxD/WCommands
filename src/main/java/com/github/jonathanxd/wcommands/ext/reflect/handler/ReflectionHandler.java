@@ -23,7 +23,7 @@ import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentsHolder;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.data.CommandData;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.containers.TreeNamedContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeNamedContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 

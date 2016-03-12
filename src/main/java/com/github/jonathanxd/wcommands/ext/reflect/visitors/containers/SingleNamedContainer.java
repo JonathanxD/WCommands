@@ -16,41 +16,30 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.factory.containers;
+package com.github.jonathanxd.wcommands.ext.reflect.visitors.containers;
 
+import com.github.jonathanxd.iutils.object.Reference;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by jonathan on 27/02/16.
  */
-public class TreeNamedContainer extends NamedContainer {
+public class SingleNamedContainer extends NamedContainer {
 
-    private final List<TreeNamedContainer> child = new ArrayList<>();
-    private final List<SingleNamedContainer> argumentContainers = new ArrayList<>();
 
-    public TreeNamedContainer(String name, Annotation value, ElementBridge bridge) {
+    public SingleNamedContainer(String name, Annotation value, ElementBridge bridge) {
         super(name, value, bridge);
+        try{
+            bridge.getParameterizedReference();
+        }catch (Throwable t) {
+            throw new IllegalArgumentException("Unsupported element! Type: "+bridge.getMember().getClass(), t);
+        }
     }
 
-    public boolean isMethod() {
-        return getBridge().getMember() instanceof Method;
+    public Reference<?> getTypes() {
+        return getBridge().getParameterizedReference();
     }
 
-    public boolean isField() {
-        return getBridge().getMember() instanceof Field;
-    }
-
-    public List<TreeNamedContainer> getChild() {
-        return child;
-    }
-
-    public List<SingleNamedContainer> getArgumentContainers() {
-        return argumentContainers;
-    }
 }

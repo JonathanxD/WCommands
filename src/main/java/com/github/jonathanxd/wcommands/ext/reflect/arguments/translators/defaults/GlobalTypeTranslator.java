@@ -26,8 +26,7 @@ import com.github.jonathanxd.wcommands.ext.reflect.arguments.IsOptional;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.exception.TranslateException;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.containers.SingleNamedContainer;
-import com.github.jonathanxd.wcommands.text.Text;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.SingleNamedContainer;
 import com.github.jonathanxd.wcommands.util.reflection.Primitive;
 
 import java.util.Optional;

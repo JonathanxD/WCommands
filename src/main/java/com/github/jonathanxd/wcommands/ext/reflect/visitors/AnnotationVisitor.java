@@ -16,12 +16,12 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.factory;
+package com.github.jonathanxd.wcommands.ext.reflect.visitors;
 
 import com.github.jonathanxd.iutils.extra.Container;
 import com.github.jonathanxd.wcommands.WCommandCommon;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.containers.NamedContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.NamedContainer;
 import com.github.jonathanxd.wcommands.interceptor.Order;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
@@ -39,6 +39,16 @@ public abstract class AnnotationVisitor<T extends Annotation, C extends NamedCon
         this.annotationClass = annotationClass;
     }
 
+    /**
+     * Called When the Annotation is found on the code
+     *
+     * You need to manually set the Containers!
+     *
+     * @param annotation Annotation
+     * @param current    Current Container
+     * @param last       Last Container
+     * @param bridge     Element Bridge
+     */
     public void visitElementAnnotation(T annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge) {
 
     }
@@ -47,6 +57,26 @@ public abstract class AnnotationVisitor<T extends Annotation, C extends NamedCon
 
     }
 
+    /**
+     * Check the dependencies. Returns False to wait next register. This method is useful for
+     * SubCommands because SubCommands require some command dependencies and SubCommands
+     * dependencies.
+     *
+     * @param container Container
+     * @param instance  Instance of the source
+     * @param support   Visitor Support
+     * @param common    Command register
+     * @param parent    Parent caller
+     * @return True to accept and call {@link #process(NamedContainer, InstanceContainer,
+     * AnnotationVisitorSupport, WCommandCommon, Optional)}. or False to postpone the process.
+     */
+    public boolean dependencyCheck(C container,
+                                   InstanceContainer instance,
+                                   AnnotationVisitorSupport support,
+                                   WCommandCommon common,
+                                   Optional<NamedContainer> parent) {
+        return true;
+    }
 
     public abstract V process(C container,
                               InstanceContainer instance,

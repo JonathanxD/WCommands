@@ -38,37 +38,53 @@ public class CommandFactory {
 
     @Deprecated
     public static CommandSpec create(String name) {
-        return create(Text.of(name), new Arguments(), false, "", "", null);
+        return create(Text.of(name), "", new Arguments(), false, "", "", null);
     }
 
     public static <H> CommandSpec create(String name, Handler<H> handler) {
-        return create(Text.of(name), new Arguments(), false, "", "", handler);
+        return create(Text.of(name), "", new Arguments(), false, "", "", handler);
+    }
+
+    public static <H> CommandSpec create(String name, String description, Handler<H> handler) {
+        return create(Text.of(name), description, new Arguments(), false, "", "", handler);
     }
 
     public static <H> CommandSpec create(String name, Arguments arguments, Handler<H> handler) {
-        return create(Text.of(name), arguments, false, "", "", handler);
+        return create(Text.of(name), "", arguments, false, "", "", handler);
+    }
+
+    public static <H> CommandSpec create(String name, String description, Arguments arguments, Handler<H> handler) {
+        return create(Text.of(name), description, arguments, false, "", "", handler);
     }
 
     @Deprecated
     public static CommandSpec createOptional(String name) {
-        return create(Text.of(name), new Arguments(), true, "", "", null);
+        return create(Text.of(name), "", new Arguments(), true, "", "", null);
     }
 
     public static <H> CommandSpec createOptional(String name, Handler<H> handler) {
-        return create(Text.of(name), new Arguments(), true, "", "", handler);
+        return create(Text.of(name), "", new Arguments(), true, "", "", handler);
+    }
+
+    public static <H> CommandSpec createOptional(String name, String description, Handler<H> handler) {
+        return create(Text.of(name), description, new Arguments(), true, "", "", handler);
     }
 
     public static <H> CommandSpec createOptional(String name, Arguments arguments, Handler<H> handler) {
-        return create(Text.of(name), arguments, true, "", "", handler);
+        return create(Text.of(name), "", arguments, true, "", "", handler);
+    }
+
+    public static <H> CommandSpec createOptional(String name, String description, Arguments arguments, Handler<H> handler) {
+        return create(Text.of(name), description, arguments, true, "", "", handler);
     }
 
 
-    public static <H> CommandSpec create(Text name, Arguments arguments, boolean optional, String prefix, String suffix, Handler<H> handler) {
+    public static <H> CommandSpec create(Text name, String description, Arguments arguments, boolean optional, String prefix, String suffix, Handler<H> handler) {
 
         return new CommandSpec(
                 Objects.requireNonNull(name, "Name cannot be null"),
                 // Primitives cannot be null
-                arguments, optional,
+                description, arguments, optional,
                 Objects.requireNonNull(prefix, "Prefix cannot be null. Must be empty or have a value"),
                 Objects.requireNonNull(suffix, "Suffix cannot be null. Must be empty or have a value"),
                 // Nullable

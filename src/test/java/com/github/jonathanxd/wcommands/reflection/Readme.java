@@ -18,10 +18,12 @@
  */
 package com.github.jonathanxd.wcommands.reflection;
 
+import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
+import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 
 import java.util.Optional;
@@ -46,6 +48,9 @@ public class Readme {
         commandProcessor.processAndInvoke("say2");
 
         commandProcessor.processAndInvoke("say2", "foo bar");
+
+        subCommandTest(commandProcessor);
+
     }
 
     @Command
@@ -54,7 +59,34 @@ public class Readme {
 
     @Command
     public void say2(@Argument(isOptional = true) Optional<String> text) {
-        System.out.println("[SAY2] "+(text == null ? "foo" : text));
+        System.out.println("[SAY2] "+ text.orElse("foo"));
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static void subCommandTest(WCommandCommon commandProcessor) throws ArgumentProcessingError {
+        commandProcessor.processAndInvoke("greet");
+        commandProcessor.processAndInvoke("greet", "special");
+        commandProcessor.processAndInvoke("greet", "special", "fan");
+
+    }
+
+    // Sub commands
+
+    //Defines command named greet
+    @Command
+    public void greet() {
+        System.out.println("Hi!");
+    }
+    // Create a sub command named special for greet command
+    @SubCommand(value = "greet", commandSpec = @Command(isOptional = true))
+    public void special() {
+        System.out.println("Hi <3");
+    }
+    // Also you can create a Sub command for a sub command.
+    @SubCommand(value = {"greet", "special"}, commandSpec = @Command(isOptional = true))
+    public void fan() {
+        System.out.println(" ❤ ");
     }
 
 }

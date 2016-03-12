@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.factory.defaults;
+package com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults;
 
 import com.github.jonathanxd.iutils.data.ExtraData;
 import com.github.jonathanxd.iutils.extra.Container;
@@ -25,11 +25,11 @@ import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.AnnotationVisitorSupport;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.AnnotationVisitor;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.containers.NamedContainer;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.containers.SingleNamedContainer;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.containers.TreeNamedContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitorSupport;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitor;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.NamedContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.SingleNamedContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeNamedContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
 import com.github.jonathanxd.wcommands.factory.CommandBuilder;
 import com.github.jonathanxd.wcommands.handler.Handler;
@@ -82,6 +82,8 @@ public class CommandVisitor extends AnnotationVisitor<Command, TreeNamedContaine
         commandBuilder.withName(Text.of(command.getName()));
         commandBuilder.withPrefix(commandAnnotation.prefix());
         commandBuilder.withSuffix(commandAnnotation.suffix());
+        commandBuilder.withDescription(commandAnnotation.desc());
+        commandBuilder.withIsOptional(commandAnnotation.isOptional());
 
         Handler<CommandHolder> handler = null;
 

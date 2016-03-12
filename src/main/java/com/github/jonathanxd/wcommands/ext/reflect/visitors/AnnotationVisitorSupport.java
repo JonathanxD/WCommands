@@ -16,32 +16,26 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.factory.containers;
+package com.github.jonathanxd.wcommands.ext.reflect.visitors;
 
-import com.github.jonathanxd.iutils.data.ExtraData;
-import com.github.jonathanxd.iutils.extra.Container;
-import com.github.jonathanxd.iutils.object.Reference;
-import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.NamedContainer;
 
 import java.lang.annotation.Annotation;
+import java.util.Optional;
 
 /**
- * Created by jonathan on 27/02/16.
+ * Created by jonathan on 29/02/16.
  */
-public class SingleNamedContainer extends NamedContainer {
+public interface AnnotationVisitorSupport {
 
+    boolean registerVisitor(AnnotationVisitor<?, ?, ?> annotationVisitor);
 
-    public SingleNamedContainer(String name, Annotation value, ElementBridge bridge) {
-        super(name, value, bridge);
-        try{
-            bridge.getParameterizedReference();
-        }catch (Throwable t) {
-            throw new IllegalArgumentException("Unsupported element! Type: "+bridge.getMember().getClass(), t);
-        }
-    }
+    boolean overrideVisitor(AnnotationVisitor<?, ?, ?> annotationVisitor);
 
-    public Reference<?> getTypes() {
-        return getBridge().getParameterizedReference();
-    }
+    boolean removeVisitor(AnnotationVisitor<?, ?, ?> annotationVisitor);
+
+    boolean removeVisitor(Class<?> annotationType);
+
+    <T extends Annotation, C extends NamedContainer, R> Optional<AnnotationVisitor<T, C, R>> getVisitorFor(Class<? extends Annotation> clazz);
 
 }

@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.factory.defaults;
+package com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults;
 
 import com.github.jonathanxd.iutils.data.DataProvider;
 import com.github.jonathanxd.iutils.data.ExtraData;
@@ -29,11 +29,11 @@ import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.IsOptional;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.AnnotationVisitor;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.AnnotationVisitorSupport;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.containers.NamedContainer;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.containers.SingleNamedContainer;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.containers.TreeNamedContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitor;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitorSupport;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.NamedContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.SingleNamedContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeNamedContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.factory.ArgumentBuilder;

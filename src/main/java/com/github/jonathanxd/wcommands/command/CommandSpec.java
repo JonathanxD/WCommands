@@ -45,41 +45,54 @@ import java.util.stream.Collectors;
  */
 public class CommandSpec implements Matchable<String> {
 
+    public static final CommandSpec EMPTY = new CommandSpec(null, null, null, false, null, null, null);
+
     /**
      * CommandSpec Name
      */
     private final Text name;
+
+    /**
+     * CommandSpec Description
+     */
+    private final String description;
+
     /**
      * CommandSpec prefix
      */
     private final String prefix;
+
     /**
      * CommandSpec suffix
      */
     private final String suffix;
+
     /**
-     * Is Optional CommandSpec?
+     * Is Optional CommandSpec (only works with sub-commands)?
      *
-     * @deprecated OPTIONAL COMMAND???
+     *
      */
-    @Deprecated
     private final boolean isOptional;
+
     /**
      * CommandSpec Handler
      */
     private final Handler defaultHandler;
+
     /**
      * ArgumentSpec specification list
      *
      * @see Arguments
      */
     private final Arguments arguments;
+
     /**
      * Alias list
      *
      * @see AliasList
      */
     private final AliasList aliasList = new AliasList();
+
     /**
      * List of commands
      */
@@ -89,19 +102,25 @@ public class CommandSpec implements Matchable<String> {
      * Create a new CommandSpec instance
      *
      * @param name           Name of command
+     * @param description    Description of command
      * @param arguments      Arguments
      * @param isOptional     Is Optional??
      * @param prefix         Prefix
      * @param suffix         Suffix
      * @param defaultHandler CommandSpec handler
      */
-    public CommandSpec(Text name, Arguments arguments, @Deprecated boolean isOptional, String prefix, String suffix, Handler defaultHandler) {
+    public CommandSpec(Text name, String description, Arguments arguments, @Deprecated boolean isOptional, String prefix, String suffix, Handler defaultHandler) {
         this.name = name;
+        this.description = description;
         this.arguments = arguments;
         this.isOptional = isOptional;
         this.prefix = prefix;
         this.suffix = suffix;
         this.defaultHandler = defaultHandler;
+    }
+
+    public static CommandSpec empty() {
+        return EMPTY;
     }
 
     public static String toString(CommandSpec commandSpec) {
@@ -119,6 +138,8 @@ public class CommandSpec implements Matchable<String> {
     public static Appendable toAppendable(CommandSpec commandSpec, Appendable append) throws IOException {
         append.append(commandSpec.getClass().getSimpleName()).append("[")
                 .append("name=").append(commandSpec.getName().getPlainString())
+                .append(",")
+                .append("description=").append(commandSpec.getDescription())
                 .append(",")
                 .append("isOptional=").append(String.valueOf(commandSpec.isOptional()))
                 .append(",")
@@ -155,6 +176,10 @@ public class CommandSpec implements Matchable<String> {
         }
 
         return Text.matches(commandSpec.getName(), withoutPAS, ignoreCase) || commandSpec.getAliases().anyMatches(withoutPAS, ignoreCase);
+    }
+
+    public boolean isEmpty() {
+        return this.name == null || this == empty();
     }
 
     /**
@@ -304,11 +329,21 @@ public class CommandSpec implements Matchable<String> {
     }
 
     /**
+     * Command Description
+     *
+     * @return Command Description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
      * True if is Optional
+     *
+     * !!! ONLY WORKS WITH SUB COMMANDS !!!
      *
      * @return True if is Optional command
      */
-    @Deprecated
     public boolean isOptional() {
         return isOptional;
     }

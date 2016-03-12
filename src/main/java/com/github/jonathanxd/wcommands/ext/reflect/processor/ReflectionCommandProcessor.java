@@ -34,13 +34,15 @@ import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.default
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.NumberTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.StringTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.AnnotationVisitor;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.AnnotationVisitorSupport;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.AnnotationVisitors;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.containers.NamedContainer;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.defaults.ArgumentVisitor;
-import com.github.jonathanxd.wcommands.ext.reflect.factory.defaults.CommandVisitor;
+import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitor;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitorSupport;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitors;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.NamedContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults.ArgumentVisitor;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults.CommandVisitor;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults.SubCommandVisitor;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.interceptor.Order;
 import com.github.jonathanxd.wcommands.processor.Processor;
@@ -53,6 +55,8 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -89,6 +93,7 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
 
         registerVisitor(new CommandVisitor(Command.class));
         registerVisitor(new ArgumentVisitor(Argument.class));
+        registerVisitor(new SubCommandVisitor(SubCommand.class));
 
     }
 
@@ -112,20 +117,32 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
     public void addCommands(Object instance, Class<?> clazz) {
         List<NamedContainer> namedContainers = new LinkedList<>();
 
+        java.util.Set<ElementBridge> bridgeSet = new TreeSet<>(new PriorityComparator(annotationVisitors));
+
         for (Field field : clazz.getDeclaredFields()) {
-            namedContainers.add(processWrapper(new ElementBridge(field)));
+            bridgeSet.add(new ElementBridge(field));
         }
 
         for (Method method : clazz.getDeclaredMethods()) {
-            namedContainers.add(processWrapper(new ElementBridge(method)));
+            bridgeSet.add(new ElementBridge(method));
+        }
+
+        for (ElementBridge bridge : bridgeSet) {
+            namedContainers.add(processWrapper(bridge));
         }
 
         namedContainers = namedContainers.stream().filter(d -> d != null).collect(Collectors.toList());
 
-        namedContainers.forEach(namedContainer -> {
-            CommandSpec commandSpec = this.processCommand(namedContainer, new InstanceContainer(instance));
-            this.registerCommand(commandSpec);
-        });
+        ConcurrentLinkedDeque<NamedContainer> concurrent = new ConcurrentLinkedDeque<>(namedContainers);
+
+        Postpone postpone = new Postpone(concurrent);
+
+        for (NamedContainer namedContainer : concurrent) {
+            CommandSpec commandSpec = this.processCommand(namedContainer, new InstanceContainer(instance), postpone);
+            if (commandSpec != null)
+                this.registerCommand(commandSpec);
+        }
+
     }
 
     private NamedContainer processWrapper(ElementBridge bridge) {
@@ -172,12 +189,26 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
     }
 
     @SuppressWarnings("unchecked")
-    private CommandSpec processCommand(NamedContainer namedContainer, InstanceContainer instance) {
+    private <C extends NamedContainer, T> boolean helpToCheck(AnnotationVisitor<?, C, T> t, NamedContainer named, InstanceContainer instance) {
+        return t.dependencyCheck((C) named, instance, this, this, Optional.empty());
+    }
+
+    @SuppressWarnings("unchecked")
+    private CommandSpec processCommand(NamedContainer namedContainer, InstanceContainer instance, Postpone postpone) {
 
         Optional<AnnotationVisitor<Annotation, NamedContainer, CommandSpec>> visitorOptional = annotationVisitors.<Annotation, NamedContainer, CommandSpec>getFor(namedContainer.get().annotationType());
 
         if (visitorOptional.isPresent()) {
-            return helpTo(visitorOptional.get(), namedContainer, instance);
+
+            if (!helpToCheck(visitorOptional.get(), namedContainer, instance)) {
+                postpone.postPone(namedContainer);
+
+                return null;
+            } else {
+                CommandSpec spec = helpTo(visitorOptional.get(), namedContainer, instance);
+
+                return spec != null && !spec.isEmpty() ? spec : null;
+            }
         }
 
         return null;
@@ -219,5 +250,18 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
 
     public enum Set {
         FINAL
+    }
+
+
+    private final static class Postpone {
+        private final ConcurrentLinkedDeque<NamedContainer> concurrent;
+
+        private Postpone(ConcurrentLinkedDeque<NamedContainer> concurrent) {
+            this.concurrent = concurrent;
+        }
+
+        public void postPone(NamedContainer namedContainer) {
+            concurrent.addLast(namedContainer);
+        }
     }
 }

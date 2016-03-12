@@ -34,6 +34,7 @@ import java.util.Objects;
  */
 public class CommandBuilder<H> {
     private Text name;
+    private String description = "";
     private String prefix = "";
     private String suffix = "";
     private boolean isOptional = false;
@@ -70,6 +71,11 @@ public class CommandBuilder<H> {
 
     public CommandBuilder<H> withRegexIgnoreCaseName(String name) {
         this.name = Text.ofRegexIgnoreCase(name);
+        return this;
+    }
+
+    public CommandBuilder<H> withDescription(String description) {
+        this.description = description;
         return this;
     }
 
@@ -130,6 +136,7 @@ public class CommandBuilder<H> {
 
     public CommandSpec build() {
         return new CommandSpec(Objects.requireNonNull(name),
+                description,
                 Objects.requireNonNull(arguments),
                 isOptional,
                 Objects.requireNonNull(prefix),

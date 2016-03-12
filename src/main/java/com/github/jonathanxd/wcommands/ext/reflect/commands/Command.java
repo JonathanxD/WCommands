@@ -35,14 +35,49 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Repeatable(Commands.class)
 public @interface Command {
+    /**
+     * Name of the command, if you don't define the name it will be determined by Reflection (like
+     * Field name and Method name).
+     *
+     * @return Name of the command, if you don't define the name it will be determined by Reflection
+     * (like Field name and Method name).
+     */
     String name() default "";
 
+    /**
+     * Description of the command, for future features of the API
+     *
+     * @return Description of the command, for future features of the API
+     */
+    String desc() default "";
+
+    /**
+     * Prefix of the command. You can direct set prefix in name, but that isn't recommended!
+     *
+     * @return Prefix of the command. You can direct set prefix in name, but that isn't recommended!
+     */
     String prefix() default "";
 
+    /**
+     * Suffix of the command. You can direct set suffix in name, but that isn't recommended!
+     *
+     * @return Suffix of the command. You can direct set suffix in name, but that isn't recommended!
+     */
     String suffix() default "";
 
-    //boolean optional() default false; -- DEPRECATED
+    /**
+     * True to set as optional command, only works with sub-commands
+     *
+     * @return True to set as optional command, only works with sub-commands
+     */
+    boolean isOptional() default false;
 
+
+    /**
+     * Handler implementation, default is {@link ReflectionHandler}
+     *
+     * @return Handler implementation, default is {@link ReflectionHandler}
+     */
     Class<? extends Handler<CommandHolder>> handler() default ReflectionHandler.class;
 
 }

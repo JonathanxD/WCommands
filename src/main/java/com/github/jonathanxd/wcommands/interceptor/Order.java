@@ -32,8 +32,20 @@ public enum Order {
     SIXTH,
     SEVENTH,
     EIGHTH,
-    NINITH,
+    NINTH,
     TENTH;
+
+    public Order next() {
+        Order[] vals = Order.values();
+        for(int x = 0; x < vals.length; ++x) {
+            if(vals[x] == this) {
+                if(x + 1 < vals.length) {
+                    return vals[x+1];
+                }
+            }
+        }
+        return vals[vals.length-1];
+    }
 
     public static Comparator<Order> comparator() {
         return Enum::compareTo;

@@ -184,7 +184,7 @@ Also you can use `Optional<String>`, but, you can only use `Optional` if you dec
 @Command
 public void say2(/* Defines a optional argument*/ @Argument(isOptional = true) Optional<String> text) {
   // If you define an argument as optional and argument type is Optional, it will be empty if not present.
-  System.out.println("[SAY2] "+ text.orElse("foo");
+  System.out.println("[SAY2] "+ text.orElse("foo"));
 }
 ```
 
@@ -197,7 +197,47 @@ commandProcessor.processAndInvoke("say2", "foo bar");
 
 Output: `[SAY2] FOO` and `[SAY2] foo bar`
 
+#### Sub Commands Since 1.5.3 @11/03/2016 
 
+Since version 1.5.3 has a new way to add sub commands. See the example:
+
+```java
+//Defines command named greet
+@Command
+public void greet() {
+  System.out.println("Hi!");
+}
+// Create a sub command named special for greet command
+@SubCommand(value = "greet", commandSpec = @Command(isOptional = true))
+public void special() {
+  System.out.println("Hi <3");
+}
+// Also you can create a Sub command for a sub command.
+@SubCommand(value = {"greet", "special"}, commandSpec = @Command(isOptional = true))
+public void fan() {
+  System.out.println(" ❤ ");
+}
+```
+
+##### Test
+
+```java
+commandProcessor.processAndInvoke("greet");
+commandProcessor.processAndInvoke("greet", "special");
+commandProcessor.processAndInvoke("greet", "special", "fan");
+```
+
+Output: `Hi!`, `Hi <3` and ` ❤ `
+
+
+
+##### How Works
+
+SubCommandVisitor find command based on path (value) defined in annotation and call CommandVisitor to Parse @Command annotation, then adds the result as sub command.
+
+**Attention**: ~~This System is under development, Sub Commands for Sub Commands may throw exceptions. If the SubCommand is parsed before the target SubCommand, the system will not find the command in register list and will throw exception. This problem don't occurs with simple @Command!~~
+
+**Attention**: Fixed the problem with registration order. Now I need to develop a Cyclic dependency detection algorithm. cyclic dependencies will cause system to go to infinite loop like `parse cmd -> postpone cmd -> parse cmd2 -> postpone cmd2 -> parse cmd -> ...`.
 
 ### MIXING
 

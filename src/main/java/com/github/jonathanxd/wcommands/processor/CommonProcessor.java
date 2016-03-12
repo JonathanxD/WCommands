@@ -203,12 +203,17 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                             }
                         }
                     }
+
                     if (matches && parent != null) {
                         // RETURN commandSpec loop for child
                         return;
                     } else if (matches) {
                         break;
                     }
+                }
+
+                if(!matches && parent == null) {
+                    throw new ArgumentProcessingError("Cannot find command '"+argument+"'", ArgumentError.MISSING_ARGUMENT);
                 }
             }
         }

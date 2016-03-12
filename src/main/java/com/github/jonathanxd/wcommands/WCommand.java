@@ -21,6 +21,7 @@ package com.github.jonathanxd.wcommands;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
+import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.handler.Handler;
 import com.github.jonathanxd.wcommands.interceptor.Interceptors;
@@ -28,7 +29,9 @@ import com.github.jonathanxd.wcommands.interceptor.InvokeInterceptor;
 import com.github.jonathanxd.wcommands.processor.Processor;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by jonathan on 26/02/16.
@@ -72,6 +75,41 @@ public class WCommand<T> {
 
     public T process(List<String> arguments) throws ArgumentProcessingError {
         return processor.process(arguments, commands, errorHandler);
+    }
+
+    public Optional<CommandSpec> getCommand(String name) {
+        for(CommandSpec spec : commands) {
+            if(spec.matches(name)) {
+                return Optional.of(spec);
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Optional<CommandSpec> getCommand(String[] path) {
+
+        List<CommandSpec> commandSpecs = commands;
+
+        Iterator<CommandSpec> commandSpecIterator = commandSpecs.iterator();
+
+        int pathIndex = 0;
+
+        while(commandSpecIterator.hasNext()) {
+
+            CommandSpec spec = commandSpecIterator.next();
+
+            if(spec.matches(path[pathIndex])) {
+
+                if(pathIndex + 1 >= path.length)
+                    return Optional.of(spec);
+
+                ++pathIndex;
+
+                commandSpecIterator = spec.getSubCommands().iterator();
+            }
+        }
+
+        return Optional.empty();
     }
 
     public void invoke(T object) {
