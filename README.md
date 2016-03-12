@@ -1,6 +1,6 @@
 # WCommands
 
-Yet Another Command API - This Project is and API that provides a Interface to create and handle commands,
+Yet Another Command API - This Project is an API that provides a Interface to create and handle commands,
  using Reflection to call methods and change Field values (see **Reflection API**) or Handler implementation to Handle commands created using
  Specifications (see **Command API**)
 
