@@ -237,7 +237,7 @@ SubCommandVisitor find command based on path (value) defined in annotation and c
 
 **Attention**: ~~This System is under development, Sub Commands for Sub Commands may throw exceptions. If the SubCommand is parsed before the target SubCommand, the system will not find the command in register list and will throw exception. This problem don't occurs with simple @Command!~~
 
-**Attention**: Fixed the problem with registration order. Now I need to develop a Cyclic dependency detection algorithm. cyclic dependencies will cause system to go to infinite loop like `parse cmd -> postpone cmd -> parse cmd2 -> postpone cmd2 -> parse cmd -> ...`.
+**Attention**: Fixed the problem with registration order. Now I need to develop a Cyclic dependency detection algorithm. cyclic dependencies will cause system to go to infinite loop like `parse cmd -> require cmd2 -> postpone cmd -> parse cmd2 -> require cmd -> postpone cmd2 -> parse cmd -> ...`.
 
 ### MIXING
 
