@@ -18,6 +18,8 @@
  */
 package com.github.jonathanxd.wcommands.processor;
 
+import com.github.jonathanxd.iutils.data.ExtraData;
+import com.github.jonathanxd.iutils.data.ReferenceData;
 import com.github.jonathanxd.iutils.extra.Container;
 import com.github.jonathanxd.wcommands.WCommand;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
@@ -32,6 +34,7 @@ import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.exceptions.MissingArgumentException;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.handler.Handler;
+import com.github.jonathanxd.wcommands.infos.Information;
 import com.github.jonathanxd.wcommands.interceptor.Interceptors;
 import com.github.jonathanxd.wcommands.interceptor.Phase;
 import com.github.jonathanxd.wcommands.text.Text;
@@ -62,7 +65,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
     @SuppressWarnings("unchecked")
     @Override
-    public void invokeCommands(List<CommandData<CommandHolder>> object, Interceptors interceptors) {
+    public void invokeCommands(List<CommandData<CommandHolder>> object, Interceptors interceptors, Information information) {
 
         Interceptors phasePreCall = interceptors.getPhase(Phase.PRE_CALL);
         Interceptors phasePostCall = interceptors.getPhase(Phase.POST_CALL);
@@ -80,7 +83,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                 phasePreCall.forEach(interceptor -> interceptor.intercept(data, handlerContainer));
 
                 if (handlerContainer.get() != null) {
-                    handlerContainer.get().handle(data);
+                    handlerContainer.get().handle(data, information);
                 }
 
 
@@ -241,7 +244,33 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                 while (argumentIter.hasNext()) {
                     String sub = argumentIter.next();
 
-                    if ((argumentSpecParse.getChecker() == null || argumentSpecParse.getChecker().get().matches(sub)) && (argumentSpecParse.getPredicate() == null || argumentSpecParse.getPredicate().test(sub))) {
+                    Boolean anyMatches = null;
+
+                    if(argumentSpecParse.getChecker() != null) {
+                        anyMatches = argumentSpecParse.getChecker().get().matches(sub);
+                    }
+
+                    if(argumentSpecParse.getPredicate() != null) {
+                        boolean result = argumentSpecParse.getPredicate().test(sub);
+
+                        if(anyMatches == null)
+                            anyMatches = result;
+                        else
+                            anyMatches = anyMatches && result;
+                    }
+
+
+                    if(anyMatches == null && argumentSpecParse.getConverter() != null) {
+                        boolean result = false;
+
+                        try{
+                            result = argumentSpecParse.getConverter().apply(sub) != null;
+                        }catch (Throwable t) {}
+                        anyMatches = result;
+                    }
+
+
+                    if (anyMatches != null && anyMatches) {
                         ArgumentHolder argument = new ArgumentHolder<>(sub, argumentSpecParse);
                         argumentHolders.add(argument);
                         break;
@@ -280,7 +309,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                 while (pos < argumentHolders.size()) {
                     ArgumentHolder holder = argumentHolders.get(pos);
 
-                    if (argumentSpec != holder.getArgumentSpec()) {
+                    if (argumentSpec != holder.getArgumentSpec() || !holder.isPresent()) {
                         if (!argumentSpec.isOptional()) {
 
                             handlerContainer.handle(

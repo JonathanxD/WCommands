@@ -18,9 +18,11 @@
  */
 package com.github.jonathanxd.wcommands.processor;
 
+import com.github.jonathanxd.iutils.data.ReferenceData;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
+import com.github.jonathanxd.wcommands.infos.Information;
 import com.github.jonathanxd.wcommands.interceptor.Interceptors;
 
 import java.util.List;
@@ -32,5 +34,5 @@ public interface Processor<T> {
 
     T process(List<String> arguments, CommandList commands, ErrorHandler errorHandler) throws ArgumentProcessingError;
 
-    void invokeCommands(T object, Interceptors interceptors);
+    void invokeCommands(T object, Interceptors interceptors, Information information);
 }

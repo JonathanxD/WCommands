@@ -18,6 +18,9 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.handler;
 
+import com.github.jonathanxd.iutils.arrays.Arrays;
+import com.github.jonathanxd.iutils.data.ReferenceData;
+import com.github.jonathanxd.iutils.object.Reference;
 import com.github.jonathanxd.wcommands.CommonHandler;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentsHolder;
@@ -25,6 +28,7 @@ import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeNamedContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
+import com.github.jonathanxd.wcommands.infos.Information;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.reflect.InvocationTargetException;
@@ -47,7 +51,7 @@ public class ReflectionHandler implements CommonHandler {
     }
 
     @Override
-    public void handle(CommandData<CommandHolder> commandData) {
+    public void handle(CommandData<CommandHolder> commandData, Information information) {
 
         CommandHolder holder = commandData.getCommand();
         ElementBridge bridge = commandContainer.getBridge();
@@ -117,8 +121,27 @@ public class ReflectionHandler implements CommonHandler {
 
             try {
                 bridge.invoke(instance.get(), argTypes, argObjects, true);
-            } catch (InvocationTargetException | IllegalAccessException e) {
-                throw new RuntimeException(e);
+            } catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
+
+                if(information == null) {
+                    throw new RuntimeException(e);
+                }
+
+                information.stream().forEach((key, value) -> {
+                    methodArguments.add(value);
+                    methodParamTypes.add(value.getClass());
+                });
+
+                argObjects = methodArguments.toArray(new Object[methodArguments.size()]);
+                argTypes = methodParamTypes.toArray(new Class<?>[methodParamTypes.size()]);
+
+                try{
+                    bridge.invoke(instance.get(), argTypes, argObjects, true);
+                }catch (InvocationTargetException | IllegalAccessException e2) {
+                    RuntimeException ex = new RuntimeException(e);
+                    ex.setStackTrace(Arrays.ofG(ex.getStackTrace()).addAll(e2.getStackTrace()).toGenericArray());
+                    throw ex;
+                }
             }
 
         }

@@ -18,12 +18,14 @@
  */
 package com.github.jonathanxd.wcommands;
 
+import com.github.jonathanxd.iutils.data.ReferenceData;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.handler.Handler;
+import com.github.jonathanxd.wcommands.infos.Information;
 import com.github.jonathanxd.wcommands.interceptor.Interceptors;
 import com.github.jonathanxd.wcommands.interceptor.InvokeInterceptor;
 import com.github.jonathanxd.wcommands.processor.Processor;
@@ -66,11 +68,15 @@ public class WCommand<T> {
     }
 
     public void processAndInvoke(String... arguments) throws ArgumentProcessingError {
-        processAndInvoke(Arrays.asList(arguments));
+        processAndInvoke(Arrays.asList(arguments), null);
     }
 
-    public void processAndInvoke(List<String> arguments) throws ArgumentProcessingError {
-        invoke(process(arguments));
+    public void processAndInvoke(Information information, String... arguments) throws ArgumentProcessingError {
+        processAndInvoke(Arrays.asList(arguments), information);
+    }
+
+    public void processAndInvoke(List<String> arguments, Information information) throws ArgumentProcessingError {
+        invoke(process(arguments), information);
     }
 
     public T process(List<String> arguments) throws ArgumentProcessingError {
@@ -112,8 +118,8 @@ public class WCommand<T> {
         return Optional.empty();
     }
 
-    public void invoke(T object) {
-        processor.invokeCommands(object, interceptors);
+    public void invoke(T object, Information information) {
+        processor.invokeCommands(object, interceptors, information);
     }
 
     public Handler<T> createHandler(Handler<T> handler) {

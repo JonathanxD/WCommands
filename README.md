@@ -92,7 +92,7 @@ In `withCommonHandler`
 
 ```java
     //...
-    .withCommonHandler((c) -> {
+    .withCommonHandler((c, data) -> {
         // DO A ACTION
         CommandHolder ch = c.getCommand();
         // Try to find argument value
@@ -270,6 +270,16 @@ Also you can 'replace' the handler
 handler.set(o -> System.out.println("hello from other handler!"));
 ```
 
+### Information
+
+Information is a class that allow to you to register pre-defined and persistent "information". The "information" will be passed to Reflection and Command API in Handlers.
+
+Information is in development stage!
+
+Examples:
+
+[Command API](https://github.com/JonathanxD/WCommands/tree/master/src/test/java/com/github/jonathanxd/wcommands/commandapi/TestInformation.java)
+[Reflection API](https://github.com/JonathanxD/WCommands/tree/master/src/test/java/com/github/jonathanxd/wcommands/reflection/TestInformation.java)
 
 
 ##### Test

@@ -18,10 +18,12 @@
  */
 package com.github.jonathanxd.wcommands;
 
+import com.github.jonathanxd.iutils.data.ReferenceData;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.handler.Handler;
+import com.github.jonathanxd.wcommands.infos.Information;
 
 import java.util.Optional;
 
@@ -40,7 +42,7 @@ public interface CommonHandler extends Handler<CommandHolder> {
 
         @SuppressWarnings("unchecked")
         @Override
-        public void handle(CommandData<CommandHolder> commandData) {
+        public void handle(CommandData<CommandHolder> commandData, Information information) {
             Optional<?> opt = commandData.getCommand().getArgValue(id);
             if(!opt.isPresent()) {
                 throw new IllegalStateException("Cannot find argument (id: '"+id+"')");
@@ -58,7 +60,7 @@ public interface CommonHandler extends Handler<CommandHolder> {
 
         @SuppressWarnings("unchecked")
         @Override
-        public void handle(CommandData<CommandHolder> commandData) {
+        public void handle(CommandData<CommandHolder> commandData, Information information) {
 
             for(ArgumentHolder holder : commandData.getCommand().getArguments()) {
                 handleAny((ID) holder.getArgumentSpec().getId(), holder.convertValue());

@@ -16,15 +16,34 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators;
+package com.github.jonathanxd.wcommands.arguments.converters;
+
+import java.util.Collection;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
 
 /**
- * Created by jonathan on 27/02/16.
+ * Created by jonathan on 12/03/16.
  */
-public interface Translator<T> {
+public class CollectionConverter<T> implements Function<String, T> {
 
-    boolean isAcceptable(String text);
+    private final Collection<T> collection;
+    private final BiPredicate<T, String> predicate;
 
-    T translate(String text);
+    public CollectionConverter(Collection<T> collection, BiPredicate<T, String> predicate) {
+        this.collection = collection;
+        this.predicate = predicate;
+    }
 
+    @Override
+    public T apply(String s) {
+
+        for (T element : collection) {
+            if (predicate.test(element, s)) {
+                return element;
+            }
+        }
+
+        throw new IllegalStateException("Cannot find element '" + s + "' in collection '" + collection + "'");
+    }
 }

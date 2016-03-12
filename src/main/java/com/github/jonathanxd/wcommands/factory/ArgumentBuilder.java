@@ -86,10 +86,10 @@ public class ArgumentBuilder<ID, T> {
         return new ArgumentSpec<>(id, checker, predicate, optional, converter);
     }
 
-    private static class All<T> implements Function<Text, Object> {
+    private static class All<T> implements Function<String, Object> {
         @Override
-        public Object apply(Text text) {
-            return text.getPlainString();
+        public Object apply(String text) {
+            return text;
         }
     }
 }

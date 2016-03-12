@@ -18,37 +18,48 @@
  */
 package com.github.jonathanxd.wcommands.reflection;
 
-import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
-
-import java.util.Optional;
+import com.github.jonathanxd.wcommands.infos.Information;
 
 /**
  * Created by jonathan on 11/03/16.
  */
-public class TestReflection {
+public class TestInformation {
 
     public static void main(String[] args) {
-        ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new TestReflection());
+        ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new TestInformation());
         try {
-            processor.processAndInvoke("say", "hello", "special");
+
+            processor.processAndInvoke(Information
+                            // Create information builder
+                            .builder()
+                            // Define the Sender as Sender "User"
+                            .with(Sender.class, new Sender("User"))
+                            // Build
+                            .build(),
+                    // Pass arguments, not needed to pass "User" as argument
+                    "say", "hello", "special");
         } catch (ArgumentProcessingError error) {
             error.printStackTrace();
         }
-
-        Optional<CommandSpec> cmdOpt = processor.getCommand("say");
-
-        cmdOpt.ifPresent(cmd -> System.out.println("Nome: " + cmd.getName() + ". Descrição: " + cmd.getDescription()));
-
     }
 
+    /**
+     * Send hello message to {@code sender}
+     *
+     * At time has 1 way to get information, declaring all information parameter in order after the
+     * arguments, declare information argument isn't required, but if you declare 1, you need to
+     * declare all information IN ORDER of registration. It will be changed soon.
+     *
+     * @param sender Message sender
+     */
     @SubCommand(value = {"say", "hello"}, commandSpec = @Command(isOptional = true))
-    public void special() {
-        System.out.println("Hello <3");
+    public void special(Sender sender) {
+        System.out.println(String.format("Hello %s <3", sender.name));
     }
 
     @SubCommand(value = "say", commandSpec = @Command(isOptional = true))
@@ -59,6 +70,17 @@ public class TestReflection {
     @Command(desc = "Diz Olá :D")
     public void say() {
         System.out.println("Say...?");
+    }
+
+    /**
+     * Command Sender
+     */
+    static class Sender {
+        final String name;
+
+        Sender(String name) {
+            this.name = name;
+        }
     }
 
 

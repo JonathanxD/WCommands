@@ -46,7 +46,7 @@ public class TestLT {
                 .withPrefix("--")
                 .withName(Text.of("allowUpper"))
                 .withArgument(new BooleanArgumentSpec<>(IDs.ALLOW_UPPER, false))
-                .withCommonHandler(commandData -> {
+                .withCommonHandler((commandData, ref) -> {
                     CommandHolder holder = commandData.getCommand();
 
                     Optional<Boolean> isAllowUpper = holder.getArgValue(IDs.ALLOW_UPPER);
@@ -65,7 +65,7 @@ public class TestLT {
         wCommandCommon.registerCommand(CommandBuilder.builder()
                 .withPrefix("--")
                 .withName(Text.of("daemon"))
-                .withCommonHandler(commandData -> System.out.println("Start Daemon"))
+                .withCommonHandler((commandData, ref) -> System.out.println("Start Daemon"))
                 .build());
 
         wCommandCommon.registerCommand(CommandBuilder.builder()
