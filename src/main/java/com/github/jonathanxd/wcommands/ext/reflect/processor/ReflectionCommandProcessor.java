@@ -36,6 +36,7 @@ import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.default
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.processor.exception.PossibleCyclicDependencies;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitor;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitorSupport;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitors;
@@ -46,17 +47,19 @@ import com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults.SubCommandV
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.interceptor.Order;
 import com.github.jonathanxd.wcommands.processor.Processor;
+import com.github.jonathanxd.wcommands.util.ListUtils;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -133,14 +136,30 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
 
         namedContainers = namedContainers.stream().filter(d -> d != null).collect(Collectors.toList());
 
-        ConcurrentLinkedDeque<NamedContainer> concurrent = new ConcurrentLinkedDeque<>(namedContainers);
+        Postpone postpone = new Postpone();
 
-        Postpone postpone = new Postpone(concurrent);
-
-        for (NamedContainer namedContainer : concurrent) {
+        for (NamedContainer namedContainer : namedContainers) {
             CommandSpec commandSpec = this.processCommand(namedContainer, new InstanceContainer(instance), postpone);
             if (commandSpec != null)
                 this.registerCommand(commandSpec);
+        }
+
+        // Postpone process
+
+        if (!postpone.hasNextInMain() && postpone.hasPostpone()) {
+            postpone.updateToPostpone();
+        }
+
+        while (postpone.hasNextInMain()) {
+            NamedContainer container = postpone.next();
+
+            CommandSpec commandSpec = this.processCommand(container, new InstanceContainer(instance), postpone);
+            if (commandSpec != null)
+                this.registerCommand(commandSpec);
+
+            if (!postpone.hasNextInMain() && postpone.hasPostpone()) {
+                postpone.updateToPostpone();
+            }
         }
 
     }
@@ -201,7 +220,7 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
         if (visitorOptional.isPresent()) {
 
             if (!helpToCheck(visitorOptional.get(), namedContainer, instance)) {
-                postpone.postPone(namedContainer);
+                postpone.postpone(namedContainer);
 
                 return null;
             } else {
@@ -248,20 +267,56 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
         return annotationVisitors.<T, C, R>getFor(clazz);
     }
 
-    public enum Set {
+    public enum PropSet {
         FINAL
     }
 
 
     private final static class Postpone {
-        private final ConcurrentLinkedDeque<NamedContainer> concurrent;
+        private final List<NamedContainer> original = new ArrayList<>();
+        private final List<NamedContainer> list = new ArrayList<>();
+        private final List<NamedContainer> postpone = new ArrayList<>();
 
-        private Postpone(ConcurrentLinkedDeque<NamedContainer> concurrent) {
-            this.concurrent = concurrent;
+        public void postpone(NamedContainer container) {
+            postpone.add(container);
         }
 
-        public void postPone(NamedContainer namedContainer) {
-            concurrent.addLast(namedContainer);
+        public boolean hasNextInMain() {
+            return !list.isEmpty();
+        }
+
+        public NamedContainer next() {
+            if (!hasNextInMain())
+                throw new RuntimeException();
+
+            return list.remove(0);
+        }
+
+        public boolean hasPostpone() {
+            return !postpone.isEmpty();
+        }
+
+        public void updateToPostpone() {
+            if (!hasPostpone())
+                throw new RuntimeException();
+
+            if (!original.isEmpty() && ListUtils.equals(this.original, postpone)) {
+                StringJoiner sj = new StringJoiner(", ", "[", "]");
+
+                for(NamedContainer container : this.original) {
+                    sj.add(container.getName());
+                }
+
+                throw new PossibleCyclicDependencies("Possible cyclic dependencies! Involved elements: '"+sj.toString()+"'. Postpone List: '"+postpone+"'. Current List: '"+original);
+            }
+
+            this.list.clear();
+            this.list.addAll(postpone);
+
+            this.original.clear();
+            this.original.addAll(postpone);
+
+            this.postpone.clear();
         }
     }
 }

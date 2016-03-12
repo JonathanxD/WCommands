@@ -148,7 +148,7 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
         ArgumentSpec argumentSpec1 = argumentBuilder.build();
 
         if (argument.setFinal()) {
-            argumentSpec1.getData().registerData(ReflectionCommandProcessor.Set.FINAL);
+            argumentSpec1.getData().registerData(ReflectionCommandProcessor.PropSet.FINAL);
         }
 
         return argumentSpec1;

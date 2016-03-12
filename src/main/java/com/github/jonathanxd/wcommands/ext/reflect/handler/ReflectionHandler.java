@@ -73,7 +73,7 @@ public class ReflectionHandler implements CommonHandler {
                     }
 
                     if(arg.isPresent()) {
-                        boolean force = argumentHolder.get().getArgumentSpec().getData().findData(ReflectionCommandProcessor.Set.FINAL.getClass());
+                        boolean force = argumentHolder.get().getArgumentSpec().getData().findData(ReflectionCommandProcessor.PropSet.FINAL.getClass());
                         bridge.setValue(instance.get(), value, true, force);
                     }
                 }
