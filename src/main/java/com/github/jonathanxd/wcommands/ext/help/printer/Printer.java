@@ -19,13 +19,14 @@
 package com.github.jonathanxd.wcommands.ext.help.printer;
 
 import com.github.jonathanxd.wcommands.common.command.CommandList;
+import com.github.jonathanxd.wcommands.infos.InformationRegister;
 
 /**
  * Created by jonathan on 12/03/16.
  */
 public interface Printer {
 
-    void printCommands(CommandList commandSpecs);
+    void printCommands(CommandList commandSpecs, InformationRegister informationRegister);
 
     void printString(String str);
 

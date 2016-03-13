@@ -30,7 +30,7 @@ import java.util.List;
  */
 public interface Processor<T> {
 
-    T process(List<String> arguments, CommandList commands, ErrorHandler<T> errorHandler);
+    T process(List<String> arguments, CommandList commands, ErrorHandler<T> errorHandler, InformationRegister informationRegister);
 
     void invokeCommands(T object, Interceptors interceptors, InformationRegister informationRegister);
 }

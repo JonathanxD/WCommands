@@ -61,7 +61,7 @@ public class TestInformation {
      * arguments, declare information argument isn't required, but if you declare 1, you need to
      * declare all information IN ORDER of registration. It will be changed soon.
      *
-     * @param sender Message sender
+     * @param entityInformation Message sender
      */
     @SubCommand(value = {"say", "hello"}, commandSpec = @Command(isOptional = true))
     public void special(@Info(description = "Message sender") Information<Entity> entityInformation) {

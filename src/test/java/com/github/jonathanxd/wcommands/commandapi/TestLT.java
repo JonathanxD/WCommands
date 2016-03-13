@@ -28,6 +28,7 @@ import com.github.jonathanxd.wcommands.exceptions.ArgumentError;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.factory.CommandBuilder;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
+import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.processor.CommonProcessor;
 import com.github.jonathanxd.wcommands.text.Text;
 
@@ -98,7 +99,7 @@ public class TestLT {
     public static class MyErrorHandler implements ErrorHandler {
 
         @Override
-        public boolean handle(ArgumentProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed) {
+        public boolean handle(ArgumentProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, InformationRegister register) {
             return error.getType().getExceptionType() != ArgumentError.Type.ERROR;
         }
     }

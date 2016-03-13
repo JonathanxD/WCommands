@@ -22,15 +22,14 @@ import com.github.jonathanxd.iutils.extra.primitivecontainers.IntContainer;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
+import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.text.Text;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,16 +62,18 @@ import java.util.StringJoiner;
  */
 public class CommonPrinter implements Printer {
 
-    public static final Printer TO_SYS_OUT = new CommonPrinter(System.out, System.err);
+    public static final Printer TO_SYS_OUT = new CommonPrinter(System.out, System.err, false);
 
     public static final PrintStream EMPTY_PRINTER = new EmptyPrinter();
 
     private final PrintStream stream;
     private final PrintStream errorStream;
+    private final boolean printLabels;
 
-    public CommonPrinter(PrintStream stream, PrintStream errorStream) {
+    public CommonPrinter(PrintStream stream, PrintStream errorStream, boolean printLabels) {
         this.stream = stream;
         this.errorStream = errorStream;
+        this.printLabels = printLabels;
     }
 
 
@@ -179,25 +180,27 @@ public class CommonPrinter implements Printer {
     }
 
     @Override
-    public void printCommands(CommandList commandSpecs) {
+    public void printCommands(CommandList commandSpecs, InformationRegister informationRegister) {
+        if (printLabels) {
+            stream.println("--------   Label  --------");
 
-        stream.println("--------   Label  --------");
+            stream.println();
 
-        stream.println();
+            stream.println(" [ ] - Required Argument");
+            stream.println(" < > - Optional Argument");
+            stream.println("  ?  - Optional Command");
+            stream.println(" ->  - Main Command");
+            stream.println(" -'> - Sub commands");
 
-        stream.println(" [ ] - Required Argument");
-        stream.println(" < > - Optional Argument");
-        stream.println("  ?  - Optional Command");
-        stream.println(" ->  - Main Command");
-        stream.println(" -'> - Sub commands");
+            stream.println(" -   - Description");
 
-        stream.println(" -   - Description");
+            stream.println();
 
-        stream.println();
+            stream.println("--------   Label  --------");
 
-        stream.println("--------   Label  --------");
+            stream.println();
 
-        stream.println();
+        }
 
         stream.println("-------- Commands --------");
 

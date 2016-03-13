@@ -27,6 +27,7 @@ import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
+import com.github.jonathanxd.wcommands.infos.InformationRegister;
 
 public class TestCMD {
 
@@ -68,7 +69,7 @@ public class TestCMD {
     public static class MyErrorHandler implements ErrorHandler {
 
         @Override
-        public boolean handle(ArgumentProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed) {
+        public boolean handle(ArgumentProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, InformationRegister informationRegister) {
             return error.getType().getExceptionType() != ArgumentError.Type.ERROR;
         }
     }

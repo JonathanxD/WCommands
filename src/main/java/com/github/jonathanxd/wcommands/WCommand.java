@@ -95,7 +95,7 @@ public class WCommand<T> {
      *
      * @param arguments Argument Array
      * @see InformationRegister
-     * @see #process(List)
+     * @see #process(List, InformationRegister)
      * @see #invoke(Object, InformationRegister)
      */
     public void processAndInvoke(String... arguments) {
@@ -108,7 +108,7 @@ public class WCommand<T> {
      * @param informationRegister Information register
      * @param arguments           Argument Array
      * @see InformationRegister
-     * @see #process(List)
+     * @see #process(List, InformationRegister)
      * @see #invoke(Object, InformationRegister)
      */
     public void processAndInvoke(InformationRegister informationRegister, String... arguments) {
@@ -121,11 +121,11 @@ public class WCommand<T> {
      * @param arguments           List of arguments
      * @param informationRegister Information register
      * @see InformationRegister
-     * @see #process(List)
+     * @see #process(List, InformationRegister)
      * @see #invoke(Object, InformationRegister)
      */
     public void processAndInvoke(List<String> arguments, InformationRegister informationRegister) {
-        invoke(process(arguments), informationRegister);
+        invoke(process(arguments, informationRegister), informationRegister);
     }
 
     /**
@@ -134,8 +134,8 @@ public class WCommand<T> {
      * @param arguments Argument list
      * @return Mapped Commands
      */
-    public T process(List<String> arguments) {
-        return processor.process(arguments, commands, errorHandler);
+    public T process(List<String> arguments, InformationRegister informationRegister) {
+        return processor.process(arguments, commands, errorHandler, informationRegister);
     }
 
     /**

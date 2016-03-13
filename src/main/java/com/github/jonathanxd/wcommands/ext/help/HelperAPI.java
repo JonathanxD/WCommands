@@ -23,21 +23,22 @@ import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.ext.Extension;
 import com.github.jonathanxd.wcommands.ext.help.printer.Printer;
+import com.github.jonathanxd.wcommands.infos.InformationRegister;
 
 /**
  * Created by jonathan on 12/03/16.
  */
 public class HelperAPI extends Extension {
 
-    public static void help(WCommand<?> command, Printer printer) {
-        help(command.getCommandList(), printer);
+    public static void help(WCommand<?> command, InformationRegister informationRegister, Printer printer) {
+        help(command.getCommandList(), informationRegister, printer);
     }
 
-    public static void help(CommandList commandSpecs, Printer printer) {
-        printer.printCommands(commandSpecs);
+    public static void help(CommandList commandSpecs, InformationRegister informationRegister, Printer printer) {
+        printer.printCommands(commandSpecs, informationRegister);
     }
 
-    public static void help(CommandSpec command, Printer printer) {
-        printer.printCommands(CommandList.singleton(command));
+    public static void help(CommandSpec command, InformationRegister informationRegister, Printer printer) {
+        printer.printCommands(CommandList.singleton(command), informationRegister);
     }
 }

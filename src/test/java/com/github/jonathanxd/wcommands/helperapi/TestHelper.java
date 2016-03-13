@@ -83,7 +83,7 @@ public class TestHelper {
     @Command(desc = "Help command")
     public void help(CommandList commandSpecs) {
         CommonPrinter.TO_SYS_OUT.printString("<---> Help <--->");
-        HelperAPI.help(commandSpecs, CommonPrinter.TO_SYS_OUT);
+        HelperAPI.help(commandSpecs, new InformationRegister(), CommonPrinter.TO_SYS_OUT);
     }
 
     /**
