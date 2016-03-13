@@ -19,16 +19,16 @@
 package com.github.jonathanxd.wcommands.ext.reflect.handler;
 
 import com.github.jonathanxd.iutils.arrays.Arrays;
-import com.github.jonathanxd.iutils.data.ReferenceData;
-import com.github.jonathanxd.iutils.object.Reference;
+import com.github.jonathanxd.iutils.object.Node;
 import com.github.jonathanxd.wcommands.CommonHandler;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentsHolder;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.data.CommandData;
-import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeNamedContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.infos.Info;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
-import com.github.jonathanxd.wcommands.infos.Information;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeNamedContainer;
+import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.reflect.InvocationTargetException;
@@ -51,7 +51,7 @@ public class ReflectionHandler implements CommonHandler {
     }
 
     @Override
-    public void handle(CommandData<CommandHolder> commandData, Information information) {
+    public void handle(CommandData<CommandHolder> commandData, InformationRegister informationRegister) {
 
         CommandHolder holder = commandData.getCommand();
         ElementBridge bridge = commandContainer.getBridge();
@@ -67,16 +67,16 @@ public class ReflectionHandler implements CommonHandler {
                     Object value = null;
 
                     if (arg.getArgumentSpec().isOptional() && bridge.getType() == Optional.class) {
-                        if(!arg.isPresent())
+                        if (!arg.isPresent())
                             value = Optional.empty();
                         else
                             value = Optional.of(arg.convertValue());
-                    }else{
-                        if(arg.isPresent())
+                    } else {
+                        if (arg.isPresent())
                             value = arg.convertValue();
                     }
 
-                    if(arg.isPresent()) {
+                    if (arg.isPresent()) {
                         boolean force = argumentHolder.get().getArgumentSpec().getData().findData(ReflectionCommandProcessor.PropSet.FINAL.getClass());
                         bridge.setValue(instance.get(), value, true, force);
                     }
@@ -109,7 +109,7 @@ public class ReflectionHandler implements CommonHandler {
                 } else {
                     if (paramTypes[x] == Optional.class && argument.getArgumentSpec().isOptional()) {
                         methodArguments.add(Optional.of(value));
-                    }else{
+                    } else {
                         methodArguments.add(value);
                         methodParamTypes.add(value.getClass());
                     }
@@ -123,21 +123,19 @@ public class ReflectionHandler implements CommonHandler {
                 bridge.invoke(instance.get(), argTypes, argObjects, true);
             } catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
 
-                if(information == null) {
+                if (informationRegister == null) {
                     throw new RuntimeException(e);
                 }
 
-                information.stream().forEach((key, value) -> {
-                    methodArguments.add(value);
-                    methodParamTypes.add(value.getClass());
-                });
+                Node<Object[], Class<?>[]> informationFor = Info.InformationUtil.getForMethod(argObjects, argTypes, bridge, informationRegister);
 
-                argObjects = methodArguments.toArray(new Object[methodArguments.size()]);
-                argTypes = methodParamTypes.toArray(new Class<?>[methodParamTypes.size()]);
+                if (informationFor == null) {
+                    throw new RuntimeException(e);
+                }
 
-                try{
-                    bridge.invoke(instance.get(), argTypes, argObjects, true);
-                }catch (InvocationTargetException | IllegalAccessException e2) {
+                try {
+                    bridge.invoke(instance.get(), informationFor.getValue(), informationFor.getKey(), true);
+                } catch (InvocationTargetException | IllegalAccessException e2) {
                     RuntimeException ex = new RuntimeException(e);
                     ex.setStackTrace(Arrays.ofG(ex.getStackTrace()).addAll(e2.getStackTrace()).toGenericArray());
                     throw ex;
@@ -147,6 +145,5 @@ public class ReflectionHandler implements CommonHandler {
         }
 
     }
-
 
 }

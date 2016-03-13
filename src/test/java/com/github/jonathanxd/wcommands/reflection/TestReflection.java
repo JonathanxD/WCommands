@@ -34,11 +34,7 @@ public class TestReflection {
 
     public static void main(String[] args) {
         ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new TestReflection());
-        try {
-            processor.processAndInvoke("say", "hello", "special");
-        } catch (ArgumentProcessingError error) {
-            error.printStackTrace();
-        }
+        processor.processAndInvoke("say", "hello", "special");
 
         Optional<CommandSpec> cmdOpt = processor.getCommand("say");
 

@@ -34,7 +34,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -56,6 +55,13 @@ public class CommandHolder implements Matchable<String> {
      * @see CommandSpec
      */
     private final CommandSpec commandSpec;
+
+    /**
+     * Parent command holder
+     *
+     * @see CommandSpec
+     */
+    private final CommandHolder parent;
 
     /**
      * Arguments
@@ -90,16 +96,17 @@ public class CommandHolder implements Matchable<String> {
      */
     private final EachArguments eachArguments = new EachArguments();
 
-    public CommandHolder(CommandSpec commandSpec, ArgumentsHolder arguments) {
-        this(commandSpec, false, arguments);
+    public CommandHolder(CommandSpec commandSpec, ArgumentsHolder arguments, CommandHolder parent) {
+        this(commandSpec, false, arguments, parent);
     }
 
-    public CommandHolder(CommandSpec commandSpec, boolean isPresent, ArgumentsHolder arguments) {
-        this(commandSpec, arguments, isPresent, false);
+    public CommandHolder(CommandSpec commandSpec, boolean isPresent, ArgumentsHolder arguments, CommandHolder parent) {
+        this(commandSpec, parent, arguments, isPresent, false);
     }
 
-    public CommandHolder(CommandSpec commandSpec, ArgumentsHolder arguments, boolean isPresent, boolean lastMatching) {
+    public CommandHolder(CommandSpec commandSpec, CommandHolder parent, ArgumentsHolder arguments, boolean isPresent, boolean lastMatching) {
         this.commandSpec = commandSpec;
+        this.parent = parent;
         this.argumentsHolder = arguments;
         this.isPresent = isPresent;
         this.lastMatching = lastMatching;
@@ -315,7 +322,7 @@ public class CommandHolder implements Matchable<String> {
      */
     @Deprecated
     public CommandHolder newWith(CommandSpec commandSpec, ArgumentsHolder argumentHolders, boolean isPresent, boolean lastMatching) {
-        CommandHolder holder = new CommandHolder(commandSpec, argumentHolders, isPresent, lastMatching);
+        CommandHolder holder = new CommandHolder(commandSpec, parent, argumentHolders, isPresent, lastMatching);
 
         holder.subCommands.addAll(this.subCommands);
 
@@ -330,6 +337,21 @@ public class CommandHolder implements Matchable<String> {
         return eachArguments;
     }
 
+    /**
+     * Return true if is main command
+     * @return true if is main command
+     */
+    public boolean isMain() {
+        return getParent() ==  null;
+    }
+
+    /**
+     * Return parent command holder
+     * @return Parent command holder
+     */
+    public CommandHolder getParent() {
+        return parent;
+    }
 
     @Override
     public boolean matches(String other) {

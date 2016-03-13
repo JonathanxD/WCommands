@@ -18,14 +18,12 @@
  */
 package com.github.jonathanxd.wcommands;
 
-import com.github.jonathanxd.iutils.data.ReferenceData;
+import com.github.jonathanxd.iutils.annotations.Immutable;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
-import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
-import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.handler.Handler;
-import com.github.jonathanxd.wcommands.infos.Information;
+import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.interceptor.Interceptors;
 import com.github.jonathanxd.wcommands.interceptor.InvokeInterceptor;
 import com.github.jonathanxd.wcommands.processor.Processor;
@@ -41,24 +39,49 @@ import java.util.Optional;
 public class WCommand<T> {
 
     private final Processor<T> processor;
-    private final ErrorHandler errorHandler;
+    private final ErrorHandler<T> errorHandler;
     private final Interceptors interceptors = new Interceptors();
 
     private final CommandList commands = new CommandList();
 
-    public WCommand(Processor<T> processor, ErrorHandler errorHandler) {
+    /**
+     * Create WCommand with specified Processor and ErrorHandler
+     *
+     * @param processor    Processor
+     * @param errorHandler ErrorHandler
+     * @see Processor
+     * @see ErrorHandler
+     */
+    public WCommand(Processor<T> processor, ErrorHandler<T> errorHandler) {
         this.processor = processor;
         this.errorHandler = errorHandler;
     }
 
+    /**
+     * Add an interceptor
+     *
+     * @param invokeInterceptor The Interceptor
+     * @see InvokeInterceptor
+     */
     public void addInterceptor(InvokeInterceptor invokeInterceptor) {
         interceptors.add(invokeInterceptor);
     }
 
+    /**
+     * Remove an interceptor
+     *
+     * @param invokeInterceptor Interceptor
+     * @see InvokeInterceptor
+     */
     public void removeInterceptor(InvokeInterceptor invokeInterceptor) {
         interceptors.remove(invokeInterceptor);
     }
 
+    /**
+     * Register command
+     *
+     * @param commandSpec Command Specification
+     */
     public void registerCommand(CommandSpec... commandSpec) {
         if (commandSpec.length == 1) {
             commands.add(commandSpec[0]);
@@ -67,31 +90,75 @@ public class WCommand<T> {
         }
     }
 
-    public void processAndInvoke(String... arguments) throws ArgumentProcessingError {
+    /**
+     * Process and invoke
+     *
+     * @param arguments Argument Array
+     * @see InformationRegister
+     * @see #process(List)
+     * @see #invoke(Object, InformationRegister)
+     */
+    public void processAndInvoke(String... arguments) {
         processAndInvoke(Arrays.asList(arguments), null);
     }
 
-    public void processAndInvoke(Information information, String... arguments) throws ArgumentProcessingError {
-        processAndInvoke(Arrays.asList(arguments), information);
+    /**
+     * Process and invoke
+     *
+     * @param informationRegister Information register
+     * @param arguments           Argument Array
+     * @see InformationRegister
+     * @see #process(List)
+     * @see #invoke(Object, InformationRegister)
+     */
+    public void processAndInvoke(InformationRegister informationRegister, String... arguments) {
+        processAndInvoke(Arrays.asList(arguments), informationRegister);
     }
 
-    public void processAndInvoke(List<String> arguments, Information information) throws ArgumentProcessingError {
-        invoke(process(arguments), information);
+    /**
+     * Process and invoke
+     *
+     * @param arguments           List of arguments
+     * @param informationRegister Information register
+     * @see InformationRegister
+     * @see #process(List)
+     * @see #invoke(Object, InformationRegister)
+     */
+    public void processAndInvoke(List<String> arguments, InformationRegister informationRegister) {
+        invoke(process(arguments), informationRegister);
     }
 
-    public T process(List<String> arguments) throws ArgumentProcessingError {
+    /**
+     * Process the argument list
+     *
+     * @param arguments Argument list
+     * @return Mapped Commands
+     */
+    public T process(List<String> arguments) {
         return processor.process(arguments, commands, errorHandler);
     }
 
+    /**
+     * Get command by name
+     *
+     * @param name Command name
+     * @return {@link Optional} of {@link CommandSpec} if find, or {@link Optional#empty()}
+     */
     public Optional<CommandSpec> getCommand(String name) {
-        for(CommandSpec spec : commands) {
-            if(spec.matches(name)) {
+        for (CommandSpec spec : commands) {
+            if (spec.matches(name)) {
                 return Optional.of(spec);
             }
         }
         return Optional.empty();
     }
 
+    /**
+     * Get command by path
+     *
+     * @param path Path, first is main command and others is the sub commands.
+     * @return {@link Optional} of {@link CommandSpec} if find, or {@link Optional#empty()}
+     */
     public Optional<CommandSpec> getCommand(String[] path) {
 
         List<CommandSpec> commandSpecs = commands;
@@ -100,13 +167,13 @@ public class WCommand<T> {
 
         int pathIndex = 0;
 
-        while(commandSpecIterator.hasNext()) {
+        while (commandSpecIterator.hasNext()) {
 
             CommandSpec spec = commandSpecIterator.next();
 
-            if(spec.matches(path[pathIndex])) {
+            if (spec.matches(path[pathIndex])) {
 
-                if(pathIndex + 1 >= path.length)
+                if (pathIndex + 1 >= path.length)
                     return Optional.of(spec);
 
                 ++pathIndex;
@@ -118,26 +185,69 @@ public class WCommand<T> {
         return Optional.empty();
     }
 
-    public void invoke(T object, Information information) {
-        processor.invokeCommands(object, interceptors, information);
+    /**
+     * Invoke mapped commands
+     *
+     * @param object              Mapped Commands
+     * @param informationRegister InformationRegister
+     */
+    public void invoke(T object, InformationRegister informationRegister) {
+        processor.invokeCommands(object, interceptors, informationRegister);
     }
 
+    /**
+     * Create a handler.
+     *
+     * @param handler Handler
+     * @return {@code handler}
+     */
     public Handler<T> createHandler(Handler<T> handler) {
         return handler;
     }
 
+    /**
+     * Command processor
+     *
+     * @return Command Processor
+     * @see Processor
+     */
     public Processor<T> getProcessor() {
         return processor;
     }
 
+    /**
+     * Get immutable CommandList.
+     *
+     * @return Immutable CommandList.
+     */
+    @Immutable
+    public CommandList getCommandList() {
+        return commands.toUnmodifiable();
+    }
+
+    /**
+     * Get mutable command list
+     *
+     * @return Mutable command list
+     */
     protected CommandList getCommands() {
         return commands;
     }
 
+    /**
+     * Get Error Handler
+     *
+     * @return Error Handler
+     */
     protected ErrorHandler getErrorHandler() {
         return errorHandler;
     }
 
+    /**
+     * Get Invoke Interceptors
+     *
+     * @return Invoke Interceptors
+     */
     protected Interceptors getInterceptors() {
         return interceptors;
     }

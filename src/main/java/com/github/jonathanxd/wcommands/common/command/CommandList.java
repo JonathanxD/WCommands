@@ -35,7 +35,19 @@ import java.util.Optional;
  */
 public class CommandList implements List<CommandSpec> {
 
-    private final List<CommandSpec> commandSpecs = new ArrayList<>();
+    private final List<CommandSpec> commandSpecs;
+
+    public CommandList() {
+        this(new ArrayList<>());
+    }
+
+    public static CommandList singleton(CommandSpec commandSpec) {
+        return new CommandList(Collections.singletonList(commandSpec));
+    }
+
+    public CommandList(List<CommandSpec> list) {
+        this.commandSpecs = list;
+    }
 
     public Optional<CommandSpec> getCommandOf(Collection<Text> namesAndAliases) {
         for (CommandSpec commandSpec : this.commandSpecs) {
@@ -74,6 +86,10 @@ public class CommandList implements List<CommandSpec> {
 
     public Optional<CommandSpec> getCommandByAlias(Text alias) {
         return this.stream().filter(command -> command.getAliases().contains(alias)).findFirst();
+    }
+
+    public CommandList toUnmodifiable() {
+        return new CommandList(Collections.unmodifiableList(commandSpecs));
     }
 
     @Override

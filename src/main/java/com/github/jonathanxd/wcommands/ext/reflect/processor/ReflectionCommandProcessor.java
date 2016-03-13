@@ -36,6 +36,7 @@ import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.default
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.processor.exception.InvalidDependency;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.exception.PossibleCyclicDependencies;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitor;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitorSupport;
@@ -55,6 +56,7 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -77,13 +79,12 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
         initBasics();
     }
 
-
-    public ReflectionCommandProcessor(ErrorHandler errorHandler) {
+    public ReflectionCommandProcessor(ErrorHandler<List<CommandData<CommandHolder>>> errorHandler) {
         super(errorHandler);
         initBasics();
     }
 
-    public ReflectionCommandProcessor(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler handler) {
+    public ReflectionCommandProcessor(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler<List<CommandData<CommandHolder>>> handler) {
         super(processor, handler);
         initBasics();
     }
@@ -307,7 +308,24 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
                     sj.add(container.getName());
                 }
 
-                throw new PossibleCyclicDependencies("Possible cyclic dependencies! Involved elements: '"+sj.toString()+"'. Postpone List: '"+postpone+"'. Current List: '"+original);
+
+                if(this.original.size() == 1) {
+
+                    StringJoiner dependencies = new StringJoiner(", ", "[", "]");
+
+                    Annotation annotation;
+
+                    if((annotation = this.original.get(0).get()) instanceof SubCommand) {
+                        SubCommand subCommand = (SubCommand) annotation;
+                        Arrays.stream(subCommand.value()).forEach(dependencies::add);
+                    }
+
+                    throw new InvalidDependency("Possible invalid dependencies! Involved elements: '"+sj.toString()+"'. Involved dependencies "+dependencies.toString()+". Postpone List: '"+postpone+"'. Current List: '"+original);
+
+                } else {
+                    throw new PossibleCyclicDependencies("Possible cyclic dependencies! Involved elements: '"+sj.toString()+"'. Postpone List: '"+postpone+"'. Current List: '"+original);
+                }
+
             }
 
             this.list.clear();

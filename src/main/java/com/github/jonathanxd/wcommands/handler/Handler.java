@@ -19,14 +19,14 @@
 package com.github.jonathanxd.wcommands.handler;
 
 import com.github.jonathanxd.wcommands.data.CommandData;
-import com.github.jonathanxd.wcommands.infos.Information;
+import com.github.jonathanxd.wcommands.infos.InformationRegister;
 
 /**
  * Created by jonathan on 26/02/16.
  */
 public interface Handler<T> {
 
-    void handle(CommandData<T> commandData, Information information);
+    void handle(CommandData<T> commandData, InformationRegister informationRegister);
 
 
 }

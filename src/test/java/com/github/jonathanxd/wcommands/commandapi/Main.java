@@ -35,7 +35,7 @@ import java.util.Optional;
 public class Main {
 
     public static void main(String[] args) throws ArgumentProcessingError {
-        WCommand<List<CommandData<CommandHolder>>> wCommand = CommonProcessor.newWCommand((e) -> true);
+        WCommand<List<CommandData<CommandHolder>>> wCommand = CommonProcessor.newWCommand((e, d, l, t) -> true);
 
         CommonProcessor.CommonHandler handler = (data, ref) -> {
             System.out.println("|CommandSpec|: " + data.getCommand());

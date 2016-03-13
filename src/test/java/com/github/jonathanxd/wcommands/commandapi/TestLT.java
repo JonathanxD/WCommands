@@ -20,7 +20,9 @@ package com.github.jonathanxd.wcommands.commandapi;
 
 import com.github.jonathanxd.wcommands.CommonHandler;
 import com.github.jonathanxd.wcommands.WCommandCommon;
+import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
+import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.defaults.argument.BooleanArgumentSpec;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentError;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
@@ -96,10 +98,8 @@ public class TestLT {
     public static class MyErrorHandler implements ErrorHandler {
 
         @Override
-        public boolean handle(ArgumentProcessingError error) {
-
+        public boolean handle(ArgumentProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed) {
             return error.getType().getExceptionType() != ArgumentError.Type.ERROR;
-
         }
     }
 }

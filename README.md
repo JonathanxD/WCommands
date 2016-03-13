@@ -274,13 +274,102 @@ handler.set(o -> System.out.println("hello from other handler!"));
 
 Information is a class that allow to you to register pre-defined and persistent "information". The "information" will be passed to Reflection and Command API in Handlers.
 
-Information is in development stage!
-
 Examples:
 
 [Command API](https://github.com/JonathanxD/WCommands/tree/master/src/test/java/com/github/jonathanxd/wcommands/commandapi/TestInformation.java)
 [Reflection API](https://github.com/JonathanxD/WCommands/tree/master/src/test/java/com/github/jonathanxd/wcommands/reflection/TestInformation.java)
 
+
+Information need to be passed with arguments.
+
+##### Building Information
+
+```java
+InformationRegister
+  // Create information builder with Immutable CommandList
+  // Alternatives: 
+  // .builder(WCommand) -> Create with WCommand
+  // .blankBuilder()    -> Create without any default value.
+  .builderWithList(processor)
+  // Define the Sender as Sender "User". First parameter is ID to get the Information Value.
+  .with(Sender.class, new Sender("User"))
+  // Also you may want to add a description:
+  //.with(Sender.class, new Sender("User"), "Description")
+  // Build
+  .build()
+```
+
+In your command handler you can get the information:
+
+```java
+// .... Handler
+Optional<Person> sender = information.getOptional(Sender.class);
+sender.ifPresent(sender -> System.out.printf("Sender: %s%n", sender.getName());
+```
+
+If you are using ReflectionAPI, has 2 ways to fetch the Information.
+ 
+```java
+@Command(...)
+public void myCommand(@Info Information<Sender> senderInfo) {
+  Sender sender = senderInfo.get();
+  System.out.println("Sender: "+sender.getName());
+}
+```
+
+Or
+
+```java
+@Command(...)
+public void myCommand(Sender senderInfo) {
+  Sender sender = senderInfo;
+  System.out.println("Sender: "+sender.getName());
+}
+```
+
+Information support object orientation, like:
+
+```java
+interface Entity {
+//...
+String getName();
+//...
+}
+class Sender implements Entity {
+...
+}
+@Command(...)
+public void myCommand(@Info Information<Entity> entityInfo) {
+  Entity entity = entityInfo.get();
+  System.out.println("Entity: "+entity.getName());
+}
+```
+
+If you add more than one information with same value type, the ReflectionAPI will not work correctly
+
+### Helper
+
+HelperAPI is an command detail print system, with HelperAPI you can print command information if occurs an exception during command parsing.
+
+How to use? You need only to construct a WCommand with HelperErrorHandler like that:
+
+```java
+// Command API
+WCommandCommon commandCommon = new WCommandCommon(new HelperErrorHandler(CommonPrinter.TO_SYS_OUT));
+// Reflection API
+ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new HelperErrorHandler(CommonPrinter.TO_SYS_OUT), ...);
+```
+
+You can also call directly HelperAPI Methods.
+
+```java
+// Print Help for all commands and child commands.
+HelperAPI.help(WCommand<?> command, Printer printer);
+// Print help for commands in list and child commands.
+HelperAPI.help(CommandList commandSpecs, Printer printer);
+// Print help for a specific command and child commands.
+HelperAPI.help(CommandSpec command, Printer printer);
+```
 
 ##### Test
 

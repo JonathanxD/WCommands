@@ -18,6 +18,8 @@
  */
 package com.github.jonathanxd.wcommands.reflection;
 
+import com.github.jonathanxd.wcommands.command.CommandSpec;
+import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentError;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
@@ -61,10 +63,8 @@ public class TestAnnotations {
     public static class MyErrorHandler implements ErrorHandler {
 
         @Override
-        public boolean handle(ArgumentProcessingError error) {
-
+        public boolean handle(ArgumentProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed) {
             return error.getType().getExceptionType() != ArgumentError.Type.ERROR;
-
         }
     }
 }

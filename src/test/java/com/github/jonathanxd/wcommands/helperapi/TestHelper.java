@@ -16,11 +16,15 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.reflection;
+package com.github.jonathanxd.wcommands.helperapi;
 
+import com.github.jonathanxd.wcommands.WCommandCommon;
+import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.ext.help.HelperAPI;
+import com.github.jonathanxd.wcommands.ext.help.error.HelperErrorHandler;
 import com.github.jonathanxd.wcommands.ext.help.printer.CommonPrinter;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.infos.Info;
@@ -31,12 +35,13 @@ import com.github.jonathanxd.wcommands.infos.InformationRegister;
 /**
  * Created by jonathan on 11/03/16.
  */
-public class TestInformation {
+public class TestHelper {
 
     public static void main(String[] args) {
-        ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new TestInformation());
 
-        InformationRegister information = InformationRegister
+        ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new HelperErrorHandler(CommonPrinter.TO_SYS_OUT), new TestHelper());
+
+        InformationRegister register = InformationRegister
                 // Create information builder
                 .builderWithList(processor)
                 // Define the Sender as Sender "User"
@@ -44,29 +49,15 @@ public class TestInformation {
                 // Build
                 .build();
 
-        processor.processAndInvoke(information,
-                // Pass arguments, not needed to pass "User" as argument
-                "say", "hello", "special");
+        processor.processAndInvoke(register);
 
-        processor.processAndInvoke(information,
-                // Pass arguments, not needed to pass "User" as argument
-                "say", "hello", "special");
-
+        processor.processAndInvoke(register, "say");
     }
 
-    /**
-     * Send hello message to {@code sender}
-     *
-     * At time has 1 way to get information, declaring all information parameter in order after the
-     * arguments, declare information argument isn't required, but if you declare 1, you need to
-     * declare all information IN ORDER of registration. It will be changed soon.
-     *
-     * @param sender Message sender
-     */
     @SubCommand(value = {"say", "hello"}, commandSpec = @Command(isOptional = true))
-    public void special(@Info(description = "Message sender") Information<Entity> entityInformation) {
-        System.out.println(String.format("Hello %s <3", entityInformation.get().getName()));
-        System.out.println("Description: "+entityInformation.getDescription().getProvidedByUnknownSource());
+    public void special(@Info(description = "Message sender") Information<Sender> sender) {
+        System.out.println(String.format("Hello %s <3", sender.get().name));
+        System.out.println("Description: "+sender.getDescription().getProvidedByUnknownSource());
     }
 
     @SubCommand(value = "say", commandSpec = @Command(isOptional = true))
@@ -75,31 +66,34 @@ public class TestInformation {
     }
 
     @Command(desc = "Diz Olá :D")
-    public void say() {
-        System.out.println("Say...?");
+    public void say(@Argument(id = "Text") String text) {
+        System.out.println(text);
     }
 
-    /**
-     * Entity
-     */
+    @SubCommand(value = "say", commandSpec = @Command(desc = "Say Hi"))
+    public void hi()  {
+        System.out.println("Hi");
+    }
 
-    interface Entity {
-        String getName();
+    @SubCommand(value = {"say", "hi"}, commandSpec = @Command(desc = "Say Ultra"))
+    public void ultra()  {
+        System.out.println("Ultra");
+    }
+
+    @Command(desc = "Help command")
+    public void help(CommandList commandSpecs) {
+        CommonPrinter.TO_SYS_OUT.printString("<---> Help <--->");
+        HelperAPI.help(commandSpecs, CommonPrinter.TO_SYS_OUT);
     }
 
     /**
      * Command Sender
      */
-    static class Sender implements Entity {
+    static class Sender {
         final String name;
 
         Sender(String name) {
             this.name = name;
-        }
-
-        @Override
-        public String getName() {
-            return name;
         }
     }
 

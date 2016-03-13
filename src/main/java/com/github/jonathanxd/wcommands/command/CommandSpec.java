@@ -290,8 +290,8 @@ public class CommandSpec implements Matchable<String> {
      * @return Sub Commands
      */
     @Immutable
-    public List<CommandSpec> getSubCommands() {
-        return Collections.unmodifiableList(subCommands);
+    public CommandList getSubCommands() {
+        return new CommandList(Collections.unmodifiableList(subCommands));
     }
 
     /**

@@ -18,12 +18,19 @@
  */
 package com.github.jonathanxd.wcommands.handler;
 
+import com.github.jonathanxd.iutils.annotations.Immutable;
+import com.github.jonathanxd.wcommands.command.CommandSpec;
+import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
+
+import javax.annotation.Nullable;
+
 
 /**
  * Created by jonathan on 27/02/16.
  */
-public interface ErrorHandler {
+@FunctionalInterface
+public interface ErrorHandler<T> {
 
     /**
      * Handle the errors!
@@ -31,17 +38,17 @@ public interface ErrorHandler {
      * @param error Exception
      * @return True to STOP the process and print the error, or false to continue processing.
      */
-    boolean handle(ArgumentProcessingError error);
+    boolean handle(ArgumentProcessingError error, @Immutable CommandList commandSpecs, @Nullable CommandSpec currentCommand, @Nullable T processed);
 
-    class Container {
-        private final ErrorHandler handler;
+    class Container<T> {
+        private final ErrorHandler<T> handler;
 
-        public Container(ErrorHandler handler) {
+        public Container(ErrorHandler<T> handler) {
             this.handler = handler;
         }
 
-        public void handle(ArgumentProcessingError error) throws ArgumentProcessingError {
-            if(!handler.handle(error)) {
+        public void handle(ArgumentProcessingError error, @Immutable CommandList commandSpecs, @Nullable CommandSpec currentCommand, @Nullable T processed) throws ArgumentProcessingError {
+            if (!handler.handle(error, commandSpecs, currentCommand, processed)) {
                 throw error;
             }
         }

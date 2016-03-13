@@ -23,7 +23,7 @@ import com.github.jonathanxd.wcommands.arguments.converters.CollectionConverter;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.factory.CommandFactory;
-import com.github.jonathanxd.wcommands.infos.Information;
+import com.github.jonathanxd.wcommands.infos.InformationRegister;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +53,7 @@ public class TestInformation {
                 // Defines the description
                 .withDescription("Send message to another person!")
                 // Define handler
-                .withCommonHandler((commandData, information /* Information Here! */) -> {
+                .withCommonHandler((commandData, information /* InformationRegister Here! */) -> {
 
                     // Get command holder
                     CommandHolder commandHolder = commandData.getCommand();
@@ -64,7 +64,7 @@ public class TestInformation {
                     // Get message argument
                     Optional<String> message = commandHolder.<ID, String>getArgValue(ID.MESSAGE);
 
-                    // Retrieve sender from Information
+                    // Retrieve sender from InformationRegister
                     Optional<Person> sender = information.getOptional(Sender.class);
 
                     // Check if optionals is present
@@ -97,20 +97,16 @@ public class TestInformation {
                 // Build command
                 .build());
 
-        try {
-            // Process & Invoke the commands
-            wCommandCommon.processAndInvoke(
-                    // Create information builder
-                    Information.builder()
-                            // Add "Carlos" as Sender
-                            .with(Sender.class, new Person("Carlos", 25))
-                            // Build information
-                            .build(),
-                    // Pass the arguments, not needed to pass and parse "Carlos".
-                    "message", "Maria", "Hi :D");
-        } catch (ArgumentProcessingError error) {
-            error.printStackTrace();
-        }
+        // Process & Invoke the commands
+        wCommandCommon.processAndInvoke(
+                // Create information builder
+                InformationRegister.blankBuilder()
+                        // Add "Carlos" as Sender
+                        .with(Sender.class, new Person("Carlos", 25))
+                        // Build information
+                        .build(),
+                // Pass the arguments, not needed to pass and parse "Carlos".
+                "message", "Maria", "Hi :D");
     }
 
     enum ID {

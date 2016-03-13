@@ -18,92 +18,54 @@
  */
 package com.github.jonathanxd.wcommands.infos;
 
-import com.github.jonathanxd.iutils.function.stream.BiStream;
-import com.github.jonathanxd.iutils.function.stream.MapStream;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 /**
  * Created by jonathan on 12/03/16.
  */
-public class Information {
+public class Information<T> implements Cloneable {
 
-    Map<Object, Object> informationMap = new HashMap<>();
+    private final Object id;
+    private final T info;
+    private final Description description;
 
-    public static InformationBuilder builder() {
-        return new InformationBuilder();
+    public Information(Object id, T info) {
+        this(id, info, (Description) null);
     }
 
-    public <ID, T> void register(ID informationId, T information) {
-        informationMap.put(informationId, information);
+    protected Information(Object id, T info, Description description) {
+        this.id = id;
+        this.info = info;
+        if (description == null)
+            this.description = new Description(null);
+        else
+            this.description = description;
     }
 
-    public <ID> void remove(ID informationId) {
-        informationMap.remove(informationId);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <ID, T> T getRequired(ID informationId) {
-        return (T) informationMap.get(informationId);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <ID, T> Optional<T> getOptional(ID informationId) {
-        if (!informationMap.containsKey(informationId))
-            return Optional.empty();
-
-        return Optional.of((T) informationMap.get(informationId));
+    public Information(Object id, T info, String description) {
+        this(id, info, new Description(description));
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Optional<T> optional(Object informationId) {
-        if (!informationMap.containsKey(informationId))
-            return Optional.empty();
-
-        return Optional.of((T) informationMap.get(informationId));
+    public <D> D getId() {
+        return (D) id;
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T required(Object informationId) {
-        return (T) informationMap.get(informationId);
+    public Description getDescription() {
+        return description;
     }
 
-    public BiStream<Object, Object> stream() {
-        return MapStream.of(informationMap);
+    public T get() {
+        return info;
     }
 
-    public static final class InformationBuilder {
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 
-        Map<Object, Object> informationMap = new HashMap<>();
+    @SuppressWarnings("CloneDoesntCallSuperClone")
+    @Override
+    public Information<T> clone() {
 
-        private InformationBuilder() {
-
-        }
-
-        public <ID, T> InformationBuilder with(ID informationId, T informationValue) {
-            informationMap.put(informationId, informationValue);
-            return this;
-        }
-
-        public <ID, T> InformationBuilder remove(ID informationId) {
-            informationMap.remove(informationId);
-            return this;
-        }
-
-        public <ID, T> InformationBuilder remove(ID informationId, T informationValue) {
-            informationMap.remove(informationId, informationValue);
-            return this;
-        }
-
-        public Information build() {
-            Information information = new Information();
-
-            informationMap.forEach(information::register);
-
-            return information;
-        }
-
+        return new Information<>(this.getId(), this.get(), this.getDescription().clone());
     }
 }

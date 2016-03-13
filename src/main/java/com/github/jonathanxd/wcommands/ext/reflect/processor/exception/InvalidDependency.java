@@ -16,35 +16,29 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.exceptions;
+package com.github.jonathanxd.wcommands.ext.reflect.processor.exception;
 
 /**
- * Created by jonathan on 27/02/16.
+ * Created by jonathan on 12/03/16.
  */
-public enum ArgumentError {
-    MISSING_ARGUMENT(Type.ERROR),
-    MISSING_SUB_COMMAND(Type.ERROR),
-    NO_COMMAND_PROVIDED(Type.ERROR),
-    POSSIBLE_BUG(Type.POSSIBLE_BUG);
-
-    private final Type type;
-
-    ArgumentError(Type type) {
-        this.type = type;
+public class InvalidDependency extends RuntimeException {
+    public InvalidDependency() {
+        super();
     }
 
-    public Type getExceptionType() {
-        return type;
+    public InvalidDependency(String message) {
+        super(message);
     }
 
-    public enum Type {
-        /**
-         * Indicates a possible bug in the Processor
-         */
-        POSSIBLE_BUG,
-        /**
-         * Indicates a error occurred during Parse Process.
-         */
-        ERROR
+    public InvalidDependency(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public InvalidDependency(Throwable cause) {
+        super(cause);
+    }
+
+    protected InvalidDependency(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

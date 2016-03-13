@@ -16,35 +16,28 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.exceptions;
+package com.github.jonathanxd.wcommands.ext.help;
+
+import com.github.jonathanxd.wcommands.WCommand;
+import com.github.jonathanxd.wcommands.command.CommandSpec;
+import com.github.jonathanxd.wcommands.common.command.CommandList;
+import com.github.jonathanxd.wcommands.ext.Extension;
+import com.github.jonathanxd.wcommands.ext.help.printer.Printer;
 
 /**
- * Created by jonathan on 27/02/16.
+ * Created by jonathan on 12/03/16.
  */
-public enum ArgumentError {
-    MISSING_ARGUMENT(Type.ERROR),
-    MISSING_SUB_COMMAND(Type.ERROR),
-    NO_COMMAND_PROVIDED(Type.ERROR),
-    POSSIBLE_BUG(Type.POSSIBLE_BUG);
+public class HelperAPI extends Extension {
 
-    private final Type type;
-
-    ArgumentError(Type type) {
-        this.type = type;
+    public static void help(WCommand<?> command, Printer printer) {
+        help(command.getCommandList(), printer);
     }
 
-    public Type getExceptionType() {
-        return type;
+    public static void help(CommandList commandSpecs, Printer printer) {
+        printer.printCommands(commandSpecs);
     }
 
-    public enum Type {
-        /**
-         * Indicates a possible bug in the Processor
-         */
-        POSSIBLE_BUG,
-        /**
-         * Indicates a error occurred during Parse Process.
-         */
-        ERROR
+    public static void help(CommandSpec command, Printer printer) {
+        printer.printCommands(CommandList.singleton(command));
     }
 }
