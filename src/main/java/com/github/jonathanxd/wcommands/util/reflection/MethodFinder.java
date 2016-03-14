@@ -18,6 +18,9 @@
  */
 package com.github.jonathanxd.wcommands.util.reflection;
 
+import com.github.jonathanxd.wcommands.ext.reflect.infos.Info;
+import com.github.jonathanxd.wcommands.infos.Information;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Parameter;

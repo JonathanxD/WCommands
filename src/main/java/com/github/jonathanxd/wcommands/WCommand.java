@@ -23,6 +23,7 @@ import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.handler.Handler;
+import com.github.jonathanxd.wcommands.infos.InfoId;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.interceptor.Interceptors;
 import com.github.jonathanxd.wcommands.interceptor.InvokeInterceptor;
@@ -37,6 +38,8 @@ import java.util.Optional;
  * Created by jonathan on 26/02/16.
  */
 public class WCommand<T> {
+
+    public static final InfoId WCOMMAND_INFOID = new InfoId(new String[]{"Manager", "WCommand"}, WCommand.class);
 
     private final Processor<T> processor;
     private final ErrorHandler<T> errorHandler;

@@ -18,9 +18,8 @@
  */
 package com.github.jonathanxd.wcommands.reflection;
 
-import com.github.jonathanxd.wcommands.ext.help.HelperAPI;
-import com.github.jonathanxd.wcommands.ext.help.printer.CommonPrinter;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.infos.Info;
@@ -31,14 +30,16 @@ import com.github.jonathanxd.wcommands.infos.InformationRegister;
 /**
  * Created by jonathan on 11/03/16.
  */
-public class TestInformation {
+public class TestNewInformationAPI {
 
     public static void main(String[] args) {
-        ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new TestInformation());
+        ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new TestNewInformationAPI());
 
         InformationRegister information = InformationRegister
                 // Create information builder
                 .builderWithList(processor)
+                // Define the receiver as User2
+                .with(Receiver.class, (Entity) () -> "User2")
                 // Define the Sender as Sender "User"
                 .with(Sender.class, new Sender("User"))
                 // Build
@@ -46,41 +47,15 @@ public class TestInformation {
 
         processor.processAndInvoke(information,
                 // Pass arguments, not needed to pass "User" as argument
-                "say", "hello", "special");
-
-        processor.processAndInvoke(information,
-                // Pass arguments, not needed to pass "User" as argument
-                "say", "hello", "special");
-
-        processor.processAndInvoke(information,
-                // Pass arguments, not needed to pass "User" as argument
-                "say", "hello");
+                "pm", "Hi :D");
 
     }
 
-    /**
-     * Send hello message to {@code sender}
-     *
-     * At time has 1 way to get information, declaring all information parameter in order after the
-     * arguments, declare information argument isn't required, but if you declare 1, you need to
-     * declare all information IN ORDER of registration. It will be changed soon.
-     *
-     * @param entityInformation Message sender
-     */
-    @SubCommand(value = {"say", "hello"}, commandSpec = @Command(isOptional = true))
-    public void special(@Info(description = "Message sender") Information<Entity> entityInformation) {
-        System.out.println(String.format("Hello %s <3", entityInformation.get().getName()));
-        System.out.println("Description: "+entityInformation.getDescription().getProvidedByUnknownSource());
-    }
-
-    @SubCommand(value = "say", commandSpec = @Command(isOptional = true))
-    public void hello(@Info(description = "etc") Entity en) {
-        System.out.println("Hello :D = "+en.getName());
-    }
-
-    @Command(desc = "Diz Olá :D")
-    public void say() {
-        System.out.println("Say...?");
+    @Command(desc = "Send a private message!")
+    public void pm(@Argument String message,
+                   @Info(description = "etc") Entity en,
+                   @Info(type = Receiver.class) Entity receiver) {
+        System.out.println(en.getName() + " send message "+receiver.getName());
     }
 
     /**
@@ -89,6 +64,9 @@ public class TestInformation {
 
     interface Entity {
         String getName();
+    }
+
+    static class Receiver {
     }
 
     /**

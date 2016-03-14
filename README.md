@@ -347,6 +347,55 @@ public void myCommand(@Info Information<Entity> entityInfo) {
 
 If you add more than one information with same value type, the ReflectionAPI will not work correctly
 
+##### Since 17/03/2016 - Version 1.8
+
+InformationAPI only supports InfoId with tags and Type.
+
+Reflection improvement:
+
+```java
+class Receiver{}
+// ...
+InformationRegister
+  // Create information builder with Immutable CommandList
+  .builder(processor)
+  // Define the Receiver.
+  .with(Receiver.class, (Entity) () -> "User2")
+  // Define the Sender as Sender "User". First parameter is ID to get the Information Value.
+  .with(Sender.class, new Sender("User"))
+  // Build
+  .build()
+```
+
+```java
+@Command(...)
+public void message(String message, @Info(type = Sender.class) Entity sender, @Info(type = Receiver.class) Entity receiver) {
+//doSomething();
+}
+```
+
+Reflection will pass `null` as parameter or an empty `Information` if information isn't provided.
+
+Also you can use tags:
+
+```java
+.with("Receiver", (Entity) () -> "User2")
+.with("Sender", (Entity) () -> "User")
+```
+
+```java
+@Command(...)
+public void message(String message, @Info(tags = "Sender") Entity sender, @Info(tags = "Receiver") Entity receiver) {
+//doSomething();
+}
+//
+// 'Or' operator tag:
+@Command(...)
+public void message(String message, @Info(tags = {"Receiver", "Sender"}) Entity receiverOrSender) {
+//doSomething();
+}
+```
+
 ### Helper
 
 HelperAPI is an command detail print system, with HelperAPI you can print command information if occurs an exception during command parsing.

@@ -19,6 +19,7 @@
 package com.github.jonathanxd.wcommands.common.command;
 
 import com.github.jonathanxd.wcommands.command.CommandSpec;
+import com.github.jonathanxd.wcommands.infos.InfoId;
 import com.github.jonathanxd.wcommands.text.Text;
 import com.github.jonathanxd.wcommands.util.Functions;
 
@@ -34,6 +35,8 @@ import java.util.Optional;
  * Created by jonathan on 23/02/16.
  */
 public class CommandList implements List<CommandSpec> {
+
+    public static final InfoId COMMANDLIST_INFOID = new InfoId("CommandList", CommandList.class);
 
     private final List<CommandSpec> commandSpecs;
 

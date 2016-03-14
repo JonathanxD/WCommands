@@ -25,6 +25,7 @@ import com.github.jonathanxd.wcommands.common.command.CommandList;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -36,13 +37,13 @@ public class InformationRegister {
 
     public static InformationBuilder builder(WCommand<?> wCommand) {
         InformationBuilder builder = blankBuilder();
-        builder.with(WCommand.class, wCommand);
+        builder.with(WCommand.WCOMMAND_INFOID, wCommand);
         return builder;
     }
 
     public static InformationBuilder builderWithList(WCommand<?> wCommand) {
         InformationBuilder builder = blankBuilder();
-        builder.with(CommandList.class, wCommand.getCommandList());
+        builder.with(CommandList.COMMANDLIST_INFOID, wCommand.getCommandList());
         return builder;
     }
 
@@ -51,20 +52,20 @@ public class InformationRegister {
     }
 
 
-    public <ID, T> void register(ID informationId, T information) {
+    public <T> void register(InfoId informationId, T information) {
         informationList.add(new Information<>(informationId, information));
     }
 
-    public <ID, T> void register(ID informationId, T information, String description) {
+    public <T> void register(InfoId informationId, T information, String description) {
         informationList.add(new Information<>(informationId, information, description));
     }
 
-    public <ID> void remove(ID informationId) {
+    public void remove(InfoId informationId) {
         getById(informationId).ifPresent(info -> informationList.remove(info));
     }
 
     @SuppressWarnings("unchecked")
-    private Optional<Information<?>> getById(Object informationId) {
+    private Optional<Information<?>> getById(InfoId informationId) {
         return informationList
                 .stream()
                 .filter(i -> i.getId().equals(informationId))
@@ -73,7 +74,16 @@ public class InformationRegister {
     }
 
     @SuppressWarnings("unchecked")
-    private <ID, T> Optional<T> getValById(ID informationId) {
+    private Optional<Information<?>> getById(Predicate<Information<?>> predicate) {
+        return informationList
+                .stream()
+                .filter(predicate)
+                .findAny();
+
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> Optional<T> getValById(InfoId informationId) {
         Optional<Information<?>> optional = getById(informationId);
 
         if (!optional.isPresent())
@@ -83,24 +93,58 @@ public class InformationRegister {
     }
 
     @SuppressWarnings("unchecked")
-    public <ID, T> T getRequired(ID informationId) {
+    private <T> Optional<T> getValById(Predicate<Information<?>> predicate) {
+        Optional<Information<?>> optional = getById(predicate);
+
+        if (!optional.isPresent())
+            return Optional.empty();
+        else
+            return Optional.of((T) optional.get().get());
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public <T> T getRequired(InfoId informationId) {
         return (T) Require.require(getById(informationId), "The information id='" + informationId + "' is required.").get();
     }
 
     @SuppressWarnings("unchecked")
-    public <ID, T> Optional<T> getOptional(ID informationId) {
+    public <T> Optional<T> getOptional(InfoId informationId) {
         return this.getValById(informationId);
-
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Optional<T> optional(Object informationId) {
+    public <T> Optional<T> getOptional(String tag, Class<?> informationId) {
+        return this.getValById(i -> i.isPresent() && i.getId().matchRequirements(tag, informationId));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> Optional<T> getOptional(String[] tags, Class<?> informationId) {
+        return this.getValById(i -> i.isPresent() && i.getId().matchRequirements(tags, informationId));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> Optional<T> getOptional(Class<?> informationId) {
+        return this.getValById(i -> i.isPresent() && i.getId().matchRequirements((String) null, informationId));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> Optional<T> getOptional(String[] tags) {
+        return this.getValById(i -> i.isPresent() && i.getId().matchRequirements(tags, null));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> Optional<T> optional(InfoId informationId) {
         return getValById(informationId);
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T required(Object informationId) {
+    public <T> T required(InfoId informationId) {
         return getRequired(informationId);
+    }
+
+    public Set<Information<?>> getInformationList() {
+        return new HashSet<>(informationList);
     }
 
     public Stream<Information<?>> stream() {
@@ -116,25 +160,93 @@ public class InformationRegister {
 
         }
 
-        public <ID, T> InformationBuilder with(ID informationId, T informationValue) {
+        private static <T> Information<?> buildSimple(Class<?> type, String tag, T o, String description) {
+            if (tag == null)
+                return build(type, (String[]) null, o, description);
+            else
+                return build(type, new String[]{tag}, o, description);
+        }
+
+        private static <T> Information<?> build(Class<?> type, String[] tag, T o, String description) {
+
+            Class<?> oClass = o.getClass();
+
+            if (type == null) type = oClass;
+            if (tag == null) tag = new String[]{oClass.getSimpleName()};
+
+            if (description == null)
+                return new Information<>(new InfoId(tag, type), o);
+            else
+                return new Information<>(new InfoId(tag, type), o, description);
+        }
+
+        public <T> InformationBuilder with(T informationValue) {
+            informationSet.add(build(null, null, informationValue, null));
+            return this;
+        }
+
+        public <T> InformationBuilder with(T informationValue, String description) {
+            informationSet.add(build(null, null, informationValue, description));
+            return this;
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////
+
+        public <T> InformationBuilder with(String informationString, T informationValue) {
+            informationSet.add(buildSimple(null, informationString, informationValue, null));
+            return this;
+        }
+
+        public <T> InformationBuilder with(String informationString, T informationValue, String description) {
+            informationSet.add(buildSimple(null, informationString, informationValue, description));
+            return this;
+        }
+
+        public <T> InformationBuilder with(Class<?> idType, T informationValue) {
+            informationSet.add(build(idType, null, informationValue, null));
+            return this;
+        }
+
+        public <T> InformationBuilder with(Class<?> idType, T informationValue, String description) {
+            informationSet.add(build(idType, null, informationValue, description));
+            return this;
+        }
+
+        public <T> InformationBuilder with(Class<?> idType, String tag, T informationValue, String description) {
+            informationSet.add(buildSimple(idType, tag, informationValue, description));
+            return this;
+        }
+
+        public <T> InformationBuilder with(Class<?> idType, String[] tag, T informationValue, String description) {
+            informationSet.add(build(idType, tag, informationValue, description));
+            return this;
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////
+
+        public <T> InformationBuilder with(InfoId informationId, T informationValue) {
             informationSet.add(new Information<>(informationId, informationValue));
             return this;
         }
 
-        public <ID, T> InformationBuilder with(ID informationId, T informationValue, String description) {
+        public <T> InformationBuilder with(InfoId informationId, T informationValue, String description) {
             informationSet.add(new Information<>(informationId, informationValue, description));
             return this;
         }
 
-        public <ID, T> InformationBuilder remove(ID informationId) {
+        //////////////////////////////////////////////////////////////////////////////////////
+
+        public InformationBuilder remove(InfoId informationId) {
             informationSet.removeIf(info -> info.getId() == informationId);
             return this;
         }
 
-        public <ID, T> InformationBuilder remove(ID informationId, T informationValue) {
+        public <T> InformationBuilder remove(InfoId informationId, T informationValue) {
             informationSet.removeIf(info -> info.getId().equals(informationId) && info.get().equals(informationValue));
             return this;
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////
 
         public InformationRegister build() {
             InformationRegister informationRegister = new InformationRegister();

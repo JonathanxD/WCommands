@@ -18,8 +18,6 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.handler;
 
-import com.github.jonathanxd.iutils.arrays.Arrays;
-import com.github.jonathanxd.iutils.object.Node;
 import com.github.jonathanxd.wcommands.CommonHandler;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentsHolder;
@@ -117,29 +115,25 @@ public class ReflectionHandler implements CommonHandler {
             }
 
             Object[] argObjects = methodArguments.toArray(new Object[methodArguments.size()]);
-            Class<?>[] argTypes = methodParamTypes.toArray(new Class<?>[methodParamTypes.size()]);
 
             try {
-                bridge.invoke(instance.get(), argTypes, argObjects, true);
+                bridge.invoke(instance.get(), argObjects, true);
             } catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
 
                 if (informationRegister == null) {
                     throw new RuntimeException(e);
                 }
 
-                Node<Object[], Class<?>[]> informationFor = Info.InformationUtil.getForMethod(argObjects, argTypes, bridge, informationRegister);
 
-                if (informationFor == null) {
-                    throw new RuntimeException(e);
-                }
+                Object[] os = Info.InformationUtil.findAssignable2(informationRegister, ((Method) bridge.getMember()).getParameters(), argObjects.length, argObjects);
 
                 try {
-                    bridge.invoke(instance.get(), informationFor.getValue(), informationFor.getKey(), true);
-                } catch (InvocationTargetException | IllegalAccessException e2) {
-                    RuntimeException ex = new RuntimeException(e);
-                    ex.setStackTrace(Arrays.ofG(ex.getStackTrace()).addAll(e2.getStackTrace()).toGenericArray());
-                    throw ex;
+                    bridge.invoke(instance.get(), os, true);
+                } catch (Throwable tt) {
+                    throw new RuntimeException(tt.getMessage(), e);
                 }
+
+
             }
 
         }

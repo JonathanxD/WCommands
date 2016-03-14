@@ -23,15 +23,17 @@ package com.github.jonathanxd.wcommands.infos;
  */
 public class Information<T> implements Cloneable {
 
-    private final Object id;
+    private static final Information<?> EMPTY = new Information<>(null, null);
+
+    private final InfoId id;
     private final T info;
     private final Description description;
 
-    public Information(Object id, T info) {
+    public Information(InfoId id, T info) {
         this(id, info, (Description) null);
     }
 
-    protected Information(Object id, T info, Description description) {
+    protected Information(InfoId id, T info, Description description) {
         this.id = id;
         this.info = info;
         if (description == null)
@@ -40,13 +42,13 @@ public class Information<T> implements Cloneable {
             this.description = description;
     }
 
-    public Information(Object id, T info, String description) {
+    public Information(InfoId id, T info, String description) {
         this(id, info, new Description(description));
     }
 
     @SuppressWarnings("unchecked")
-    public <D> D getId() {
-        return (D) id;
+    public InfoId getId() {
+        return id;
     }
 
     public Description getDescription() {
@@ -67,5 +69,14 @@ public class Information<T> implements Cloneable {
     public Information<T> clone() {
 
         return new Information<>(this.getId(), this.get(), this.getDescription().clone());
+    }
+
+    public boolean isPresent() {
+        return (this.id != null && this.info != null) || (this != EMPTY);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Information<T> empty() {
+        return (Information<T>) EMPTY;
     }
 }
