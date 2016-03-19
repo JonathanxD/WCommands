@@ -20,14 +20,14 @@ package com.github.jonathanxd.wcommands.handler;
 
 import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
-import com.github.jonathanxd.wcommands.infos.Requirements;
+import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 
 /**
  * Created by jonathan on 26/02/16.
  */
 public interface Handler<T> {
 
-    void handle(CommandData<T> commandData, Requirements requirements, InformationRegister informationRegister);
+    Object handle(CommandData<T> commandData, Requirements requirements, InformationRegister informationRegister);
 
 
 }

@@ -21,36 +21,35 @@ package com.github.jonathanxd.wcommands.exceptions;
 /**
  * Created by jonathan on 27/02/16.
  */
-public class ArgumentProcessingError extends Throwable {
+public enum ErrorType {
+    MISSING_ARGUMENT(Type.ERROR),
+    MISSING_SUB_COMMAND(Type.ERROR),
+    NO_COMMAND_PROVIDED(Type.ERROR),
+    POSSIBLE_BUG(Type.POSSIBLE_BUG),
+    FAIL(Type.FAIL);
 
-    private final ArgumentError type;
+    private final Type type;
 
-    public ArgumentProcessingError(ArgumentError type) {
-        super();
+    ErrorType(Type type) {
         this.type = type;
     }
 
-    public ArgumentProcessingError(String message, ArgumentError type) {
-        super(message);
-        this.type = type;
-    }
-
-    public ArgumentProcessingError(String message, Throwable cause, ArgumentError type) {
-        super(message, cause);
-        this.type = type;
-    }
-
-    public ArgumentProcessingError(Throwable cause, ArgumentError type) {
-        super(cause);
-        this.type = type;
-    }
-
-    protected ArgumentProcessingError(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace, ArgumentError type) {
-        super(message, cause, enableSuppression, writableStackTrace);
-        this.type = type;
-    }
-
-    public ArgumentError getType() {
+    public Type getExceptionType() {
         return type;
+    }
+
+    public enum Type {
+        /**
+         * Indicates a possible bug in the Processor
+         */
+        POSSIBLE_BUG,
+        /**
+         * Indicates a error occurred during Parse Process.
+         */
+        ERROR,
+        /**
+         * Indicates a Severe System Fail!
+         */
+        FAIL
     }
 }

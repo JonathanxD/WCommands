@@ -22,7 +22,7 @@ import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
-import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
+import com.github.jonathanxd.wcommands.exceptions.ProcessingError;
 import com.github.jonathanxd.wcommands.factory.ArgumentBuilder;
 import com.github.jonathanxd.wcommands.factory.CommandBuilder;
 import com.github.jonathanxd.wcommands.text.Text;
@@ -34,7 +34,7 @@ import java.util.Optional;
  */
 public class Readme {
 
-    public static void main(String[] args) throws ArgumentProcessingError {
+    public static void main(String[] args) throws ProcessingError {
         WCommandCommon manager = new WCommandCommon();
 
         CommandSpec spec = CommandBuilder.builder()
@@ -50,7 +50,7 @@ public class Readme {
                     }else{
                         System.out.println("[SAY] FOO");
                     }
-
+                    return null;
                     //System.out.println("[SAY] "+str.orElse("FOO"));
 
                 })

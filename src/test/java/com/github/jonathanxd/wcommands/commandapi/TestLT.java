@@ -24,12 +24,12 @@ import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.defaults.argument.BooleanArgumentSpec;
-import com.github.jonathanxd.wcommands.exceptions.ArgumentError;
-import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
+import com.github.jonathanxd.wcommands.exceptions.ErrorType;
+import com.github.jonathanxd.wcommands.exceptions.ProcessingError;
 import com.github.jonathanxd.wcommands.factory.CommandBuilder;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
-import com.github.jonathanxd.wcommands.infos.Requirements;
+import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 import com.github.jonathanxd.wcommands.processor.CommonProcessor;
 import com.github.jonathanxd.wcommands.text.Text;
 
@@ -40,7 +40,7 @@ public class TestLT {
     // --allowUpper false --daemon --rail true
 
 
-    public static void main(String[] args) throws ArgumentProcessingError {
+    public static void main(String[] args) throws ProcessingError {
         WCommandCommon wCommandCommon = new WCommandCommon(new CommonProcessor(), new MyErrorHandler());
         /*wCommandCommon.registerCommand(CommandVisitor.create("allowUpper",
                 new BooleanArgumentSpec<IDs>(IDs.ALLOW_UPPER, false),
@@ -62,14 +62,14 @@ public class TestLT {
                             System.out.println("Disallowed upper case");
                         }
                     }
-
+                    return null;
                 })
                 .build()
         );
         wCommandCommon.registerCommand(CommandBuilder.builder()
                 .withPrefix("--")
                 .withName(Text.of("daemon"))
-                .withCommonHandler((commandData, requirements, ref) -> System.out.println("Start Daemon"))
+                .withCommonHandler((commandData, requirements, ref) -> {System.out.println("Start Daemon"); return null;})
                 .build());
 
         wCommandCommon.registerCommand(CommandBuilder.builder()
@@ -78,12 +78,14 @@ public class TestLT {
                 .withArgument(new BooleanArgumentSpec<>(IDs.RAIL, false))
                 .withValueHandler(new CommonHandler.Value<IDs, Boolean>(IDs.RAIL) {
                     @Override
-                    public void handle(Boolean value) {
+                    public Object handle(Boolean value) {
                         if (value) {
                             System.out.println("Allowed rail");
                         } else {
                             System.out.println("Disallowed rail");
                         }
+
+                        return null;
                     }
                 })
                 .build()
@@ -100,8 +102,8 @@ public class TestLT {
     public static class MyErrorHandler implements ErrorHandler {
 
         @Override
-        public boolean handle(ArgumentProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, Requirements requirements, InformationRegister register) {
-            return error.getType().getExceptionType() != ArgumentError.Type.ERROR;
+        public boolean handle(ProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, Requirements requirements, InformationRegister register) {
+            return error.getType().getExceptionType() != ErrorType.Type.ERROR;
         }
     }
 }

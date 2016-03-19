@@ -16,35 +16,22 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.exceptions;
+package com.github.jonathanxd.wcommands.ext.reflect.infos.require;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Created by jonathan on 27/02/16.
+ * Created by jonathan on 18/03/16.
  */
-public enum ArgumentError {
-    MISSING_ARGUMENT(Type.ERROR),
-    MISSING_SUB_COMMAND(Type.ERROR),
-    NO_COMMAND_PROVIDED(Type.ERROR),
-    POSSIBLE_BUG(Type.POSSIBLE_BUG);
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Require {
 
-    private final Type type;
+    Class<?> type();
 
-    ArgumentError(Type type) {
-        this.type = type;
-    }
+    String data();
 
-    public Type getExceptionType() {
-        return type;
-    }
-
-    public enum Type {
-        /**
-         * Indicates a possible bug in the Processor
-         */
-        POSSIBLE_BUG,
-        /**
-         * Indicates a error occurred during Parse Process.
-         */
-        ERROR
-    }
 }

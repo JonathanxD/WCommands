@@ -21,14 +21,17 @@ package com.github.jonathanxd.wcommands;
 import com.github.jonathanxd.iutils.annotations.Immutable;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
+import com.github.jonathanxd.wcommands.exceptions.ErrorType;
+import com.github.jonathanxd.wcommands.exceptions.ProcessingError;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.handler.Handler;
 import com.github.jonathanxd.wcommands.infos.InfoId;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
-import com.github.jonathanxd.wcommands.infos.Requirements;
+import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 import com.github.jonathanxd.wcommands.interceptor.Interceptors;
 import com.github.jonathanxd.wcommands.interceptor.InvokeInterceptor;
 import com.github.jonathanxd.wcommands.processor.Processor;
+import com.github.jonathanxd.wcommands.result.Results;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -111,8 +114,8 @@ public class WCommand<T> {
      * @see #process(List, Requirements, InformationRegister)
      * @see #invoke(Object, Requirements, InformationRegister)
      */
-    public void processAndInvoke(String... arguments) {
-        processAndInvoke(Arrays.asList(arguments), null, null);
+    public Results processAndInvoke(String... arguments) {
+        return processAndInvoke(Arrays.asList(arguments), null, null);
     }
 
     /**
@@ -124,8 +127,8 @@ public class WCommand<T> {
      * @see #process(List, Requirements, InformationRegister)
      * @see #invoke(Object, Requirements, InformationRegister)
      */
-    public void processAndInvoke(InformationRegister informationRegister, String... arguments) {
-        processAndInvoke(Arrays.asList(arguments), null, informationRegister);
+    public Results processAndInvoke(InformationRegister informationRegister, String... arguments) {
+        return processAndInvoke(Arrays.asList(arguments), null, informationRegister);
     }
 
     /**
@@ -137,8 +140,8 @@ public class WCommand<T> {
      * @see #process(List, Requirements, InformationRegister)
      * @see #invoke(Object, Requirements, InformationRegister)
      */
-    public void processAndInvoke(Requirements requirements, InformationRegister informationRegister, String... arguments) {
-        processAndInvoke(Arrays.asList(arguments), requirements, informationRegister);
+    public Results processAndInvoke(Requirements requirements, InformationRegister informationRegister, String... arguments) {
+        return processAndInvoke(Arrays.asList(arguments), requirements, informationRegister);
     }
 
     /**
@@ -150,8 +153,8 @@ public class WCommand<T> {
      * @see #process(List, Requirements, InformationRegister)
      * @see #invoke(Object, Requirements, InformationRegister)
      */
-    public void processAndInvoke(List<String> arguments, Requirements requirements, InformationRegister informationRegister) {
-        invoke(process(arguments, requirements, informationRegister), requirements, informationRegister);
+    public Results processAndInvoke(List<String> arguments, Requirements requirements, InformationRegister informationRegister) {
+        return invoke(process(arguments, requirements, informationRegister), requirements, informationRegister);
     }
 
     /**
@@ -161,7 +164,15 @@ public class WCommand<T> {
      * @return Mapped Commands
      */
     public T process(List<String> arguments, Requirements requirements, InformationRegister informationRegister) {
-        return processor.process(arguments, commands, errorHandler, requirements, informationRegister);
+        try{
+            return processor.process(arguments, commands, errorHandler, requirements, informationRegister);
+        } catch (Throwable e) {
+            if(errorHandler.handle(new ProcessingError(e, ErrorType.FAIL), this.getCommandList(), null, null, requirements, informationRegister)) {
+                throw e;
+            } else {
+                return null;
+            }
+        }
     }
 
     /**
@@ -217,8 +228,17 @@ public class WCommand<T> {
      * @param object              Mapped Commands
      * @param informationRegister InformationRegister
      */
-    public void invoke(T object, Requirements requirements, InformationRegister informationRegister) {
-        processor.invokeCommands(object, interceptors, requirements, informationRegister);
+    public Results invoke(T object, Requirements requirements, InformationRegister informationRegister) {
+        try{
+            return processor.invokeCommands(object, interceptors, requirements, informationRegister);
+        } catch (Throwable e) {
+            if(errorHandler.handle(new ProcessingError(e, ErrorType.FAIL), this.getCommandList(), null, null, requirements, informationRegister)) {
+                throw e;
+            } else {
+                return null;
+            }
+        }
+
     }
 
     /**

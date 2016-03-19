@@ -19,7 +19,7 @@
 package com.github.jonathanxd.wcommands.reflection;
 
 import com.github.jonathanxd.wcommands.WCommandCommon;
-import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
+import com.github.jonathanxd.wcommands.exceptions.ProcessingError;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
@@ -33,7 +33,7 @@ import java.util.Optional;
  */
 public class Readme {
 
-    public static void main(String[] args) throws ArgumentProcessingError {
+    public static void main(String[] args) throws ProcessingError {
         Readme readme = new Readme();
         ReflectionCommandProcessor commandProcessor = ReflectionAPI.createWCommand(readme);
 
@@ -64,7 +64,7 @@ public class Readme {
 
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static void subCommandTest(WCommandCommon commandProcessor) throws ArgumentProcessingError {
+    public static void subCommandTest(WCommandCommon commandProcessor) throws ProcessingError {
         commandProcessor.processAndInvoke("greet");
         commandProcessor.processAndInvoke("greet", "special");
         commandProcessor.processAndInvoke("greet", "special", "fan");

@@ -19,7 +19,6 @@
 package com.github.jonathanxd.wcommands.reflection;
 
 import com.github.jonathanxd.wcommands.command.CommandSpec;
-import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;

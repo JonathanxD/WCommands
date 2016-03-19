@@ -23,17 +23,20 @@ import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentsHolder;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.data.CommandData;
+import com.github.jonathanxd.wcommands.ext.reflect.handler.exception.UnsatisfiedRequirementException;
 import com.github.jonathanxd.wcommands.ext.reflect.infos.Info;
+import com.github.jonathanxd.wcommands.ext.reflect.infos.require.Require;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeNamedContainer;
 import com.github.jonathanxd.wcommands.handler.Handler;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
-import com.github.jonathanxd.wcommands.infos.Requirements;
+import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,10 +54,18 @@ public class ReflectionHandler implements CommonHandler {
     }
 
     @Override
-    public void handle(CommandData<CommandHolder> commandData, Requirements requirements, InformationRegister informationRegister) {
+    public Object handle(CommandData<CommandHolder> commandData, Requirements requirements, InformationRegister informationRegister) {
+
+        Object theReturn = null;
 
         CommandHolder holder = commandData.getCommand();
         ElementBridge bridge = commandContainer.getBridge();
+
+        Require[] requires = null;
+
+        try{
+            requires = bridge.getDeclaredAnnotationsByType(Require.class);
+        } catch (Exception e){}
 
         if (bridge.isField()) {
             Optional<ArgumentHolder<String, Object>> argumentHolder = holder.getArgument(bridge.getName(), true);
@@ -76,10 +87,16 @@ public class ReflectionHandler implements CommonHandler {
                             value = arg.convertValue();
                     }
 
+                    //if(!
+                    test(requirements, requires, commandData, informationRegister, new Object[] {value});
+                    //) { throw Exception };
+
                     if (arg.isPresent()) {
                         boolean force = argumentHolder.get().getArgumentSpec().getData().findData(ReflectionCommandProcessor.PropSet.FINAL.getClass());
                         bridge.setValue(instance.get(), value, true, force);
                     }
+
+                    theReturn = value;
                 }
             } catch (IllegalAccessException | NoSuchFieldException e) {
                 throw new RuntimeException(e);
@@ -116,18 +133,22 @@ public class ReflectionHandler implements CommonHandler {
             Object[] argObjects = methodArguments.toArray(new Object[methodArguments.size()]);
 
             try {
-                bridge.invoke(instance.get(), argObjects, true);
+                if(ElementBridge.check(argObjects, (Method) bridge.getMember())) {
+                    test(requirements, requires, commandData, informationRegister, Arrays.copyOf(argObjects, argObjects.length));
+                }
+                theReturn = bridge.invoke(instance.get(), argObjects, true);
             } catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
 
                 if (informationRegister == null) {
                     throw new RuntimeException(e);
                 }
 
+                Object[] os = Info.InformationUtil.findAssignable(informationRegister, ((Method) bridge.getMember()).getParameters(), argObjects.length, argObjects);
 
-                Object[] os = Info.InformationUtil.findAssignable2(informationRegister, ((Method) bridge.getMember()).getParameters(), argObjects.length, argObjects);
+                test(requirements, requires, commandData, informationRegister, Arrays.copyOf(os, os.length));
 
                 try {
-                    bridge.invoke(instance.get(), os, true);
+                    theReturn = bridge.invoke(instance.get(), os, true);
                 } catch (Throwable tt) {
                     throw new RuntimeException(tt.getMessage(), e);
                 }
@@ -136,14 +157,33 @@ public class ReflectionHandler implements CommonHandler {
         } else if (bridge.isClass()) {
             Class<?> clazz = (Class<?>) bridge.getMember();
 
+            test(requirements, requires, commandData, informationRegister, new Object[]{});
+
             if(Handler.class.isAssignableFrom(clazz)) {
                 @SuppressWarnings("unchecked") Handler<CommandHolder> handler = (Handler<CommandHolder>) instance.get();
-                handler.handle(commandData, requirements, informationRegister);
+                theReturn = handler.handle(commandData, requirements, informationRegister);
             }else {
                 throw new InvalidCommand("The command '" + commandData.getCommand() + "' for input '" + commandData.getInputArgument() + "' is invalid! Classes has no Executors to run!");
             }
         }
 
+
+        return theReturn;
+    }
+
+    public void test(Requirements requirements, Require[] requires, CommandData<CommandHolder> commandData, InformationRegister informationRegister, Object[] args) {
+        if(requires == null)
+            return;
+
+        for(Require require : requires) {
+            test(requirements.test(require.type(), require.data(), args, commandData, informationRegister), require);
+        }
+    }
+
+    public void test(boolean b, Require require) {
+        if(!b) {
+            throw new UnsatisfiedRequirementException("Requirement: '"+ require +"'", require.type(), require.data());
+        }
     }
 
 }

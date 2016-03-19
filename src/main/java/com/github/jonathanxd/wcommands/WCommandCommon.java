@@ -20,7 +20,8 @@ package com.github.jonathanxd.wcommands;
 
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.data.CommandData;
-import com.github.jonathanxd.wcommands.exceptions.ArgumentError;
+import com.github.jonathanxd.wcommands.exceptions.ErrorType;
+import com.github.jonathanxd.wcommands.exceptions.ProcessingError;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.processor.CommonProcessor;
 import com.github.jonathanxd.wcommands.processor.Processor;
@@ -33,7 +34,7 @@ import java.util.List;
 public class WCommandCommon extends WCommand<List<CommandData<CommandHolder>>> {
 
     public WCommandCommon() {
-        this(new CommonProcessor(), (e, d, l, v, r, k) -> e.getType().getExceptionType() != ArgumentError.Type.ERROR);
+        this(new CommonProcessor(), (e, d, l, v, r, k) -> e instanceof ProcessingError && ((ProcessingError)e).getType().getExceptionType() != ErrorType.Type.ERROR);
     }
 
     public WCommandCommon(ErrorHandler<List<CommandData<CommandHolder>>> errorHandler) {

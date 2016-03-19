@@ -22,13 +22,13 @@ import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.data.CommandData;
-import com.github.jonathanxd.wcommands.exceptions.ArgumentError;
-import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
+import com.github.jonathanxd.wcommands.exceptions.ErrorType;
+import com.github.jonathanxd.wcommands.exceptions.ProcessingError;
 import com.github.jonathanxd.wcommands.ext.help.HelperAPI;
 import com.github.jonathanxd.wcommands.ext.help.printer.Printer;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
-import com.github.jonathanxd.wcommands.infos.Requirements;
+import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 
 import java.util.List;
 
@@ -43,8 +43,8 @@ public class HelperErrorHandler implements ErrorHandler<List<CommandData<Command
     }
 
     @Override
-    public boolean handle(ArgumentProcessingError error, CommandList commandSpecs, CommandSpec current, List<CommandData<CommandHolder>> processed, Requirements requirements, InformationRegister informationRegister) {
-        if (error.getType() == ArgumentError.MISSING_SUB_COMMAND || error.getType() == ArgumentError.MISSING_ARGUMENT) {
+    public boolean handle(ProcessingError error, CommandList commandSpecs, CommandSpec current, List<CommandData<CommandHolder>> processed, Requirements requirements, InformationRegister informationRegister) {
+        if (error.getType() == ErrorType.MISSING_SUB_COMMAND || error.getType() == ErrorType.MISSING_ARGUMENT) {
 
 
             if (current != null || !processed.isEmpty()) {
@@ -57,13 +57,13 @@ public class HelperErrorHandler implements ErrorHandler<List<CommandData<Command
                 HelperAPI.help(commandSpec, informationRegister, printer);
                 return false;
             }
-        } else if (error.getType() == ArgumentError.NO_COMMAND_PROVIDED) {
+        } else if (error.getType() == ErrorType.NO_COMMAND_PROVIDED) {
             printer.printString("<---> No Commands Provided. <--->");
             printer.printString("<---> See all commands below. <--->");
             HelperAPI.help(commandSpecs, informationRegister, printer);
         } else {
             throw new RuntimeException(error);
         }
-        return error.getType().getExceptionType() != ArgumentError.Type.ERROR;
+        return error.getType().getExceptionType() != ErrorType.Type.ERROR;
     }
 }

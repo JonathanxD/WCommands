@@ -16,10 +16,12 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.infos;
+package com.github.jonathanxd.wcommands.result;
+
+import java.util.ArrayList;
 
 /**
  * Created by jonathan on 18/03/16.
  */
-public class Requirements {
+public class Results extends ArrayList<Result>{
 }

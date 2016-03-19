@@ -58,7 +58,7 @@ public @interface Info {
 
     final class InformationUtil {
 
-        public static Object[] findAssignable2(InformationRegister register, Parameter[] parameters, int start, Object[] passedParameters) {
+        public static Object[] findAssignable(InformationRegister register, Parameter[] parameters, int start, Object[] passedParameters) {
             Set<Information<?>> informationSet = register.getInformationList();
             List<Object> passParameters = new ArrayList<>(Arrays.asList(passedParameters));
 

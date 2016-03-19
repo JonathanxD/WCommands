@@ -21,7 +21,6 @@ package com.github.jonathanxd.wcommands.commandapi;
 import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.arguments.converters.CollectionConverter;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
-import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.factory.CommandFactory;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 
@@ -75,6 +74,8 @@ public class TestInformation {
                     } else {
                         throw new RuntimeException("Argument parsing error??");
                     }
+
+                    return null;
                 })
                 // Register argument
                 .withArgument(CommandFactory

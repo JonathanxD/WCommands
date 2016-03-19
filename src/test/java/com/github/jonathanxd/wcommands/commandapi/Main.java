@@ -24,7 +24,7 @@ import com.github.jonathanxd.wcommands.arguments.Arguments;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.data.CommandData;
-import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
+import com.github.jonathanxd.wcommands.exceptions.ProcessingError;
 import com.github.jonathanxd.wcommands.factory.CommandFactory;
 import com.github.jonathanxd.wcommands.processor.CommonProcessor;
 import com.github.jonathanxd.wcommands.text.Text;
@@ -34,7 +34,7 @@ import java.util.Optional;
 
 public class Main {
 
-    public static void main(String[] args) throws ArgumentProcessingError {
+    public static void main(String[] args) throws ProcessingError {
         WCommand<List<CommandData<CommandHolder>>> wCommand = CommonProcessor.newWCommand((e, d, l, v, r, t) -> true);
 
         CommonProcessor.CommonHandler handler = (data, req, ref) -> {
@@ -50,6 +50,7 @@ public class Main {
             if(data.getParent() != null) {
                 System.out.println("PARENT: " + data.getParent().getPlainArgument(ArgumentIDs.REGION_NAME));
             }
+            return null;
         };
 
         ArgumentSpec argumentSpec = CommandFactory.create(ArgumentIDs.ITEM_ARGUMENT, () -> Text.of("(STONE)|(GOLD)|(AXE)", true, true));

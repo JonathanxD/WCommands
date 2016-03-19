@@ -24,6 +24,7 @@ CommandSpec spec = CommandBuilder.builder()
     .withCommonHandler((c) -> {
         // DO A ACTION
         System.out.println("[SAY] FOO");
+        return null;
     })
     // Build command
     .build();
@@ -65,6 +66,7 @@ CommandSpec spec = CommandBuilder.builder()
     .withCommonHandler((c) -> {
         // DO A ACTION
         System.out.println("[SAY] FOO");
+        reutrn null;
     })
     // Define argument(s)
     .withArgument(
@@ -107,6 +109,7 @@ In `withCommonHandler`
         }
         // or
         // System.out.println("[SAY] "+str.orElse("FOO"));
+        return null;
     })
     //...
 ```

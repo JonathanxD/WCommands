@@ -16,23 +16,32 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.processor;
+package com.github.jonathanxd.wcommands.result;
 
-import com.github.jonathanxd.wcommands.common.command.CommandList;
-import com.github.jonathanxd.wcommands.handler.ErrorHandler;
-import com.github.jonathanxd.wcommands.infos.InformationRegister;
-import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
-import com.github.jonathanxd.wcommands.interceptor.Interceptors;
-import com.github.jonathanxd.wcommands.result.Results;
-
-import java.util.List;
+import com.github.jonathanxd.wcommands.handler.Handler;
 
 /**
- * Created by jonathan on 26/02/16.
+ * Created by jonathan on 18/03/16.
  */
-public interface Processor<T> {
+public class Result {
+    private final Handler<?> source;
+    private final Object resultValue;
 
-    T process(List<String> arguments, CommandList commands, ErrorHandler<T> errorHandler, Requirements requirements, InformationRegister informationRegister);
+    public Result(Handler<?> source, Object resultValue) {
+        this.source = source;
+        this.resultValue = resultValue;
+    }
 
-    Results invokeCommands(T object, Interceptors interceptors, Requirements requirements, InformationRegister informationRegister);
+    public Handler<?> getSource() {
+        return source;
+    }
+
+    public Object getResultValue() {
+        return resultValue;
+    }
+
+    @Override
+    public String toString() {
+        return "Result[source="+source+", resultValue="+resultValue+"]";
+    }
 }

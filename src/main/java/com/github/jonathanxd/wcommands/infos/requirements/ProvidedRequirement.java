@@ -16,23 +16,21 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.processor;
+package com.github.jonathanxd.wcommands.infos.requirements;
 
-import com.github.jonathanxd.wcommands.common.command.CommandList;
-import com.github.jonathanxd.wcommands.handler.ErrorHandler;
+import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
+import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
-import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
-import com.github.jonathanxd.wcommands.interceptor.Interceptors;
-import com.github.jonathanxd.wcommands.result.Results;
-
-import java.util.List;
 
 /**
- * Created by jonathan on 26/02/16.
+ * Created by jonathan on 18/03/16.
  */
-public interface Processor<T> {
+public interface ProvidedRequirement {
+    //@RequireArgument(id = "ivk", predicate = Abl)
+    //@RequireInformation({"big"}, type = Sender.class)
+    default boolean test(String data, Object[] parameters, CommandData<CommandHolder> commandData, InformationRegister informationRegister) {
+        return test(data, informationRegister);
+    }
 
-    T process(List<String> arguments, CommandList commands, ErrorHandler<T> errorHandler, Requirements requirements, InformationRegister informationRegister);
-
-    Results invokeCommands(T object, Interceptors interceptors, Requirements requirements, InformationRegister informationRegister);
+    boolean test(String data, InformationRegister informationRegister);
 }

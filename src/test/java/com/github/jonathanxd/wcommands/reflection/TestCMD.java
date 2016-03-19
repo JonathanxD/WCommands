@@ -20,19 +20,19 @@ package com.github.jonathanxd.wcommands.reflection;
 
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
-import com.github.jonathanxd.wcommands.exceptions.ArgumentError;
-import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
+import com.github.jonathanxd.wcommands.exceptions.ErrorType;
+import com.github.jonathanxd.wcommands.exceptions.ProcessingError;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
-import com.github.jonathanxd.wcommands.infos.Requirements;
+import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 
 public class TestCMD {
 
-    public static void main(String[] args) throws ArgumentProcessingError {
+    public static void main(String[] args) throws ProcessingError {
 
         TestCMD testAnnotations = new TestCMD();
 
@@ -70,8 +70,8 @@ public class TestCMD {
     public static class MyErrorHandler implements ErrorHandler {
 
         @Override
-        public boolean handle(ArgumentProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, Requirements requirements, InformationRegister informationRegister) {
-            return error.getType().getExceptionType() != ArgumentError.Type.ERROR;
+        public boolean handle(ProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, Requirements requirements, InformationRegister informationRegister) {
+            return error.getType().getExceptionType() != ErrorType.Type.ERROR;
         }
     }
 }

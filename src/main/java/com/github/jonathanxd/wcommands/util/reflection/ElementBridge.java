@@ -64,6 +64,24 @@ public class ElementBridge implements AnnotatedElement {
         this(element, location, reference, null);
     }
 
+    public static boolean check(Object[] args, Method method) {
+        if (args.length != method.getParameterCount()) {
+            return false;
+        }
+
+        Class<?>[] types = method.getParameterTypes();
+
+        for (int x = 0; x < args.length; ++x) {
+            Object val = args[x];
+            Class<?> type = types[x];
+
+            if (!type.isAssignableFrom(val.getClass()))
+                return false;
+        }
+
+        return true;
+    }
+
     public boolean hasAlternativePriority() {
         return priority != null;
     }
@@ -74,7 +92,7 @@ public class ElementBridge implements AnnotatedElement {
 
     public String getName() {
         try {
-            if(element instanceof Class) {
+            if (element instanceof Class) {
                 return (String) call("getSimpleName", new Class<?>[]{}, new Object[]{});
             }
             return (String) call("getName", new Class<?>[]{}, new Object[]{});
@@ -133,12 +151,14 @@ public class ElementBridge implements AnnotatedElement {
         return element instanceof Class;
     }
 
-    public void invoke(Object instance, Object[] args, boolean forceAccess) throws InvocationTargetException, IllegalAccessException {
+    public Object invoke(Object instance, Object[] args, boolean forceAccess) throws InvocationTargetException, IllegalAccessException {
         Method method = (Method) getMember();
         if (forceAccess)
             method.setAccessible(true);
 
-        method.invoke(instance, args);
+        check(args, method);
+
+        return method.invoke(instance, args);
     }
 
     public boolean isField() {

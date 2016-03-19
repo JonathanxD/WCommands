@@ -23,7 +23,7 @@ import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.handler.Handler;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
-import com.github.jonathanxd.wcommands.infos.Requirements;
+import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 
 import java.util.Optional;
 
@@ -42,15 +42,15 @@ public interface CommonHandler extends Handler<CommandHolder> {
 
         @SuppressWarnings("unchecked")
         @Override
-        public void handle(CommandData<CommandHolder> commandData, Requirements requirements, InformationRegister informationRegister) {
+        public Object handle(CommandData<CommandHolder> commandData, Requirements requirements, InformationRegister informationRegister) {
             Optional<?> opt = commandData.getCommand().getArgValue(id);
             if(!opt.isPresent()) {
                 throw new IllegalStateException("Cannot find argument (id: '"+id+"')");
             }
-            handle((T) opt.get());
+            return handle((T) opt.get());
         }
 
-        public abstract void handle(T value);
+        public abstract Object handle(T value);
     }
 
     abstract class AnyValue<ID> implements Handler<CommandHolder> {
@@ -60,14 +60,15 @@ public interface CommonHandler extends Handler<CommandHolder> {
 
         @SuppressWarnings("unchecked")
         @Override
-        public void handle(CommandData<CommandHolder> commandData, Requirements requirements, InformationRegister informationRegister) {
-
+        public Object handle(CommandData<CommandHolder> commandData, Requirements requirements, InformationRegister informationRegister) {
+            Object ret = null;
             for(ArgumentHolder holder : commandData.getCommand().getArguments()) {
-                handleAny((ID) holder.getArgumentSpec().getId(), holder.convertValue());
+                ret = handleAny((ID) holder.getArgumentSpec().getId(), holder.convertValue());
             }
 
+            return ret;
         }
 
-        public abstract <T> void handleAny(ID id, T value);
+        public abstract <T> Object handleAny(ID id, T value);
     }
 }
