@@ -33,6 +33,7 @@ import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitor;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitorSupport;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.NamedContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.SingleNamedContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeHead;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeNamedContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
@@ -41,6 +42,7 @@ import com.github.jonathanxd.wcommands.interceptor.Order;
 import com.github.jonathanxd.wcommands.util.Require;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
+import java.lang.annotation.ElementType;
 import java.util.Optional;
 
 /**
@@ -70,13 +72,7 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
     }
 
     @Override
-    public void visitElementArguments(Argument annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge) {
-        visitElementAnnotation(annotation, current, last, bridge);
-    }
-
-    @Override
-    public void visitElementAnnotation(Argument annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge) {
-        if (last.isPresent()) {
+    public void visitElementAnnotation(Argument annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead) {
 
             String name = annotation.id().trim().isEmpty() ? bridge.getName() : annotation.id();
 
@@ -87,21 +83,31 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
                 } else {
                     if (bridge.directReference() == null) {
                         if (annotation.type() != Argument.PR.class) {
-                            bridge = new ElementBridge(bridge.getMember(), Reference.aEnd(annotation.type()));
+                            bridge = new ElementBridge(bridge.getMember(), location, Reference.aEnd(annotation.type()));
                         }
                     }
                 }
             }
 
-            TreeNamedContainer treeNamedContainer = Require.require(last.get(), TreeNamedContainer.class);
+            SingleNamedContainer container = new SingleNamedContainer(name, annotation, bridge);
 
-            treeNamedContainer.getArgumentContainers().add(new SingleNamedContainer(name, annotation, bridge));
+            if(last.isPresent() && last.get() instanceof TreeNamedContainer) {
+                TreeNamedContainer treeNamedContainer = Require.require(last.get(), TreeNamedContainer.class);
+
+                treeNamedContainer.getArgumentContainers().add(container);
+            } else {
+                if(!current.isPresent()) {
+                    current.set(container);
+                    last.set(container);
+                } else {
+                    System.err.println("Failed to get HEAD element!");
+                }
         }
     }
 
 
     @Override
-    public ArgumentSpec<?, ?> process(SingleNamedContainer argumentContainer, InstanceContainer instance, AnnotationVisitorSupport support, WCommandCommon common, Optional<NamedContainer> parent) {
+    public ArgumentSpec<?, ?> process(SingleNamedContainer argumentContainer, InstanceContainer instance, AnnotationVisitorSupport support, WCommandCommon common, ElementType location, TreeHead treeHead, Optional<NamedContainer> parent) {
         Argument argument = (Argument) argumentContainer.get();
 
         ArgumentBuilder<String, Object> argumentBuilder = ArgumentBuilder.builder();

@@ -25,11 +25,8 @@ import com.github.jonathanxd.wcommands.interceptor.Order;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 /**
  * Created by jonathan on 11/03/16.
@@ -52,7 +49,14 @@ public class PriorityComparator implements Comparator<ElementBridge> {
         if(o1.getMember() == o2.getMember())
             return 0;
 
+        if(o1.hasAlternativePriority())
+            firstOrder = o1.getPriority();
+
+        if(o2.hasAlternativePriority())
+            secondOrder = o2.getPriority();
+
         int comp = firstOrder.compareTo(secondOrder);
+
         return comp != 0 ? comp : comp + 1;
     }
 

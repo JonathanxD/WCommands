@@ -22,10 +22,12 @@ import com.github.jonathanxd.iutils.extra.Container;
 import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.NamedContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeHead;
 import com.github.jonathanxd.wcommands.interceptor.Order;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
 import java.util.Optional;
 
 /**
@@ -49,11 +51,11 @@ public abstract class AnnotationVisitor<T extends Annotation, C extends NamedCon
      * @param last       Last Container
      * @param bridge     Element Bridge
      */
-    public void visitElementAnnotation(T annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge) {
+    public void visitElementAnnotation(T annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead) {
 
     }
 
-    public void visitElementArguments(T annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge) {
+    public void visitElementArguments(T annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location) {
 
     }
 
@@ -68,12 +70,15 @@ public abstract class AnnotationVisitor<T extends Annotation, C extends NamedCon
      * @param common    Command register
      * @param parent    Parent caller
      * @return True to accept and call {@link #process(NamedContainer, InstanceContainer,
-     * AnnotationVisitorSupport, WCommandCommon, Optional)}. or False to postpone the process.
+     * AnnotationVisitorSupport, WCommandCommon, ElementType, TreeHead, Optional)}. or False to postpone the
+     * process.
      */
     public boolean dependencyCheck(C container,
                                    InstanceContainer instance,
                                    AnnotationVisitorSupport support,
                                    WCommandCommon common,
+                                   ElementType location,
+                                   TreeHead treeHead,
                                    Optional<NamedContainer> parent) {
         return true;
     }
@@ -82,6 +87,8 @@ public abstract class AnnotationVisitor<T extends Annotation, C extends NamedCon
                               InstanceContainer instance,
                               AnnotationVisitorSupport support,
                               WCommandCommon common,
+                              ElementType location,
+                              TreeHead treeHead,
                               Optional<NamedContainer> parent);
 
     public Class<? extends Annotation> getAnnotationClass() {

@@ -28,11 +28,13 @@ import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitor;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitorSupport;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.NamedContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.SingleNamedContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeHead;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeNamedContainer;
 import com.github.jonathanxd.wcommands.interceptor.Order;
 import com.github.jonathanxd.wcommands.util.Require;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
+import java.lang.annotation.ElementType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -47,14 +49,14 @@ public class SubCommandVisitor extends AnnotationVisitor<SubCommand, TreeNamedCo
     }
 
     @Override
-    public void visitElementAnnotation(SubCommand annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge) {
-        String[] targets = annotation.value();
-
+    public void visitElementAnnotation(SubCommand annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead) {
         Command commandAnnotation = annotation.commandSpec();
 
         String name = commandAnnotation.name().trim().isEmpty() ? bridge.getName() : commandAnnotation.name();
 
-        if (!current.isPresent()) {
+        CommandVisitor.Common.visit(name, annotation, current, last, bridge, location, treeHead);
+
+        /*if (!current.isPresent()) {
 
             current.set(new TreeNamedContainer(name, annotation, bridge));
             last.set(current.get());
@@ -66,13 +68,13 @@ public class SubCommandVisitor extends AnnotationVisitor<SubCommand, TreeNamedCo
             TreeNamedContainer lastTree = Require.require(last.get(), TreeNamedContainer.class);
 
             container.getChild().add(lastTree);
-        }
+        }*/
 
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public CommandSpec process(TreeNamedContainer command, InstanceContainer instance, AnnotationVisitorSupport support, WCommandCommon common, Optional<NamedContainer> parent) {
+    public CommandSpec process(TreeNamedContainer command, InstanceContainer instance, AnnotationVisitorSupport support, WCommandCommon common, ElementType location, TreeHead treeHead, Optional<NamedContainer> parent) {
         SubCommand subCommandAnnotation = (SubCommand) command.get();
         Command commandAnnotation = subCommandAnnotation.commandSpec();
 
@@ -88,7 +90,7 @@ public class SubCommandVisitor extends AnnotationVisitor<SubCommand, TreeNamedCo
 
             AnnotationVisitor<Command, TreeNamedContainer, CommandSpec> visitor = com.github.jonathanxd.iutils.optional.Require.require(support.<Command, TreeNamedContainer, CommandSpec>getVisitorFor(Command.class), "Cannot get @Command Visitor");
 
-            CommandSpec spec = visitor.process(tree, instance, support, common, parent);
+            CommandSpec spec = visitor.process(tree, instance, support, common, location, treeHead, parent);
 
             main.addSub(spec);
 
@@ -100,7 +102,7 @@ public class SubCommandVisitor extends AnnotationVisitor<SubCommand, TreeNamedCo
     }
 
     @Override
-    public boolean dependencyCheck(TreeNamedContainer container, InstanceContainer instance, AnnotationVisitorSupport support, WCommandCommon common, Optional<NamedContainer> parent) {
+    public boolean dependencyCheck(TreeNamedContainer container, InstanceContainer instance, AnnotationVisitorSupport support, WCommandCommon common, ElementType location, TreeHead treeHead, Optional<NamedContainer> parent) {
         SubCommand subCommandAnnotation = (SubCommand) container.get();
 
         return common.getCommand(subCommandAnnotation.value()).isPresent();

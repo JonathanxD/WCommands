@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
  * Created by jonathan on 27/02/16.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD})
 @Repeatable(Commands.class)
 public @interface Command {
     /**

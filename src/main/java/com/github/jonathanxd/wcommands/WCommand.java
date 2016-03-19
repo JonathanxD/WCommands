@@ -94,6 +94,15 @@ public class WCommand<T> {
     }
 
     /**
+     * Register all commands from another list
+     *
+     * @param commands Command list
+     */
+    public void registerAllFrom(CommandList commands) {
+        this.commands.addAll(commands);
+    }
+
+    /**
      * Process and invoke
      *
      * @param arguments Argument Array

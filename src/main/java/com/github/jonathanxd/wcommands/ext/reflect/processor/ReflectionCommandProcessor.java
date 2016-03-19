@@ -18,6 +18,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.processor;
 
+import com.github.jonathanxd.iutils.annotations.NotNull;
 import com.github.jonathanxd.iutils.extra.Container;
 import com.github.jonathanxd.iutils.object.Reference;
 import com.github.jonathanxd.wcommands.WCommandCommon;
@@ -42,6 +43,9 @@ import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitor;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitorSupport;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitors;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.NamedContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.SingleNamedContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeHead;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeNamedContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults.ArgumentVisitor;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults.CommandVisitor;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults.SubCommandVisitor;
@@ -49,21 +53,24 @@ import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.interceptor.Order;
 import com.github.jonathanxd.wcommands.processor.Processor;
 import com.github.jonathanxd.wcommands.util.ListUtils;
+import com.github.jonathanxd.wcommands.util.reflection.ClassExplorer;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 /**
  * Created by jonathan on 27/02/16.
@@ -118,29 +125,52 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
         translatorList.forEach(t -> consumer.accept(t.getType(), t.getTranslator()));
     }
 
+    public void addCommands(Object instance) {
+        addCommands(instance, instance.getClass());
+    }
+
+    public void addCommandFromClass(Class<?> clazz, Function<Class<?>, @NotNull Object> instanceCreator) {
+        ClassExplorer.explore(clazz, aClass -> addCommands(instanceCreator.apply(aClass)));
+    }
+
     public void addCommands(Object instance, Class<?> clazz) {
-        List<NamedContainer> namedContainers = new LinkedList<>();
+        Objects.requireNonNull(instance);
+        Objects.requireNonNull(clazz);
+
+        List<NamedContainer> namedContainers = new ArrayList<>();
 
         java.util.Set<ElementBridge> bridgeSet = new TreeSet<>(new PriorityComparator(annotationVisitors));
 
+        /*************** HEAD PROCESSING SINCE 18/03/2016 (03/18/2016) ***************/
+
+        TreeHead treeHead = new TreeHead();
+
+        bridgeSet.add(new ElementBridge(clazz, ElementType.TYPE, Order.FIRST));
+
+        /*************** HEAD PROCESSING SINCE 18/03/2016 (03/18/2016) ***************/
+
         for (Field field : clazz.getDeclaredFields()) {
-            bridgeSet.add(new ElementBridge(field));
+            bridgeSet.add(new ElementBridge(field, ElementType.FIELD));
         }
 
         for (Method method : clazz.getDeclaredMethods()) {
-            bridgeSet.add(new ElementBridge(method));
+            bridgeSet.add(new ElementBridge(method, ElementType.METHOD));
         }
 
         for (ElementBridge bridge : bridgeSet) {
-            namedContainers.add(processWrapper(bridge));
+            NamedContainer processed = processWrapper(bridge, treeHead);
+
+            if (processed != null) {
+                addToList(treeHead.getLast(), namedContainers, processed);
+            }
         }
 
-        namedContainers = namedContainers.stream().filter(d -> d != null).collect(Collectors.toList());
+        namedContainers = Collections.unmodifiableList(namedContainers);
 
         Postpone postpone = new Postpone();
 
         for (NamedContainer namedContainer : namedContainers) {
-            CommandSpec commandSpec = this.processCommand(namedContainer, new InstanceContainer(instance), postpone);
+            CommandSpec commandSpec = this.processCommand(namedContainer, new InstanceContainer(instance), postpone, treeHead);
             if (commandSpec != null)
                 this.registerCommand(commandSpec);
         }
@@ -154,7 +184,7 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
         while (postpone.hasNextInMain()) {
             NamedContainer container = postpone.next();
 
-            CommandSpec commandSpec = this.processCommand(container, new InstanceContainer(instance), postpone);
+            CommandSpec commandSpec = this.processCommand(container, new InstanceContainer(instance), postpone, treeHead);
             if (commandSpec != null)
                 this.registerCommand(commandSpec);
 
@@ -162,10 +192,27 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
                 postpone.updateToPostpone();
             }
         }
-
     }
 
-    private NamedContainer processWrapper(ElementBridge bridge) {
+    private void addToList(TreeNamedContainer head, List<NamedContainer> namedContainerList, NamedContainer namedContainer) {
+        if (head != null) {
+            if (namedContainer != head) {
+                if (namedContainer instanceof TreeNamedContainer) {
+                    head.getChild().add((TreeNamedContainer) namedContainer);
+                } else if (namedContainer instanceof SingleNamedContainer) {
+                    head.getArgumentContainers().add((SingleNamedContainer) namedContainer);
+                }
+            }
+            if (namedContainerList.isEmpty() || !namedContainerList.contains(head)) {
+                namedContainerList.add(head);
+            }
+
+        } else {
+            namedContainerList.add(namedContainer);
+        }
+    }
+
+    private NamedContainer processWrapper(ElementBridge bridge, TreeHead treeHead) {
         Annotation[] annotations = bridge.getDeclaredAnnotations();
 
         Container<NamedContainer> theContainer = new Container<>(null);
@@ -173,10 +220,10 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
 
         for (Annotation annotation : annotations) {
 
-            Optional<AnnotationVisitor<Annotation, NamedContainer, Object>> factory = annotationVisitors.<Annotation, NamedContainer, Object>getFor(annotation.annotationType());
+            Optional<AnnotationVisitor<Annotation, NamedContainer, Object>> factory = annotationVisitors.getFor(annotation.annotationType());
 
             if (factory.isPresent()) {
-                factory.get().visitElementAnnotation(annotation, theContainer, last, bridge);
+                factory.get().visitElementAnnotation(annotation, theContainer, last, bridge, bridge.getLocation(), treeHead);
             }
         }
 
@@ -185,14 +232,14 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
 
             for (AnnotatedType annotatedType : executable.getAnnotatedParameterTypes()) {
 
-                ElementBridge annotatedTypeBridge = new ElementBridge(annotatedType);
+                ElementBridge annotatedTypeBridge = new ElementBridge(annotatedType, bridge.getLocation());
 
                 for (Annotation annotation : annotatedType.getDeclaredAnnotations()) {
 
-                    Optional<AnnotationVisitor<Annotation, NamedContainer, Object>> factory = annotationVisitors.<Annotation, NamedContainer, Object>getFor(annotation.annotationType());
+                    Optional<AnnotationVisitor<Annotation, NamedContainer, Object>> factory = annotationVisitors.getFor(annotation.annotationType());
 
                     if (factory.isPresent()) {
-                        factory.get().visitElementAnnotation(annotation, theContainer, last, annotatedTypeBridge);
+                        factory.get().visitElementAnnotation(annotation, theContainer, last, annotatedTypeBridge, bridge.getLocation(), treeHead);
                     }
 
                 }
@@ -204,28 +251,28 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
     }
 
     @SuppressWarnings("unchecked")
-    private <C extends NamedContainer, T> T helpTo(AnnotationVisitor<?, C, T> t, NamedContainer named, InstanceContainer instance) {
-        return t.process((C) named, instance, this, this, Optional.empty());
+    private <C extends NamedContainer, T> T helpTo(AnnotationVisitor<?, C, T> t, NamedContainer named, InstanceContainer instance, TreeHead treeHead) {
+        return t.process((C) named, instance, this, this, named.getBridge().getLocation(), treeHead, Optional.empty());
     }
 
     @SuppressWarnings("unchecked")
-    private <C extends NamedContainer, T> boolean helpToCheck(AnnotationVisitor<?, C, T> t, NamedContainer named, InstanceContainer instance) {
-        return t.dependencyCheck((C) named, instance, this, this, Optional.empty());
+    private <C extends NamedContainer, T> boolean helpToCheck(AnnotationVisitor<?, C, T> t, NamedContainer named, InstanceContainer instance, TreeHead treeHead) {
+        return t.dependencyCheck((C) named, instance, this, this, named.getBridge().getLocation(), treeHead, Optional.empty());
     }
 
     @SuppressWarnings("unchecked")
-    private CommandSpec processCommand(NamedContainer namedContainer, InstanceContainer instance, Postpone postpone) {
+    private CommandSpec processCommand(NamedContainer namedContainer, InstanceContainer instance, Postpone postpone, TreeHead treeHead) {
 
         Optional<AnnotationVisitor<Annotation, NamedContainer, CommandSpec>> visitorOptional = annotationVisitors.<Annotation, NamedContainer, CommandSpec>getFor(namedContainer.get().annotationType());
 
         if (visitorOptional.isPresent()) {
 
-            if (!helpToCheck(visitorOptional.get(), namedContainer, instance)) {
+            if (!helpToCheck(visitorOptional.get(), namedContainer, instance, treeHead)) {
                 postpone.postpone(namedContainer);
 
                 return null;
             } else {
-                CommandSpec spec = helpTo(visitorOptional.get(), namedContainer, instance);
+                CommandSpec spec = helpTo(visitorOptional.get(), namedContainer, instance, treeHead);
 
                 return spec != null && !spec.isEmpty() ? spec : null;
             }
@@ -304,26 +351,26 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
             if (!original.isEmpty() && ListUtils.equals(this.original, postpone)) {
                 StringJoiner sj = new StringJoiner(", ", "[", "]");
 
-                for(NamedContainer container : this.original) {
+                for (NamedContainer container : this.original) {
                     sj.add(container.getName());
                 }
 
 
-                if(this.original.size() == 1) {
+                if (this.original.size() == 1) {
 
                     StringJoiner dependencies = new StringJoiner(", ", "[", "]");
 
                     Annotation annotation;
 
-                    if((annotation = this.original.get(0).get()) instanceof SubCommand) {
+                    if ((annotation = this.original.get(0).get()) instanceof SubCommand) {
                         SubCommand subCommand = (SubCommand) annotation;
                         Arrays.stream(subCommand.value()).forEach(dependencies::add);
                     }
 
-                    throw new InvalidDependency("Possible invalid dependencies! Involved elements: '"+sj.toString()+"'. Involved dependencies "+dependencies.toString()+". Postpone List: '"+postpone+"'. Current List: '"+original);
+                    throw new InvalidDependency("Possible invalid dependencies! Involved elements: '" + sj.toString() + "'. Involved dependencies " + dependencies.toString() + ". Postpone List: '" + postpone + "'. Current List: '" + original);
 
                 } else {
-                    throw new PossibleCyclicDependencies("Possible cyclic dependencies! Involved elements: '"+sj.toString()+"'. Postpone List: '"+postpone+"'. Current List: '"+original);
+                    throw new PossibleCyclicDependencies("Possible cyclic dependencies! Involved elements: '" + sj.toString() + "'. Postpone List: '" + postpone + "'. Current List: '" + original);
                 }
 
             }

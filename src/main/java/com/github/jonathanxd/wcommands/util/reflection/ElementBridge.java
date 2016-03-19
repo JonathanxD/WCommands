@@ -19,8 +19,10 @@
 package com.github.jonathanxd.wcommands.util.reflection;
 
 import com.github.jonathanxd.iutils.object.Reference;
+import com.github.jonathanxd.wcommands.interceptor.Order;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -35,23 +37,49 @@ public class ElementBridge implements AnnotatedElement {
 
     private final Object element;
     private final Class<?> elementClass;
+    private final ElementType location;
+    private final Order priority;
     private Reference<?> reference;
 
-    public ElementBridge(Object element) {
-        this(element, null);
-    }
-
-    public ElementBridge(Object element, Reference<?> reference) {
+    public ElementBridge(Object element, ElementType location, Order priority) {
         this.element = element;
         this.elementClass = this.element.getClass();
+        this.location = location;
+        this.priority = priority;
+    }
+
+    public ElementBridge(Object element, ElementType location) {
+        this(element, location, (Order) null);
+    }
+
+    public ElementBridge(Object element, ElementType location, Reference<?> reference, Order priority) {
+        this.element = element;
+        this.location = location;
+        this.elementClass = this.element.getClass();
         this.reference = reference;
+        this.priority = priority;
+    }
+
+    public ElementBridge(Object element, ElementType location, Reference<?> reference) {
+        this(element, location, reference, null);
+    }
+
+    public boolean hasAlternativePriority() {
+        return priority != null;
+    }
+
+    public Order getPriority() {
+        return priority;
     }
 
     public String getName() {
         try {
+            if(element instanceof Class) {
+                return (String) call("getSimpleName", new Class<?>[]{}, new Object[]{});
+            }
             return (String) call("getName", new Class<?>[]{}, new Object[]{});
         } catch (Exception e) {
-            return "param|" + element.toString();
+            return "unknown|" + element.toString();
         }
     }
 
@@ -135,7 +163,12 @@ public class ElementBridge implements AnnotatedElement {
             Method method = elementClass.getDeclaredMethod(methodName, parameterTypes);
             return method.invoke(element, parameters);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            try {
+                Method method = elementClass.getMethod(methodName, parameterTypes);
+                return method.invoke(element, parameters);
+            } catch (Exception e2) {
+                throw new RuntimeException(e.getMessage() + "|" + e2.getMessage(), e);
+            }
         }
     }
 
@@ -153,5 +186,9 @@ public class ElementBridge implements AnnotatedElement {
     @Override
     public Annotation[] getDeclaredAnnotations() {
         return (Annotation[]) call("getDeclaredAnnotations", new Class<?>[]{}, new Object[]{});
+    }
+
+    public ElementType getLocation() {
+        return location;
     }
 }
