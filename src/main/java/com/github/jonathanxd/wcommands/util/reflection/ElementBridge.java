@@ -75,7 +75,7 @@ public class ElementBridge implements AnnotatedElement {
             Object val = args[x];
             Class<?> type = types[x];
 
-            if (!type.isAssignableFrom(val.getClass()))
+            if (val != null && !type.isAssignableFrom(val.getClass()))
                 return false;
         }
 

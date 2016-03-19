@@ -53,7 +53,7 @@ public class TestNewInformationAPI {
 
     @Command(desc = "Send a private message!")
     public void pm(@Argument String message,
-                   @Info(description = "etc") Entity en,
+                   @Info(type = Sender.class, description = "etc") Entity en,
                    @Info(type = Receiver.class) Entity receiver) {
         System.out.println(en.getName() + " send message "+receiver.getName());
     }

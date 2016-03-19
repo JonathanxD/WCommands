@@ -209,7 +209,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                         processed.add(commandSpec);
                         matches = true;
                     } else {
-                        if (commandSpec.isOptional()) {
+                        if (commandSpec.isOptional() || parent == null) {
                             //argIter.previous();
                             continue;
                         } else {
