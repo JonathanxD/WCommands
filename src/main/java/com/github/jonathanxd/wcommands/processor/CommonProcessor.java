@@ -177,8 +177,8 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
                 for (CommandSpec commandSpec : commandSpecs) {
 
-                    if (processed.contains(commandSpec))
-                        continue;
+                    //if (processed.contains(commandSpec))
+                        //continue;
 
                     if (findLastSet(commandDatas) && (main != null && !main.contains(commandSpec))) {
                         // TODO revision, see 'if(matches && parent != null)' LINE, this operation will never be called
