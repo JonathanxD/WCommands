@@ -20,6 +20,8 @@ package com.github.jonathanxd.wcommands;
 
 import com.github.jonathanxd.iutils.annotations.Immutable;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
+import com.github.jonathanxd.wcommands.commandstring.CommandStringParser;
+import com.github.jonathanxd.wcommands.commandstring.CommonCommandStringParser;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.exceptions.ErrorType;
 import com.github.jonathanxd.wcommands.exceptions.ProcessingError;
@@ -48,6 +50,8 @@ public class WCommand<T> {
     private final Processor<T> processor;
     private final ErrorHandler<T> errorHandler;
     private final Interceptors interceptors = new Interceptors();
+    private final CommandStringParser commandStringParser;
+
 
     private final CommandList commands = new CommandList();
 
@@ -56,12 +60,29 @@ public class WCommand<T> {
      *
      * @param processor    Processor
      * @param errorHandler ErrorHandler
+     * @param commandStringParser Command String parser
      * @see Processor
      * @see ErrorHandler
+     */
+    public WCommand(Processor<T> processor, ErrorHandler<T> errorHandler, CommandStringParser commandStringParser) {
+        this.processor = processor;
+        this.errorHandler = errorHandler;
+        this.commandStringParser = commandStringParser;
+    }
+
+    /**
+     * Create WCommand with specified Processor and ErrorHandler
+     *
+     * @param processor    Processor
+     * @param errorHandler ErrorHandler
+     * @see Processor
+     * @see ErrorHandler
+     * @see #WCommand(Processor, ErrorHandler, CommandStringParser)
      */
     public WCommand(Processor<T> processor, ErrorHandler<T> errorHandler) {
         this.processor = processor;
         this.errorHandler = errorHandler;
+        this.commandStringParser = new CommonCommandStringParser();
     }
 
     /**

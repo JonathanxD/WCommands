@@ -42,10 +42,8 @@ import com.github.jonathanxd.wcommands.util.StaticContainer;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
 
 /**
  * Created by jonathan on 26/02/16.
@@ -53,6 +51,7 @@ import java.util.Set;
 // List of CommandData<CommandHolder>
 public class CommonProcessor implements Processor<List<CommandData<CommandHolder>>> {
 
+    @Deprecated
     public static WCommand<List<CommandData<CommandHolder>>> newWCommand(ErrorHandler<List<CommandData<CommandHolder>>> handler) {
         return new WCommand<>(new CommonProcessor(), handler);
     }

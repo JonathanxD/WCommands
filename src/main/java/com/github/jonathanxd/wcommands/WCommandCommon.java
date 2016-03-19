@@ -19,6 +19,7 @@
 package com.github.jonathanxd.wcommands;
 
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
+import com.github.jonathanxd.wcommands.commandstring.CommandStringParser;
 import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.exceptions.ErrorType;
 import com.github.jonathanxd.wcommands.exceptions.ProcessingError;
@@ -34,7 +35,7 @@ import java.util.List;
 public class WCommandCommon extends WCommand<List<CommandData<CommandHolder>>> {
 
     public WCommandCommon() {
-        this(new CommonProcessor(), (e, d, l, v, r, k) -> e instanceof ProcessingError && ((ProcessingError)e).getType().getExceptionType() != ErrorType.Type.ERROR);
+        this(new CommonProcessor(), (e, d, l, v, r, k) -> e != null && e.getType().getExceptionType() != ErrorType.Type.ERROR);
     }
 
     public WCommandCommon(ErrorHandler<List<CommandData<CommandHolder>>> errorHandler) {
@@ -43,6 +44,10 @@ public class WCommandCommon extends WCommand<List<CommandData<CommandHolder>>> {
 
     public WCommandCommon(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler<List<CommandData<CommandHolder>>> errorHandler) {
         super(processor, errorHandler);
+    }
+
+    public WCommandCommon(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler<List<CommandData<CommandHolder>>> errorHandler, CommandStringParser commandStringParser) {
+        super(processor, errorHandler, commandStringParser);
     }
 
     /**
