@@ -146,7 +146,6 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
         private final ErrorHandler.Container<List<CommandData<CommandHolder>>> handlerContainer;
         private final List<CommandData<CommandHolder>> commandDatas = new ArrayList<>();
         private List<CommandSpec> main = null;
-        private Set<CommandSpec> processed = new HashSet<>();
 
         private Processing(ErrorHandler.Container<List<CommandData<CommandHolder>>> handlerContainer) {
             this.handlerContainer = handlerContainer;
@@ -206,7 +205,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                             commandDatas.remove(commandDatas.size() - 1);
                             commandDatas.add(new CommandData<>(argument, new CommandHolder(commandSpec, parent, argumentHolders, true, true), parent));
                         }
-                        processed.add(commandSpec);
+                        //processed.add(commandSpec);
                         matches = true;
                     } else {
                         if (commandSpec.isOptional() || parent == null) {
