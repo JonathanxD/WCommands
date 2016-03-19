@@ -28,6 +28,7 @@ import com.github.jonathanxd.wcommands.ext.help.HelperAPI;
 import com.github.jonathanxd.wcommands.ext.help.printer.Printer;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
+import com.github.jonathanxd.wcommands.infos.Requirements;
 
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class HelperErrorHandler implements ErrorHandler<List<CommandData<Command
     }
 
     @Override
-    public boolean handle(ArgumentProcessingError error, CommandList commandSpecs, CommandSpec current, List<CommandData<CommandHolder>> processed, InformationRegister informationRegister) {
+    public boolean handle(ArgumentProcessingError error, CommandList commandSpecs, CommandSpec current, List<CommandData<CommandHolder>> processed, Requirements requirements, InformationRegister informationRegister) {
         if (error.getType() == ArgumentError.MISSING_SUB_COMMAND || error.getType() == ArgumentError.MISSING_ARGUMENT) {
 
 

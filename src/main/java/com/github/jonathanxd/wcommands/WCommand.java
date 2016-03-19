@@ -25,6 +25,7 @@ import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.handler.Handler;
 import com.github.jonathanxd.wcommands.infos.InfoId;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
+import com.github.jonathanxd.wcommands.infos.Requirements;
 import com.github.jonathanxd.wcommands.interceptor.Interceptors;
 import com.github.jonathanxd.wcommands.interceptor.InvokeInterceptor;
 import com.github.jonathanxd.wcommands.processor.Processor;
@@ -107,11 +108,11 @@ public class WCommand<T> {
      *
      * @param arguments Argument Array
      * @see InformationRegister
-     * @see #process(List, InformationRegister)
-     * @see #invoke(Object, InformationRegister)
+     * @see #process(List, Requirements, InformationRegister)
+     * @see #invoke(Object, Requirements, InformationRegister)
      */
     public void processAndInvoke(String... arguments) {
-        processAndInvoke(Arrays.asList(arguments), null);
+        processAndInvoke(Arrays.asList(arguments), null, null);
     }
 
     /**
@@ -120,11 +121,24 @@ public class WCommand<T> {
      * @param informationRegister Information register
      * @param arguments           Argument Array
      * @see InformationRegister
-     * @see #process(List, InformationRegister)
-     * @see #invoke(Object, InformationRegister)
+     * @see #process(List, Requirements, InformationRegister)
+     * @see #invoke(Object, Requirements, InformationRegister)
      */
     public void processAndInvoke(InformationRegister informationRegister, String... arguments) {
-        processAndInvoke(Arrays.asList(arguments), informationRegister);
+        processAndInvoke(Arrays.asList(arguments), null, informationRegister);
+    }
+
+    /**
+     * Process and invoke
+     *
+     * @param informationRegister Information register
+     * @param arguments           Argument Array
+     * @see InformationRegister
+     * @see #process(List, Requirements, InformationRegister)
+     * @see #invoke(Object, Requirements, InformationRegister)
+     */
+    public void processAndInvoke(Requirements requirements, InformationRegister informationRegister, String... arguments) {
+        processAndInvoke(Arrays.asList(arguments), requirements, informationRegister);
     }
 
     /**
@@ -133,11 +147,11 @@ public class WCommand<T> {
      * @param arguments           List of arguments
      * @param informationRegister Information register
      * @see InformationRegister
-     * @see #process(List, InformationRegister)
-     * @see #invoke(Object, InformationRegister)
+     * @see #process(List, Requirements, InformationRegister)
+     * @see #invoke(Object, Requirements, InformationRegister)
      */
-    public void processAndInvoke(List<String> arguments, InformationRegister informationRegister) {
-        invoke(process(arguments, informationRegister), informationRegister);
+    public void processAndInvoke(List<String> arguments, Requirements requirements, InformationRegister informationRegister) {
+        invoke(process(arguments, requirements, informationRegister), requirements, informationRegister);
     }
 
     /**
@@ -146,8 +160,8 @@ public class WCommand<T> {
      * @param arguments Argument list
      * @return Mapped Commands
      */
-    public T process(List<String> arguments, InformationRegister informationRegister) {
-        return processor.process(arguments, commands, errorHandler, informationRegister);
+    public T process(List<String> arguments, Requirements requirements, InformationRegister informationRegister) {
+        return processor.process(arguments, commands, errorHandler, requirements, informationRegister);
     }
 
     /**
@@ -203,8 +217,8 @@ public class WCommand<T> {
      * @param object              Mapped Commands
      * @param informationRegister InformationRegister
      */
-    public void invoke(T object, InformationRegister informationRegister) {
-        processor.invokeCommands(object, interceptors, informationRegister);
+    public void invoke(T object, Requirements requirements, InformationRegister informationRegister) {
+        processor.invokeCommands(object, interceptors, requirements, informationRegister);
     }
 
     /**

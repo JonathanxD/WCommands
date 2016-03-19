@@ -23,6 +23,7 @@ import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
+import com.github.jonathanxd.wcommands.infos.Requirements;
 
 import javax.annotation.Nullable;
 
@@ -39,7 +40,7 @@ public interface ErrorHandler<T> {
      * @param error Exception
      * @return True to STOP the process and print the error, or false to continue processing.
      */
-    boolean handle(ArgumentProcessingError error, @Immutable CommandList commandSpecs, @Nullable CommandSpec currentCommand, @Nullable T processed, InformationRegister informationRegister);
+    boolean handle(ArgumentProcessingError error, @Immutable CommandList commandSpecs, @Nullable CommandSpec currentCommand, @Nullable T processed, Requirements requirements, InformationRegister informationRegister);
 
     class Container<T> {
         private final ErrorHandler<T> handler;
@@ -48,8 +49,8 @@ public interface ErrorHandler<T> {
             this.handler = handler;
         }
 
-        public void handle(ArgumentProcessingError error, @Immutable CommandList commandSpecs, @Nullable CommandSpec currentCommand, @Nullable T processed, InformationRegister informationRegister) throws ArgumentProcessingError {
-            if (!handler.handle(error, commandSpecs, currentCommand, processed, informationRegister)) {
+        public void handle(ArgumentProcessingError error, @Immutable CommandList commandSpecs, @Nullable CommandSpec currentCommand, @Nullable T processed, Requirements requirements, InformationRegister informationRegister) throws ArgumentProcessingError {
+            if (!handler.handle(error, commandSpecs, currentCommand, processed, requirements, informationRegister)) {
                 throw error;
             }
         }

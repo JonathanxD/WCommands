@@ -27,6 +27,7 @@ import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
+import com.github.jonathanxd.wcommands.infos.Requirements;
 import com.github.jonathanxd.wcommands.processor.CommonProcessor;
 
 public class TestAnnotations {
@@ -64,7 +65,7 @@ public class TestAnnotations {
     public static class MyErrorHandler implements ErrorHandler {
 
         @Override
-        public boolean handle(ArgumentProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, InformationRegister informationRegister) {
+        public boolean handle(ArgumentProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, Requirements requirements, InformationRegister informationRegister) {
             return error.getType().getExceptionType() != ArgumentError.Type.ERROR;
         }
     }

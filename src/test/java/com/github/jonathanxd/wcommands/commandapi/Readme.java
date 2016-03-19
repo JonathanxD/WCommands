@@ -39,7 +39,7 @@ public class Readme {
 
         CommandSpec spec = CommandBuilder.builder()
                 .withName(Text.of("say"))
-                .withCommonHandler((c, data) -> {
+                .withCommonHandler((c, req, data) -> {
                     // DO A ACTION
                     CommandHolder ch = c.getCommand();
 

@@ -16,34 +16,29 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.reflection.intype;
-
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
-import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
-import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
+package com.github.jonathanxd.wcommands.ext.reflect.handler;
 
 /**
  * Created by jonathan on 18/03/16.
  */
-@Command(name = "super")
-public class SuperCommand {
-
-    @Command
-    @Argument(setFinal = true)
-    private final String name = null;
-
-    @Command
-    public void alt() {
-        System.out.println("Alt!");
+public class InvalidCommand extends RuntimeException {
+    public InvalidCommand() {
+        super();
     }
 
-    @SubCommand(value = "super", commandSpec = @Command(name = "ctrl", isOptional = true))
-    public static class CommandCTRL {
-
-        @Command
-        public void ctrl() {
-            System.out.println("ctrl!");
-        }
+    public InvalidCommand(String message) {
+        super(message);
     }
 
+    public InvalidCommand(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public InvalidCommand(Throwable cause) {
+        super(cause);
+    }
+
+    protected InvalidCommand(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

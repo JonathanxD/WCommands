@@ -26,7 +26,9 @@ import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.ext.reflect.infos.Info;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeNamedContainer;
+import com.github.jonathanxd.wcommands.handler.Handler;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
+import com.github.jonathanxd.wcommands.infos.Requirements;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.reflect.InvocationTargetException;
@@ -49,7 +51,7 @@ public class ReflectionHandler implements CommonHandler {
     }
 
     @Override
-    public void handle(CommandData<CommandHolder> commandData, InformationRegister informationRegister) {
+    public void handle(CommandData<CommandHolder> commandData, Requirements requirements, InformationRegister informationRegister) {
 
         CommandHolder holder = commandData.getCommand();
         ElementBridge bridge = commandContainer.getBridge();
@@ -85,7 +87,6 @@ public class ReflectionHandler implements CommonHandler {
         } else if (bridge.isMethod()) {
 
             List<Object> methodArguments = new ArrayList<>();
-            List<Class<?>> methodParamTypes = new ArrayList<>();
 
             Class<?>[] paramTypes = ((Method) bridge.getMember()).getParameterTypes();
 
@@ -103,13 +104,11 @@ public class ReflectionHandler implements CommonHandler {
                     } else {
                         methodArguments.add(/*value*/null);
                     }
-                    methodParamTypes.add(paramTypes[x]);
                 } else {
                     if (paramTypes[x] == Optional.class && argument.getArgumentSpec().isOptional()) {
                         methodArguments.add(Optional.of(value));
                     } else {
                         methodArguments.add(value);
-                        methodParamTypes.add(value.getClass());
                     }
                 }
             }
@@ -132,10 +131,17 @@ public class ReflectionHandler implements CommonHandler {
                 } catch (Throwable tt) {
                     throw new RuntimeException(tt.getMessage(), e);
                 }
-
-
             }
 
+        } else if (bridge.isClass()) {
+            Class<?> clazz = (Class<?>) bridge.getMember();
+
+            if(Handler.class.isAssignableFrom(clazz)) {
+                @SuppressWarnings("unchecked") Handler<CommandHolder> handler = (Handler<CommandHolder>) instance.get();
+                handler.handle(commandData, requirements, informationRegister);
+            }else {
+                throw new InvalidCommand("The command '" + commandData.getCommand() + "' for input '" + commandData.getInputArgument() + "' is invalid! Classes has no Executors to run!");
+            }
         }
 
     }

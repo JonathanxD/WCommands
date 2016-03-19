@@ -129,6 +129,10 @@ public class ElementBridge implements AnnotatedElement {
         return element instanceof Method;
     }
 
+    public boolean isClass() {
+        return element instanceof Class;
+    }
+
     public void invoke(Object instance, Object[] args, boolean forceAccess) throws InvocationTargetException, IllegalAccessException {
         Method method = (Method) getMember();
         if (forceAccess)

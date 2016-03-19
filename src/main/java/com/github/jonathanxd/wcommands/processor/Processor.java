@@ -21,6 +21,7 @@ package com.github.jonathanxd.wcommands.processor;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
+import com.github.jonathanxd.wcommands.infos.Requirements;
 import com.github.jonathanxd.wcommands.interceptor.Interceptors;
 
 import java.util.List;
@@ -30,7 +31,7 @@ import java.util.List;
  */
 public interface Processor<T> {
 
-    T process(List<String> arguments, CommandList commands, ErrorHandler<T> errorHandler, InformationRegister informationRegister);
+    T process(List<String> arguments, CommandList commands, ErrorHandler<T> errorHandler, Requirements requirements, InformationRegister informationRegister);
 
-    void invokeCommands(T object, Interceptors interceptors, InformationRegister informationRegister);
+    void invokeCommands(T object, Interceptors interceptors, Requirements requirements, InformationRegister informationRegister);
 }

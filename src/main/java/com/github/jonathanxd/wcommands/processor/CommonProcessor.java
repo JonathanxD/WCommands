@@ -33,6 +33,7 @@ import com.github.jonathanxd.wcommands.exceptions.MissingArgumentException;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.handler.Handler;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
+import com.github.jonathanxd.wcommands.infos.Requirements;
 import com.github.jonathanxd.wcommands.interceptor.Interceptors;
 import com.github.jonathanxd.wcommands.interceptor.Phase;
 import com.github.jonathanxd.wcommands.util.StaticContainer;
@@ -55,19 +56,19 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
     }
 
     @Override
-    public List<CommandData<CommandHolder>> process(List<String> arguments, CommandList commands, ErrorHandler<List<CommandData<CommandHolder>>> handler, InformationRegister informationRegister) {
+    public List<CommandData<CommandHolder>> process(List<String> arguments, CommandList commands, ErrorHandler<List<CommandData<CommandHolder>>> handler, Requirements requirements, InformationRegister informationRegister) {
 
         if (arguments.size() == 0) {
-            handler.handle(new ArgumentProcessingError("No commands provided", ArgumentError.NO_COMMAND_PROVIDED), commands.toUnmodifiable(), null, null, informationRegister);
+            handler.handle(new ArgumentProcessingError("No commands provided", ArgumentError.NO_COMMAND_PROVIDED), commands.toUnmodifiable(), null, null, requirements, informationRegister);
 
             return Collections.emptyList();
         }
 
         Processing processing = new Processing(new ErrorHandler.Container<>(handler));
         try {
-            processing.process(arguments.listIterator(), commands.toUnmodifiable(), null, informationRegister);
+            processing.process(arguments.listIterator(), commands.toUnmodifiable(), null, requirements, informationRegister);
         } catch (ArgumentProcessingError argumentProcessingError) {
-            handler.handle(argumentProcessingError, commands.toUnmodifiable(), null, processing.commandDatas, informationRegister);
+            handler.handle(argumentProcessingError, commands.toUnmodifiable(), null, processing.commandDatas, requirements, informationRegister);
         }
 
         return processing.commandDatas;
@@ -75,7 +76,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
     @SuppressWarnings("unchecked")
     @Override
-    public void invokeCommands(List<CommandData<CommandHolder>> object, Interceptors interceptors, InformationRegister informationRegister) {
+    public void invokeCommands(List<CommandData<CommandHolder>> object, Interceptors interceptors, Requirements requirements, InformationRegister informationRegister) {
 
         Interceptors phasePreCall = interceptors.getPhase(Phase.PRE_CALL);
         Interceptors phasePostCall = interceptors.getPhase(Phase.POST_CALL);
@@ -93,7 +94,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                 phasePreCall.forEach(interceptor -> interceptor.intercept(data, handlerContainer));
 
                 if (handlerContainer.get() != null) {
-                    handlerContainer.get().handle(data, informationRegister);
+                    handlerContainer.get().handle(data, requirements, informationRegister);
                 }
 
 
@@ -140,12 +141,12 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
             this.handlerContainer = handlerContainer;
         }
 
-        public void process(ListIterator<String> argIter, CommandList commandSpecs, CommandHolder parent, InformationRegister informationRegister) throws ArgumentProcessingError {
+        public void process(ListIterator<String> argIter, CommandList commandSpecs, CommandHolder parent, Requirements requirements, InformationRegister informationRegister) throws ArgumentProcessingError {
             if (main == null) {
                 main = commandSpecs;
             }
             if (!argIter.hasNext()) {
-                handlerContainer.handle(new ArgumentProcessingError("No more elements!", ArgumentError.POSSIBLE_BUG), commandSpecs, (parent != null ? parent.getCommandSpec() : null), commandDatas, informationRegister);
+                handlerContainer.handle(new ArgumentProcessingError("No more elements!", ArgumentError.POSSIBLE_BUG), commandSpecs, (parent != null ? parent.getCommandSpec() : null), commandDatas, requirements, informationRegister);
                 return;
             }
 
@@ -178,7 +179,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
                     if (commandSpec.matches(argument)) {
 
-                        ArgumentsHolder argumentHolders = parseArguments(argIter, commandSpec, commandSpecs, informationRegister);
+                        ArgumentsHolder argumentHolders = parseArguments(argIter, commandSpec, commandSpecs, requirements, informationRegister);
 
                         CommandHolder holder = new CommandHolder(commandSpec, parent, argumentHolders, true, last);
 
@@ -187,7 +188,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                         int size = commandDatas.size();
 
                         if (!commandSpec.getSubCommands().isEmpty()) {
-                            process(argIter, commandSpec.getSubCommands(), holder, informationRegister);
+                            process(argIter, commandSpec.getSubCommands(), holder, requirements, informationRegister);
                         }
 
                         if (size == commandDatas.size()) {
@@ -202,9 +203,9 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                             continue;
                         } else {
                             if (last) {
-                                handlerContainer.handle(new ArgumentProcessingError("CRITICAL NOT found to argument: '" + argument + "'", ArgumentError.POSSIBLE_BUG), commandSpecs, commandSpec, commandDatas, informationRegister);
+                                handlerContainer.handle(new ArgumentProcessingError("CRITICAL NOT found to argument: '" + argument + "'", ArgumentError.POSSIBLE_BUG), commandSpecs, commandSpec, commandDatas, requirements, informationRegister);
                             }
-                            handlerContainer.handle(new ArgumentProcessingError("Not found to argument: '" + argument + "'", ArgumentError.POSSIBLE_BUG), commandSpecs, commandSpec, commandDatas, informationRegister);
+                            handlerContainer.handle(new ArgumentProcessingError("Not found to argument: '" + argument + "'", ArgumentError.POSSIBLE_BUG), commandSpecs, commandSpec, commandDatas, requirements, informationRegister);
                         }
                     }
                     ////////////////////////////////
@@ -212,7 +213,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                         List<CommandSpec> notOptional = commandSpec.getNotOptionalSubCommands();
                         if (notOptional.size() > 0) {
                             if (!findAny(commandDatas, notOptional)) {
-                                handlerContainer.handle(new ArgumentProcessingError("Missing sub-commandSpec for commandSpec '" + commandSpec + "'", ArgumentError.MISSING_SUB_COMMAND), commandSpecs, commandSpec, commandDatas, informationRegister);
+                                handlerContainer.handle(new ArgumentProcessingError("Missing sub-commandSpec for commandSpec '" + commandSpec + "'", ArgumentError.MISSING_SUB_COMMAND), commandSpecs, commandSpec, commandDatas, requirements, informationRegister);
                             }
                         }
                     }
@@ -226,7 +227,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                 }
 
                 if (!matches && parent == null) {
-                    handlerContainer.handle(new ArgumentProcessingError("Cannot find command '" + argument + "'", ArgumentError.MISSING_ARGUMENT), commandSpecs, null, commandDatas, informationRegister);
+                    handlerContainer.handle(new ArgumentProcessingError("Cannot find command '" + argument + "'", ArgumentError.MISSING_ARGUMENT), commandSpecs, null, commandDatas, requirements, informationRegister);
                 }
             }
         }
@@ -240,7 +241,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
         // give item STONE | jump to 15
         //
-        private ArgumentsHolder parseArguments(ListIterator<String> argumentIter, CommandSpec commandSpec, CommandList commandSpecs, InformationRegister informationRegister) throws ArgumentProcessingError {
+        private ArgumentsHolder parseArguments(ListIterator<String> argumentIter, CommandSpec commandSpec, CommandList commandSpecs, Requirements requirements, InformationRegister informationRegister) throws ArgumentProcessingError {
             ArgumentsHolder argumentHolders = new ArgumentsHolder();
             // ArgumentSpec parsing
 
@@ -311,7 +312,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                             handlerContainer.handle(
                                     new ArgumentProcessingError(
                                             new IllegalArgumentException(String.format("Illegal argument '%s' for parser '%s'", sub, argumentSpecParse)),
-                                            ArgumentError.MISSING_ARGUMENT), commandSpecs, commandSpec, commandDatas, informationRegister);
+                                            ArgumentError.MISSING_ARGUMENT), commandSpecs, commandSpec, commandDatas, requirements, informationRegister);
 
                         }
 
@@ -328,7 +329,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                         handlerContainer.handle(
                                 new ArgumentProcessingError(
                                         new MissingArgumentException(String.format("Missing argumentSpec (id: '%s', %s). Probably is missing all arguments required...", argumentSpec.getId(), argumentSpec)),
-                                        ArgumentError.MISSING_ARGUMENT), commandSpecs, commandSpec, commandDatas, informationRegister);
+                                        ArgumentError.MISSING_ARGUMENT), commandSpecs, commandSpec, commandDatas, requirements, informationRegister);
                     } else {
                         continue;
                     }
@@ -342,7 +343,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                             handlerContainer.handle(
                                     new ArgumentProcessingError(
                                             new MissingArgumentException(String.format("Missing argumentSpec (id: '%s', %s)", argumentSpec.getId(), argumentSpec)),
-                                            ArgumentError.MISSING_ARGUMENT), commandSpecs, commandSpec, commandDatas, informationRegister);
+                                            ArgumentError.MISSING_ARGUMENT), commandSpecs, commandSpec, commandDatas, requirements, informationRegister);
                         } else {
                             ++pos;
                             continue;

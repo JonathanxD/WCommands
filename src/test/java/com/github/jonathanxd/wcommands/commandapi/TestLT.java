@@ -29,6 +29,7 @@ import com.github.jonathanxd.wcommands.exceptions.ArgumentProcessingError;
 import com.github.jonathanxd.wcommands.factory.CommandBuilder;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
+import com.github.jonathanxd.wcommands.infos.Requirements;
 import com.github.jonathanxd.wcommands.processor.CommonProcessor;
 import com.github.jonathanxd.wcommands.text.Text;
 
@@ -49,7 +50,7 @@ public class TestLT {
                 .withPrefix("--")
                 .withName(Text.of("allowUpper"))
                 .withArgument(new BooleanArgumentSpec<>(IDs.ALLOW_UPPER, false))
-                .withCommonHandler((commandData, ref) -> {
+                .withCommonHandler((commandData, requirements, ref) -> {
                     CommandHolder holder = commandData.getCommand();
 
                     Optional<Boolean> isAllowUpper = holder.getArgValue(IDs.ALLOW_UPPER);
@@ -68,7 +69,7 @@ public class TestLT {
         wCommandCommon.registerCommand(CommandBuilder.builder()
                 .withPrefix("--")
                 .withName(Text.of("daemon"))
-                .withCommonHandler((commandData, ref) -> System.out.println("Start Daemon"))
+                .withCommonHandler((commandData, requirements, ref) -> System.out.println("Start Daemon"))
                 .build());
 
         wCommandCommon.registerCommand(CommandBuilder.builder()
@@ -99,7 +100,7 @@ public class TestLT {
     public static class MyErrorHandler implements ErrorHandler {
 
         @Override
-        public boolean handle(ArgumentProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, InformationRegister register) {
+        public boolean handle(ArgumentProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, Requirements requirements, InformationRegister register) {
             return error.getType().getExceptionType() != ArgumentError.Type.ERROR;
         }
     }

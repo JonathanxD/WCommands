@@ -33,7 +33,7 @@ import java.util.List;
 public class WCommandCommon extends WCommand<List<CommandData<CommandHolder>>> {
 
     public WCommandCommon() {
-        this(new CommonProcessor(), (e, d, l, v, k) -> e.getType().getExceptionType() != ArgumentError.Type.ERROR);
+        this(new CommonProcessor(), (e, d, l, v, r, k) -> e.getType().getExceptionType() != ArgumentError.Type.ERROR);
     }
 
     public WCommandCommon(ErrorHandler<List<CommandData<CommandHolder>>> errorHandler) {

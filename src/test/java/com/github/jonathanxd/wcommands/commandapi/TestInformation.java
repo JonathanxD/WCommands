@@ -53,7 +53,7 @@ public class TestInformation {
                 // Defines the description
                 .withDescription("Send message to another person!")
                 // Define handler
-                .withCommonHandler((commandData, information /* InformationRegister Here! */) -> {
+                .withCommonHandler((commandData, requirements, information /* InformationRegister Here! */) -> {
 
                     // Get command holder
                     CommandHolder commandHolder = commandData.getCommand();
