@@ -273,6 +273,15 @@ Also you can 'replace' the handler
 handler.set(o -> System.out.println("hello from other handler!"));
 ```
 
+##### Test
+
+```java
+commandProcessor.processAndInvoke("say", "foo bar");
+```
+Output: `[SAY] ad`
+
+
+
 ### Information
 
 Information is a class that allow to you to register pre-defined and persistent "information". The "information" will be passed to Reflection and Command API in Handlers.
@@ -422,13 +431,6 @@ HelperAPI.help(CommandList commandSpecs, Printer printer);
 // Print help for a specific command and child commands.
 HelperAPI.help(CommandSpec command, Printer printer);
 ```
-
-##### Test
-
-```java
-commandProcessor.processAndInvoke("say", "foo bar");
-```
-Output: `[SAY] ad`
 
 
 ### More Examples
