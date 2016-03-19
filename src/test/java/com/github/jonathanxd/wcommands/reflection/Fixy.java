@@ -18,24 +18,10 @@
  */
 package com.github.jonathanxd.wcommands.reflection;
 
-import com.github.jonathanxd.iutils.annotations.Immutable;
-import com.github.jonathanxd.wcommands.WCommandCommon;
-import com.github.jonathanxd.wcommands.command.CommandSpec;
-import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
-import com.github.jonathanxd.wcommands.common.command.CommandList;
-import com.github.jonathanxd.wcommands.data.CommandData;
-import com.github.jonathanxd.wcommands.exceptions.ProcessingError;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
-import com.github.jonathanxd.wcommands.handler.ErrorHandler;
-import com.github.jonathanxd.wcommands.infos.InformationRegister;
-import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
-
-import java.util.List;
-
-import javax.annotation.Nullable;
 
 /**
  * Created by jonathan on 19/03/16.
