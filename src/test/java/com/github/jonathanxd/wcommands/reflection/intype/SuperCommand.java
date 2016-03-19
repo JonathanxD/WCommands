@@ -25,23 +25,23 @@ import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 /**
  * Created by jonathan on 18/03/16.
  */
-@Command(name = "furious")
+@Command(name = "super")
 public class SuperCommand {
 
     @Argument(setFinal = true)
     private final String name = null;
 
     @Command
-    public void mork() {
-        System.out.println("Mork is furious!");
+    public void alt() {
+        System.out.println("Alt!");
     }
 
-    @SubCommand(value = "furious", commandSpec = @Command(name = "dina", isOptional = true))
-    public static class CommandDina {
+    @SubCommand(value = "super", commandSpec = @Command(name = "ctrl", isOptional = true))
+    public static class CommandCTRL {
 
         @Command
-        public void dd() {
-            System.out.println("dd is copy!");
+        public void ctrl() {
+            System.out.println("ctrl!");
         }
     }
 

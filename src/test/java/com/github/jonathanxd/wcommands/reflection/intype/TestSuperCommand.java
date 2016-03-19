@@ -35,7 +35,7 @@ public class TestSuperCommand {
 
         ReflectionCommandProcessor commandProcessor = ReflectionAPI.createWCommand(/*commandFurious*/);
 
-        //commandProcessor.addCommands(new SuperCommand.CommandDina());
+        //commandProcessor.addCommands(new SuperCommand.CommandCTRL());
         commandProcessor.addCommandFromClass(SuperCommand.class, Creator::createEmpty);
 
         HelperAPI.help(commandProcessor.getCommandList(), null, CommonPrinter.TO_SYS_OUT);
