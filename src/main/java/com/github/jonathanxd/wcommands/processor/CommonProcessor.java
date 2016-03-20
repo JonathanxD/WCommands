@@ -179,27 +179,11 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
             while (argIter.hasNext()) {
 
-                //int index = argIter.nextIndex();
-
                 String argument = argIter.next();
-
-                /*if (commandSpecs.size() == 0) {
-                    // TODO revision, see 'if(!command.getSubCommands().isEmpty())' LINE, normally this operation will never be called
-                    argIter.previous();
-                    return;
-                }*/
 
                 boolean matches = false;
                 while (commandSpecIterator.hasNext()) {
                     CommandSpec commandSpec = commandSpecIterator.next();
-                    //if (processed.contains(commandSpec))
-                        //continue;
-
-                    /*if (findLastSet(commandDatas) && (main != null && !main.contains(commandSpec))) {
-                        // TODO revision, see 'if(matches && parent != null)' LINE, this operation will never be called
-                        argIter.previous();
-                        return;
-                    }*/
 
                     boolean last = !argIter.hasNext();
 
@@ -222,25 +206,8 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                             commandDatas.remove(commandDatas.size() - 1);
                             commandDatas.add(new CommandData<>(argument, new CommandHolder(commandSpec, parent, argumentHolders, true, true), parent));
                         }
-                        //processed.add(commandSpec);
                         matches = true;
                     } else {
-
-                        /*@DEPRECATED
-                        if (commandSpec.isOptional() || parent == null) {
-                            argIter.previous();
-                            continue;
-                        } else {
-                            if (last) {
-                                handlerContainer.handle(new ProcessingError("CRITICAL NOT found to argument: '" + argument + "'", ErrorType.POSSIBLE_BUG), commandSpecs, commandSpec, commandDatas, requirements, informationRegister);
-                            }
-                            handlerContainer.handle(new ProcessingError("Not found to argument: '" + argument + "'", ErrorType.POSSIBLE_BUG), commandSpecs, commandSpec, commandDatas, requirements, informationRegister);
-                        }*/
-
-                        /*if (last) {
-                            handlerContainer.handle(new ProcessingError("CRITICAL NOT found to argument: '" + argument + "'", ErrorType.POSSIBLE_BUG), commandSpecs, commandSpec, commandDatas, requirements, informationRegister);
-                        }*/
-
                         continue;
                     }
                     ////////////////////////////////
@@ -254,13 +221,6 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                     }
 
                     break;
-
-                    /*if (matches && parent != null) {
-                        // RETURN commandSpec loop for child
-                        return;
-                    } else if (matches) {
-                        break;
-                    }*/
 
                 }
 
