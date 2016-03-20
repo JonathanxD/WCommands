@@ -58,6 +58,9 @@ public class TestList {
         Results results = wCommandCommon.processAndInvoke(requirements, informationRegister, "show", "list", "a", "b", "c", "named", "Xy");
 
         System.out.println("Results: "+results);
+
+        Results results2 = wCommandCommon.processAndInvoke(requirements, informationRegister, "myList", "A", "B", "C");
+
     }
 
     static class Sender{
@@ -67,6 +70,18 @@ public class TestList {
     }
 
     class Permission {}
+
+    enum EN {
+        A,
+        B,
+        C
+    }
+
+    @Command
+    public void myList(@Argument(isInfinite = true) List<EN> ens) {
+        System.out.println("En: "+ens);
+        EN en = ens.get(0);
+    }
 
     @Command
     @Require(type = Permission.class, data = "dup")

@@ -34,7 +34,8 @@ import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Transla
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TypeTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.BooleanTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.NumberTranslator;
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.StringListTranslator;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.list.EnumListTranslator;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.list.StringListTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.StringTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
@@ -109,6 +110,7 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
         addGlobalTranslator(Reference.aEnd(String.class), StringTranslator.class);
         addGlobalTranslator(Reference.aEnd(Enum.class), EnumTranslator.class, Order.SEVENTH);
         addGlobalTranslator(Reference.referenceTo().a(List.class).of(String.class).build(), StringListTranslator.class);
+        addGlobalTranslator(Reference.referenceTo().a(List.class).of(Enum.class).build(), EnumListTranslator.class);
 
         registerVisitor(new CommandVisitor(Command.class));
         registerVisitor(new ArgumentVisitor(Argument.class));

@@ -99,11 +99,13 @@ public class GlobalTypeTranslator implements Translator<Object> {
             if(Primitive.asBoxed(testType) != null) {
                 testType = Primitive.asBoxed(testType);
             }
-            if ((aType.getAClass().isAssignableFrom(testType) || aType.compareTo(type) == 0)
-                    || (type.getRelated().length > 0
-                    && this.isOptional
-                    && type.getAClass() == Optional.class
-                    && aType.getAClass().isAssignableFrom((testType = type.getRelated()[0].getAClass())))) {
+            if (((type.getRelated().length == 0 && aType.getRelated().length == 0 && aType.getAClass().isAssignableFrom(testType))
+                    || aType.compareTo(type) == 0
+                    || aType.compareToAssignable(type) == 0)
+                        || (type.getRelated().length > 0
+                        && this.isOptional
+                        && type.getAClass() == Optional.class
+                        && aType.getAClass().isAssignableFrom((testType = type.getRelated()[0].getAClass())))) {
 
                 if(testType == null) {
                     return;

@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults;
+package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.list;
 
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 

@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Created by jonathan on 28/02/16.
  */
-public class EnumTranslator implements Translator<Object> {
+public class EnumTranslator implements Translator<Enum> {
     private final Class<? extends Enum> enumClass;
     private final EnumPredicate predicate;
 
@@ -42,7 +42,7 @@ public class EnumTranslator implements Translator<Object> {
     }
 
     @Override
-    public Object translate(List<String> text) {
+    public Enum translate(List<String> text) {
 
         Enum e = predicate.get(text.get(0));
 
