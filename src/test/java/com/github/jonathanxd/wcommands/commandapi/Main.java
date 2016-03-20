@@ -29,12 +29,15 @@ import com.github.jonathanxd.wcommands.factory.CommandFactory;
 import com.github.jonathanxd.wcommands.processor.CommonProcessor;
 import com.github.jonathanxd.wcommands.text.Text;
 
+import org.junit.Test;
+
 import java.util.List;
 import java.util.Optional;
 
 public class Main {
 
-    public static void main(String[] args) throws ProcessingError {
+    @Test
+    public void mainTest() throws ProcessingError {
         WCommand<List<CommandData<CommandHolder>>> wCommand = CommonProcessor.newWCommand((e, d, l, v, r, t) -> true);
 
         CommonProcessor.CommonHandler handler = (data, req, ref) -> {
@@ -44,7 +47,7 @@ public class Main {
             });
             CommandHolder command = data.getCommand();
 
-            Optional<String> xPArgOpt = command.getPlainArgument(ArgumentIDs.XP_ARGUMENT);
+            Optional<List<String>> xPArgOpt = command.getPlainArgument(ArgumentIDs.XP_ARGUMENT);
             xPArgOpt.ifPresent(System.out::println);
 
             if(data.getParent() != null) {

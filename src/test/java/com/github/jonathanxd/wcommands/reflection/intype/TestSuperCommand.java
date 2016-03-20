@@ -24,12 +24,15 @@ import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.util.reflection.Creator;
 
+import org.junit.Test;
+
 /**
  * Created by jonathan on 18/03/16.
  */
 public class TestSuperCommand {
 
-    public static void main(String[] args) {
+    @Test
+    public void testSuperCommand() {
 
         //SuperCommand commandFurious = new SuperCommand();
 

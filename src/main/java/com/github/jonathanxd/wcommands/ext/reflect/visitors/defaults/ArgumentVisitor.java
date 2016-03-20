@@ -150,6 +150,8 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
 
 
         argumentBuilder.setOptional(argument.isOptional());
+        argumentBuilder.setInfinite(argument.isInfinite());
+
 
         ArgumentSpec argumentSpec1 = argumentBuilder.build();
 

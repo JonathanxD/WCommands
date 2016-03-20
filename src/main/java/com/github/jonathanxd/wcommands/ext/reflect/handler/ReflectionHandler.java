@@ -69,7 +69,6 @@ public class ReflectionHandler implements CommonHandler {
 
         if (bridge.isField()) {
             Optional<ArgumentHolder<String, Object>> argumentHolder = holder.getArgument(bridge.getName(), true);
-
             try {
                 if (argumentHolder.isPresent()) {
 
@@ -91,9 +90,14 @@ public class ReflectionHandler implements CommonHandler {
                     test(requirements, requires, commandData, informationRegister, new Object[] {value});
                     //) { throw Exception };
 
+                    boolean force = argumentHolder.get().getArgumentSpec().getData().findData(ReflectionCommandProcessor.PropSet.FINAL.getClass());
+
                     if (arg.isPresent()) {
-                        boolean force = argumentHolder.get().getArgumentSpec().getData().findData(ReflectionCommandProcessor.PropSet.FINAL.getClass());
                         bridge.setValue(instance.get(), value, true, force);
+                    }else if(arg.getArgumentSpec().isOptional()) {
+                        if(Boolean.class.isAssignableFrom(bridge.getType()) || Boolean.TYPE.isAssignableFrom(bridge.getType())) {
+                            bridge.setValue(instance.get(), true, true, force);
+                        }
                     }
 
                     theReturn = value;

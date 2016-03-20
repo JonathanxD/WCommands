@@ -23,6 +23,7 @@ import com.github.jonathanxd.wcommands.text.Text;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -32,13 +33,13 @@ public class NumberTranslator implements Translator<Number> {
     public static final Pattern NUMBER_REGEX = Pattern.compile("-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?");
 
     @Override
-    public boolean isAcceptable(String text) {
-        return NUMBER_REGEX.matcher(text).matches();
+    public boolean isAcceptable(List<String> text) {
+        return !text.isEmpty() && NUMBER_REGEX.matcher(text.get(0)).matches();
     }
 
     @Override
-    public Number translate(String text) {
-        return numberConversion(text);
+    public Number translate(List<String> text) {
+        return numberConversion(text.get(0));
     }
 
 

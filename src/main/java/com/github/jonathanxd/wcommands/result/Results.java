@@ -18,10 +18,22 @@
  */
 package com.github.jonathanxd.wcommands.result;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Optional;
 
 /**
  * Created by jonathan on 18/03/16.
  */
-public class Results extends ArrayList<Result>{
+public class Results extends HashSet<IResult<?>> {
+
+    @SuppressWarnings("unchecked")
+    public <T> Optional<Result<T>> find(Enum<?> uniqueId) {
+        for(IResult<?> result : this) {
+            if(result.getId() != null && result.getId() == uniqueId) {
+                return Optional.of((Result<T>) result);
+            }
+        }
+        return Optional.empty();
+    }
+
 }

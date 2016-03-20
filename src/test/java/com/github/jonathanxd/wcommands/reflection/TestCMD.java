@@ -30,9 +30,12 @@ import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 
+import org.junit.Test;
+
 public class TestCMD {
 
-    public static void main(String[] args) throws ProcessingError {
+    @Test
+    public void testCommand() throws ProcessingError {
 
         TestCMD testAnnotations = new TestCMD();
 

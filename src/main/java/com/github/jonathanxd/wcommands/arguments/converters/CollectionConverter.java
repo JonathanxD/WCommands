@@ -19,24 +19,25 @@
 package com.github.jonathanxd.wcommands.arguments.converters;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 /**
  * Created by jonathan on 12/03/16.
  */
-public class CollectionConverter<T> implements Function<String, T> {
+public class CollectionConverter<T> implements Function<List<String>, T> {
 
     private final Collection<T> collection;
-    private final BiPredicate<T, String> predicate;
+    private final BiPredicate<T, List<String>> predicate;
 
-    public CollectionConverter(Collection<T> collection, BiPredicate<T, String> predicate) {
+    public CollectionConverter(Collection<T> collection, BiPredicate<T, List<String>> predicate) {
         this.collection = collection;
         this.predicate = predicate;
     }
 
     @Override
-    public T apply(String s) {
+    public T apply(List<String> s) {
 
         for (T element : collection) {
             if (predicate.test(element, s)) {

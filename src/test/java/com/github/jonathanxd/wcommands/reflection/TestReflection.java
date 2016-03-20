@@ -24,6 +24,8 @@ import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 
+import org.junit.Test;
+
 import java.util.Optional;
 
 /**
@@ -31,7 +33,8 @@ import java.util.Optional;
  */
 public class TestReflection {
 
-    public static void main(String[] args) {
+    @Test
+    public void reflectionTest() {
         ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new TestReflection());
         processor.processAndInvoke("say", "hello", "special");
 

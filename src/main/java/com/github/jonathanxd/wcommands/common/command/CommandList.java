@@ -91,6 +91,15 @@ public class CommandList implements List<CommandSpec> {
         return this.stream().filter(command -> command.getAliases().contains(alias)).findFirst();
     }
 
+    public CommandSpec getAnyMatching(String match) {
+        for(CommandSpec commandSpec : this) {
+            if(commandSpec.matches(match))
+                return commandSpec;
+        }
+
+        return null;
+    }
+
     public CommandList toUnmodifiable() {
         return new CommandList(Collections.unmodifiableList(commandSpecs));
     }

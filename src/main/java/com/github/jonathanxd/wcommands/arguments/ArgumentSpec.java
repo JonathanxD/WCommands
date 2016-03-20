@@ -22,6 +22,7 @@ import com.github.jonathanxd.iutils.data.ExtraData;
 import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.text.Text;
 
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -57,10 +58,16 @@ public class ArgumentSpec<ID, T> {
      * True if is an Optional ArgumentSpec (not required)
      */
     private final boolean optional;
+
+    /**
+     * Infinite arguments = List
+     */
+    private final boolean isInfinite;
+
     /**
      * Converter
      */
-    private final Function<String, T> converter;
+    private final Function<List<String>, T> converter;
     /**
      * Checker
      */
@@ -68,14 +75,16 @@ public class ArgumentSpec<ID, T> {
     /**
      * Predicate
      */
-    private final Predicate<String> predicate;
+    private final Predicate<List<String>> predicate;
     /**
-     * Extra Data's, AdditionalData provided by {@link com.github.jonathanxd.wcommands.ext.Extension} and 2nd/3rd APIs
+     * Extra Data's, AdditionalData provided by {@link com.github.jonathanxd.wcommands.ext.Extension}
+     * and 2nd/3rd APIs
      */
     private final ExtraData data = new ExtraData();
 
-    public ArgumentSpec(ID id, Supplier<Matchable<String>> checker, Predicate<String> predicateChecker, boolean optional, Function<String, T> converter) {
+    public ArgumentSpec(ID id, boolean isInfinite, Supplier<Matchable<String>> checker, Predicate<List<String>> predicateChecker, boolean optional, Function<List<String>, T> converter) {
         this.id = id;
+        this.isInfinite = isInfinite;
         this.checker = checker;
         this.predicate = predicateChecker;
         this.optional = optional;
@@ -84,6 +93,7 @@ public class ArgumentSpec<ID, T> {
 
     /**
      * Get the ID
+     *
      * @return the ID
      */
     public ID getId() {
@@ -92,6 +102,7 @@ public class ArgumentSpec<ID, T> {
 
     /**
      * Get checker
+     *
      * @return Checker
      */
     public Supplier<Matchable<String>> getChecker() {
@@ -100,14 +111,16 @@ public class ArgumentSpec<ID, T> {
 
     /**
      * Get Predicate
+     *
      * @return Predicate
      */
-    public Predicate<String> getPredicate() {
+    public Predicate<List<String>> getPredicate() {
         return predicate;
     }
 
     /**
      * True if is a optional ArgumentSpec, false otherwise
+     *
      * @return True if is a optional ArgumentSpec, false otherwise
      */
     public boolean isOptional() {
@@ -115,15 +128,26 @@ public class ArgumentSpec<ID, T> {
     }
 
     /**
+     * True if is a infinite ArgumentSpec (lists/arrays)
+     *
+     * @return True if is a infinite ArgumentSpec (lists/arrays)
+     */
+    public boolean isInfinite() {
+        return isInfinite;
+    }
+
+    /**
      * {@link Text} representation to {@link Object} representation converter
+     *
      * @return {@link Text} representation to {@link Object} representation converter
      */
-    public Function<String, T> getConverter() {
+    public Function<List<String>, T> getConverter() {
         return converter;
     }
 
     /**
      * Extra Data (Additional Data)
+     *
      * @return Extra Data (Additional Data)
      */
     public ExtraData getData() {
@@ -132,6 +156,6 @@ public class ArgumentSpec<ID, T> {
 
     @Override
     public String toString() {
-        return "ArgumentSpec[id="+id+", isOptional="+optional+"]";
+        return "ArgumentSpec[id=" + id + ", isOptional=" + optional + "]";
     }
 }

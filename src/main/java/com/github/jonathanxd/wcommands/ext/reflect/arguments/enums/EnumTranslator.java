@@ -22,6 +22,8 @@ import com.github.jonathanxd.wcommands.common.enums.EnumPredicate;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 import com.github.jonathanxd.wcommands.text.Text;
 
+import java.util.List;
+
 /**
  * Created by jonathan on 28/02/16.
  */
@@ -35,14 +37,14 @@ public class EnumTranslator implements Translator<Object> {
     }
 
     @Override
-    public boolean isAcceptable(String text) {
-        return predicate.test(text);
+    public boolean isAcceptable(List<String> text) {
+        return !text.isEmpty() && predicate.test(text.get(0));
     }
 
     @Override
-    public Object translate(String text) {
+    public Object translate(List<String> text) {
 
-        Enum e = predicate.get(text);
+        Enum e = predicate.get(text.get(0));
 
         if(e == null && text != null)
             throw new IllegalStateException("Cannot get enum ("+enumClass.getCanonicalName()+") constant '"+text+"'");

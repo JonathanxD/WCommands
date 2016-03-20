@@ -23,12 +23,15 @@ import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 
+import org.junit.Test;
+
 /**
  * Created by jonathan on 19/03/16.
  */
 public class Fixy {
 
-    public static void main(String[] args) {
+    @Test
+    public void fixyTest() {
         ReflectionCommandProcessor wCommandCommon = ReflectionAPI.createWCommand((error, commandSpecs, currentCommand, processed, requirements, informationRegister) -> {
             error.printStackTrace();
             return false;
@@ -37,7 +40,7 @@ public class Fixy {
         wCommandCommon.addCommands(new Fixy.DD());
 
 
-        wCommandCommon.processAndInvoke("simple");
+        wCommandCommon.processAndInvoke("vim", "p", "ads", "dld");
 
     }
 
@@ -45,7 +48,7 @@ public class Fixy {
     public static final class Vim {
         @Command
         public void p(@Argument String a, @Argument String b) {
-            System.out.println("VSimple");
+            System.out.println("VSimple + "+a+" -> "+b);
         }
 
     }

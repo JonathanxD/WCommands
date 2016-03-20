@@ -27,6 +27,8 @@ import com.github.jonathanxd.wcommands.factory.ArgumentBuilder;
 import com.github.jonathanxd.wcommands.factory.CommandBuilder;
 import com.github.jonathanxd.wcommands.text.Text;
 
+import org.junit.Test;
+
 import java.util.Optional;
 
 /**
@@ -34,7 +36,8 @@ import java.util.Optional;
  */
 public class Readme {
 
-    public static void main(String[] args) throws ProcessingError {
+    @Test
+    public void readme() throws ProcessingError {
         WCommandCommon manager = new WCommandCommon();
 
         CommandSpec spec = CommandBuilder.builder()
@@ -59,7 +62,7 @@ public class Readme {
                                 .<ID, String>builder()
                                 .withId(ID.TEXT)
                                 .withTextPredicate(text->true)
-                                .withConverter(String::toString)
+                                .withConverter(Object::toString)
                                 .setOptional(true)
                                 .build()
                 ).build();
@@ -72,7 +75,7 @@ public class Readme {
 
         manager.addInterceptor((commandData, handler) -> {
             Optional<ArgumentHolder<ID, Object>> argumentHolder = commandData.getCommand().getArgument(ID.TEXT);
-            argumentHolder.ifPresent(v -> v.setValue("ad"));
+            argumentHolder.ifPresent(v -> v.setValues("ad"));
         });
 
         manager.processAndInvoke("say", "foo bar");

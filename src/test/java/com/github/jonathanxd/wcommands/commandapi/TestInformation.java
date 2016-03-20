@@ -24,6 +24,8 @@ import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.factory.CommandFactory;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +35,8 @@ import java.util.Optional;
  */
 public class TestInformation {
 
-    public static void main(String[] args) {
+    @Test
+    public void testInformation() {
         // Create a list of persons
         List<Person> persons = new ArrayList<>();
         // Add "Maria" to list
@@ -84,7 +87,7 @@ public class TestInformation {
                         // Set argument id
                         .withId(ID.PERSON)
                         // Set argument converter
-                        .withConverter(new CollectionConverter<>(persons, (p, in) -> p.getName().equalsIgnoreCase(in)))
+                        .withConverter(new CollectionConverter<>(persons, (p, in) -> in.stream().anyMatch(t -> t.equalsIgnoreCase(p.getName()))))
                         // Build argument
                         .build())
                 .withArgument(CommandFactory

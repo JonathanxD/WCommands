@@ -28,12 +28,15 @@ import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandPr
 import com.github.jonathanxd.wcommands.infos.Information;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 
+import org.junit.Test;
+
 /**
  * Created by jonathan on 11/03/16.
  */
 public class TestInformation {
 
-    public static void main(String[] args) {
+    @Test
+    public void testInformation() {
         ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new TestInformation());
 
         InformationRegister information = InformationRegister

@@ -30,12 +30,16 @@ import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 import com.github.jonathanxd.wcommands.processor.CommonProcessor;
 
+import org.junit.Assert;
+
+import org.junit.Test;
+
 public class TestAnnotations {
 
     // --allowUpper false --daemon --rail true
 
-
-    public static void main(String[] args) throws ProcessingError {
+    @Test
+    public void testAnnotations() throws ProcessingError {
 
         ReflectionCommandProcessor commandCommon = new ReflectionCommandProcessor(new CommonProcessor(), new MyErrorHandler());
 
@@ -48,24 +52,29 @@ public class TestAnnotations {
         System.out.println("Allow Upper? "+testAnnotations.allowUpper);
         System.out.println("Is Daemon? "+testAnnotations.daemon);
         System.out.println("Rail? "+testAnnotations.rail);
+
+        Assert.assertEquals(testAnnotations.allowUpper, true);
+        Assert.assertEquals(testAnnotations.daemon, true);
+        Assert.assertEquals(testAnnotations.rail, false);
     }
 
     @Command(prefix = "--")
     @Argument
     private boolean allowUpper = false;
 
-    @Command
-    @Argument
+    @Command(prefix = "--")
+    @Argument(isOptional = true)
     private boolean daemon = false;
 
     @Command(prefix = "--")
     @Argument
-    public boolean rail = false;
+    public boolean rail = true;
 
     public static class MyErrorHandler implements ErrorHandler {
 
         @Override
         public boolean handle(ProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, Requirements requirements, InformationRegister informationRegister) {
+            error.printStackTrace();
             return error.getType().getExceptionType() != ErrorType.Type.ERROR;
         }
     }

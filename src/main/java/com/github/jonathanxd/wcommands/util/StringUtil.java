@@ -26,6 +26,7 @@ import java.util.List;
  */
 public class StringUtil {
 
+    @Deprecated
     public static List<String> toList(String[] arguments) {
 
         List<String> list = new ArrayList<>();
@@ -37,7 +38,7 @@ public class StringUtil {
                 if (currentString == null) {
                     currentString = arg.substring(1);
                 } else {
-                    if (QuoteUtil.allOpenAllClose(currentString)) {
+                    if (TagUtil.allOpenAllClose(currentString)) {
 
                         currentString += " " + arg;
                         list.add(currentString.substring(0, currentString.length()-1));
@@ -47,7 +48,7 @@ public class StringUtil {
 
             } else if (arg.endsWith("\"")) {
                 if (currentString != null) {
-                    if (QuoteUtil.allOpenAllClose(currentString)) {
+                    if (TagUtil.allOpenAllClose(currentString)) {
                         list.add(currentString);
                         currentString = null;
                     }
@@ -64,6 +65,11 @@ public class StringUtil {
         }
 
         return list;
+    }
+
+    public static List<String> argToList(String arguments, char[] tags) {
+        TagUtil.TagsData tagsData = TagUtil.process(arguments, tags);
+        return TagUtil.getSplited(arguments, tagsData, ' ', true);
     }
 
 }

@@ -18,13 +18,15 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators;
 
+import java.util.List;
+
 /**
  * Created by jonathan on 27/02/16.
  */
 public interface Translator<T> {
 
-    boolean isAcceptable(String text);
+    boolean isAcceptable(List<String> text);
 
-    T translate(String text);
+    T translate(List<String> text);
 
 }

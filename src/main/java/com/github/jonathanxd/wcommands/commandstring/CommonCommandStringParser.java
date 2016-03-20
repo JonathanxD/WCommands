@@ -20,7 +20,9 @@ package com.github.jonathanxd.wcommands.commandstring;
 
 import com.github.jonathanxd.wcommands.util.StringUtil;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * Created by jonathan on 19/03/16.
@@ -28,6 +30,11 @@ import java.util.List;
 public class CommonCommandStringParser implements CommandStringParser {
     @Override
     public List<String> parse(String[] commandString) {
-        return StringUtil.toList(commandString);
+
+        StringJoiner sj = new StringJoiner(" ");
+
+        Arrays.stream(commandString).forEach(sj::add);
+
+        return StringUtil.argToList(sj.toString(), new char[]{'[', ']', '"', '"'});
     }
 }

@@ -32,12 +32,15 @@ import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandPr
 import com.github.jonathanxd.wcommands.infos.Information;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 
+import org.junit.Test;
+
 /**
  * Created by jonathan on 11/03/16.
  */
 public class TestHelper {
 
-    public static void main(String[] args) {
+    @Test
+    public void testHelper() {
 
         ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new HelperErrorHandler(CommonPrinter.TO_SYS_OUT), new TestHelper());
 

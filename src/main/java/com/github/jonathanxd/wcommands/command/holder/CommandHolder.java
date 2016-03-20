@@ -261,11 +261,11 @@ public class CommandHolder implements Matchable<String> {
      * @param <R>  Value Type?
      * @return Optional of {@link Text} representation
      */
-    public <ID, R> Optional<String> getPlainArgument(ID id) {
+    public <ID, R> Optional<List<String>> getPlainArgument(ID id) {
         Optional<ArgumentHolder<ID, R>> argumentHolder = getArgument(id);
 
         if (argumentHolder.isPresent()) {
-            return Optional.of(argumentHolder.get().getValue());
+            return Optional.of(argumentHolder.get().getValues());
         }
 
         return Optional.empty();
@@ -371,8 +371,8 @@ public class CommandHolder implements Matchable<String> {
          * Consume all arguments as Plain ArgumentSpec
          * @param argumentConsumer ArgumentSpec consumer
          */
-        public void plain(Consumer<String> argumentConsumer) {
-            holder(holder -> argumentConsumer.accept(holder.getValue()));
+        public void plain(Consumer<List<String>> argumentConsumer) {
+            holder(holder -> argumentConsumer.accept(((ArgumentHolder<?, ?>)holder).getValues()));
         }
 
         /**
@@ -384,5 +384,10 @@ public class CommandHolder implements Matchable<String> {
                 argumentConsumer.accept(argumentHolder);
             }
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return getCommandSpec().hashCode();
     }
 }

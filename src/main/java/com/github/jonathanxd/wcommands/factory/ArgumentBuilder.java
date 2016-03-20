@@ -22,9 +22,12 @@ import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.text.Text;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Created by jonathan on 27/02/16.
@@ -32,10 +35,11 @@ import java.util.function.Supplier;
 public class ArgumentBuilder<ID, T> {
     private ID id;
     private boolean optional = false;
+    private boolean isInfinite = false;
     @SuppressWarnings("unchecked")
-    private Function<String, T> converter = new All();
+    private Function<List<String>, T> converter = new All();
     private Supplier<Matchable<String>> checker = null;
-    private Predicate<String> predicate = null;
+    private Predicate<List<String>> predicate = null;
 
     private ArgumentBuilder() {
     }
@@ -54,7 +58,12 @@ public class ArgumentBuilder<ID, T> {
         return this;
     }
 
-    public ArgumentBuilder<ID, T> withConverter(Function<String, T> converter) {
+    public ArgumentBuilder<ID, T> setInfinite(boolean infinite) {
+        isInfinite = infinite;
+        return this;
+    }
+
+    public ArgumentBuilder<ID, T> withConverter(Function<List<String>, T> converter) {
         this.converter = converter;
         return this;
     }
@@ -70,12 +79,12 @@ public class ArgumentBuilder<ID, T> {
      * @return COMPATIBILITY
      * @see #withPredicate(Predicate)
      */
-    public ArgumentBuilder<ID, T> withTextPredicate(Predicate<Text> predicate) {
-        this.predicate = t -> predicate.test(Text.of(t));
+    public ArgumentBuilder<ID, T> withTextPredicate(Predicate<List<Text>> predicate) {
+        this.predicate = t -> predicate.test(t.stream().map(Text::of).collect(Collectors.toList()));
         return this;
     }
 
-    public ArgumentBuilder<ID, T> withPredicate(Predicate<String> predicate) {
+    public ArgumentBuilder<ID, T> withPredicate(Predicate<List<String>> predicate) {
         this.predicate = predicate;
         return this;
     }
@@ -83,13 +92,14 @@ public class ArgumentBuilder<ID, T> {
 
 
     public ArgumentSpec<ID, T> build() {
-        return new ArgumentSpec<>(id, checker, predicate, optional, converter);
+        return new ArgumentSpec<>(id, isInfinite, checker, predicate, optional, converter);
     }
 
-    private static class All<T> implements Function<String, Object> {
+    private static class All<T> implements Function<List<String>, T> {
+        @SuppressWarnings("unchecked")
         @Override
-        public Object apply(String text) {
-            return text;
+        public T apply(List<String> text) {
+            return (T) text.get(0);
         }
     }
 }

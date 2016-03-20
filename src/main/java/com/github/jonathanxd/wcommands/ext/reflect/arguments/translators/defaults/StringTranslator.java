@@ -21,18 +21,20 @@ package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaul
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 import com.github.jonathanxd.wcommands.text.Text;
 
+import java.util.List;
+
 /**
  * Created by jonathan on 27/02/16.
  */
 public class StringTranslator implements Translator<String> {
 
     @Override
-    public boolean isAcceptable(String text) {
-        return true;
+    public boolean isAcceptable(List<String> text) {
+        return !text.isEmpty() && text.size() == 1;
     }
 
     @Override
-    public String translate(String text) {
-        return text;
+    public String translate(List<String> text) {
+        return text.get(0);
     }
 }

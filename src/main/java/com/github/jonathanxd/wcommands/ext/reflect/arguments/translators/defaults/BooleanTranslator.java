@@ -21,6 +21,7 @@ package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaul
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 import com.github.jonathanxd.wcommands.text.Text;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -30,14 +31,16 @@ public class BooleanTranslator implements Translator<Boolean> {
     private static final Pattern BOOLEAN_REGEX = Pattern.compile("true|false|yes|no");
 
     @Override
-    public boolean isAcceptable(String text) {
-        return BOOLEAN_REGEX.matcher(text).matches();
+    public boolean isAcceptable(List<String> text) {
+        return !text.isEmpty() && BOOLEAN_REGEX.matcher(text.get(0)).matches();
     }
 
     @Override
-    public Boolean translate(String text) {
+    public Boolean translate(List<String> textList) {
 
-        if(!isAcceptable(text))
+        String text = textList.get(0);
+
+        if(!isAcceptable(textList))
             throw new IllegalArgumentException("Cannot translate '"+text+"' to Boolean");
 
         return text.equalsIgnoreCase("true") || text.equalsIgnoreCase("yes");

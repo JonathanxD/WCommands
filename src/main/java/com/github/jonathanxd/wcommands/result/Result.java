@@ -18,30 +18,98 @@
  */
 package com.github.jonathanxd.wcommands.result;
 
+import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.handler.Handler;
+import com.github.jonathanxd.wcommands.util.reflection.ToString;
+
+import java.util.Optional;
 
 /**
  * Created by jonathan on 18/03/16.
  */
-public class Result {
+public class Result<T> implements IResult<T> {
     private final Handler<?> source;
-    private final Object resultValue;
+    private final CommandData<?> commandData;
+    private final T resultValue;
+    private final Enum<?> id;
 
-    public Result(Handler<?> source, Object resultValue) {
-        this.source = source;
-        this.resultValue = resultValue;
+    Result(Handler<?> source, T resultValue, CommandData<?> commandData) {
+        this(source, commandData, resultValue, null);
     }
 
+    Result(Handler<?> source, CommandData<?> commandData, T resultValue, Enum<?> id) {
+        this.source = source;
+        this.commandData = commandData;
+        this.resultValue = resultValue;
+        this.id = id;
+    }
+
+    public Result(T resultValue, Enum<?> id) {
+        this.source = null;
+        this.commandData = null;
+        this.resultValue = resultValue;
+        this.id = id;
+    }
+
+    @Override
+    public Optional<Enum<?>> getBoxedId() {
+        return Optional.ofNullable(id);
+    }
+
+    @Override
+    public Enum<?> getId() {
+        return id;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <V extends Enum<V>> Enum<V> getGenId() {
+        return id == null ? null : (Enum<V>) id;
+    }
+
+    @Override
+    public <V extends Enum<V>> Enum<V> getGenId(Class<V> clazz) {
+        return id == null || clazz == null ? null : clazz.cast(id);
+    }
+
+    @Override
+    public CommandData<?> getCommandData() {
+        return commandData;
+    }
+
+    @Override
     public Handler<?> getSource() {
         return source;
     }
 
-    public Object getResultValue() {
+    @Override
+    public T getResultValue() {
         return resultValue;
     }
 
     @Override
     public String toString() {
-        return "Result[source="+source+", resultValue="+resultValue+"]";
+        return "Result["+ ToString.toString(this)+"]";
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : commandData.hashCode();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static IResult<?> fill(IResult<?> iResult, Handler<?> source, CommandData<?> commandData, Object resultValue, Enum<?> id) {
+
+        Handler<?> fSource = iResult.getSource();
+        CommandData<?> fCommandData = iResult.getCommandData();
+        Object fResultValue = iResult.getResultValue();
+        Enum<?> fId = iResult.getId();
+
+        fSource = fSource != null ? fSource : source;
+        fCommandData = fCommandData != null ? fCommandData : commandData;
+        fResultValue = fResultValue != null ? fResultValue : resultValue;
+        fId = fId != null ? fId : id;
+
+        return new Result<>(fSource, fCommandData, fResultValue, fId);
     }
 }

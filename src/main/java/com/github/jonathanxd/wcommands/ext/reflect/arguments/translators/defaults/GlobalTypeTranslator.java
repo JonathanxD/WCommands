@@ -29,6 +29,7 @@ import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.default
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.SingleNamedContainer;
 import com.github.jonathanxd.wcommands.util.reflection.Primitive;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -74,7 +75,7 @@ public class GlobalTypeTranslator implements Translator<Object> {
     }
 
     @Override
-    public boolean isAcceptable(String text) {
+    public boolean isAcceptable(List<String> text) {
 
         try {
             return translate(text) != null;
@@ -84,7 +85,7 @@ public class GlobalTypeTranslator implements Translator<Object> {
     }
 
     @Override
-    public Object translate(String text) {
+    public Object translate(List<String> text) {
 
         Container<Object> objectContainer = new Container<>(null);
 

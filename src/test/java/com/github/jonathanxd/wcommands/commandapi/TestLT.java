@@ -33,6 +33,9 @@ import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 import com.github.jonathanxd.wcommands.processor.CommonProcessor;
 import com.github.jonathanxd.wcommands.text.Text;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.util.Optional;
 
 public class TestLT {
@@ -40,8 +43,9 @@ public class TestLT {
     // --allowUpper false --daemon --rail true
 
 
-    public static void main(String[] args) throws ProcessingError {
-        WCommandCommon wCommandCommon = new WCommandCommon(new CommonProcessor(), new MyErrorHandler());
+    @Test
+    public void firstTest() throws ProcessingError {
+        WCommandCommon wCommandCommon = new WCommandCommon(new CommonProcessor());
         /*wCommandCommon.registerCommand(CommandVisitor.create("allowUpper",
                 new BooleanArgumentSpec<IDs>(IDs.ALLOW_UPPER, false),
                 false,
@@ -49,7 +53,7 @@ public class TestLT {
         wCommandCommon.registerCommand(CommandBuilder.builder()
                 .withPrefix("--")
                 .withName(Text.of("allowUpper"))
-                .withArgument(new BooleanArgumentSpec<>(IDs.ALLOW_UPPER, false))
+                .withArgument(new BooleanArgumentSpec<>(IDs.ALLOW_UPPER, false, false))
                 .withCommonHandler((commandData, requirements, ref) -> {
                     CommandHolder holder = commandData.getCommand();
 
@@ -75,7 +79,7 @@ public class TestLT {
         wCommandCommon.registerCommand(CommandBuilder.builder()
                 .withPrefix("--")
                 .withName(Text.of("rail"))
-                .withArgument(new BooleanArgumentSpec<>(IDs.RAIL, false))
+                .withArgument(new BooleanArgumentSpec<>(IDs.RAIL, false, false))
                 .withValueHandler(new CommonHandler.Value<IDs, Boolean>(IDs.RAIL) {
                     @Override
                     public Object handle(Boolean value) {

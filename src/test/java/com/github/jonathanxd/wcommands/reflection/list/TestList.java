@@ -16,26 +16,32 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.reflection.requirements;
+package com.github.jonathanxd.wcommands.reflection.list;
 
 import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
+import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
+import com.github.jonathanxd.wcommands.ext.reflect.infos.Info;
 import com.github.jonathanxd.wcommands.ext.reflect.infos.require.Require;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.infos.requirements.ProvidedRequirement;
 import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
+import com.github.jonathanxd.wcommands.result.Result;
 import com.github.jonathanxd.wcommands.result.Results;
 
 import org.junit.Test;
 
+import java.util.List;
+
 /**
  * Created by jonathan on 18/03/16.
  */
-public class TestReq {
+public class TestList {
 
     @Test
-    public void requirementsTest() {
+    public void listTest() {
         ProvidedRequirement providedRequirement = (data, reg) -> {
             Sender sender = reg.<Sender>getOptional(Sender.class).get();
             return sender.hasPerm(data);
@@ -47,9 +53,9 @@ public class TestReq {
         requirements.add(Permission.class, providedRequirement);
 
 
-        WCommandCommon wCommandCommon = ReflectionAPI.createWCommand(new TestReq());
+        WCommandCommon wCommandCommon = ReflectionAPI.createWCommand(new TestList());
 
-        Results results = wCommandCommon.processAndInvoke(requirements, informationRegister, "test1");
+        Results results = wCommandCommon.processAndInvoke(requirements, informationRegister, "show", "list", "a", "b", "c", "named", "Xy");
 
         System.out.println("Results: "+results);
     }
@@ -64,9 +70,24 @@ public class TestReq {
 
     @Command
     @Require(type = Permission.class, data = "dup")
-    public String test1() {
-        System.out.println("TEST WITH PERM");
+    public String show() {
         return "AAB";
     }
 
+    @SubCommand({"show"})
+    public Result<List<String>> list(@Argument(isInfinite = true) List<String> stringList) {
+        System.out.println("A List "+stringList);
+        return new Result<>(stringList, IDs.DATA);
+    }
+
+    @SubCommand({"show"})
+    public String named(@Argument String name,
+                        @Info Results results) {
+        System.out.println("Results: "+results.find(IDs.DATA));
+        return "WM";
+    }
+
+    enum IDs {
+        DATA
+    }
 }

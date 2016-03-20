@@ -25,6 +25,7 @@ import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.handler.Handler;
 import com.github.jonathanxd.wcommands.text.Text;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -92,29 +93,45 @@ public class CommandFactory {
     }
 
     public static <ID> ArgumentSpec<ID, String> create(ID id, Supplier<Matchable<String>> checker) {
-        return create(id, checker, t -> true, false, new All());
+        return create(id, checker, t -> true, false, false, new All());
+    }
+
+    public static <ID> ArgumentSpec<ID, String> create(ID id, boolean infinite, Supplier<Matchable<String>> checker) {
+        return create(id, checker, t -> true, false, infinite, new All());
     }
 
     public static <ID> ArgumentSpec<ID, String> createOptional(ID id, Supplier<Matchable<String>> checker) {
-        return create(id, checker, t -> true, true, new All());
+        return create(id, checker, t -> true, true, false, new All());
     }
 
-    public static <ID> ArgumentSpec<ID, String> create(ID id, Supplier<Matchable<String>> checker, Predicate<String> postCheck) {
-        return create(id, checker, postCheck, false, new All());
+    public static <ID> ArgumentSpec<ID, String> createOptional(ID id, boolean infinite, Supplier<Matchable<String>> checker) {
+        return create(id, checker, t -> true, true, infinite, new All());
     }
 
-    public static <ID> ArgumentSpec<ID, String> createOptional(ID id, Supplier<Matchable<String>> checker, Predicate<String> postCheck) {
-        return create(id, checker, postCheck, true, new All());
+    public static <ID> ArgumentSpec<ID, String> create(ID id, Supplier<Matchable<String>> checker, Predicate<List<String>> postCheck) {
+        return create(id, checker, postCheck, false, false, new All());
     }
 
-    public static <ID, T> ArgumentSpec<ID, T> create(ID id, Supplier<Matchable<String>> checker, Predicate<String> predicate, boolean optional, Function<String, T> converter) {
-        return new ArgumentSpec<>(id, checker, predicate, optional, converter);
+    public static <ID> ArgumentSpec<ID, String> create(ID id, boolean infinite, Supplier<Matchable<String>> checker, Predicate<List<String>> postCheck) {
+        return create(id, checker, postCheck, false, infinite, new All());
     }
 
-    private static class All implements Function<String, String> {
+    public static <ID> ArgumentSpec<ID, String> createOptional(ID id, Supplier<Matchable<String>> checker, Predicate<List<String>> postCheck) {
+        return create(id, checker, postCheck, true, false, new All());
+    }
+
+    public static <ID> ArgumentSpec<ID, String> createOptional(ID id, boolean infinite, Supplier<Matchable<String>> checker, Predicate<List<String>> postCheck) {
+        return create(id, checker, postCheck, true, infinite, new All());
+    }
+
+    public static <ID, T> ArgumentSpec<ID, T> create(ID id, Supplier<Matchable<String>> checker, Predicate<List<String>> predicate, boolean optional, boolean infinite, Function<List<String>, T> converter) {
+        return new ArgumentSpec<>(id, infinite, checker, predicate, optional, converter);
+    }
+
+    private static class All implements Function<List<String>, String> {
         @Override
-        public String apply(String text) {
-            return text;
+        public String apply(List<String> text) {
+            return text.isEmpty() ? null : text.get(0);
         }
     }
 

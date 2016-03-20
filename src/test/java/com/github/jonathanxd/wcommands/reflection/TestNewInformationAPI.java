@@ -27,12 +27,15 @@ import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandPr
 import com.github.jonathanxd.wcommands.infos.Information;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 
+import org.junit.Test;
+
 /**
  * Created by jonathan on 11/03/16.
  */
 public class TestNewInformationAPI {
 
-    public static void main(String[] args) {
+    @Test
+    public void newInformationAPITest() {
         ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new TestNewInformationAPI());
 
         InformationRegister information = InformationRegister
@@ -55,7 +58,7 @@ public class TestNewInformationAPI {
     public void pm(@Argument String message,
                    @Info(type = Sender.class, description = "etc") Entity en,
                    @Info(type = Receiver.class) Entity receiver) {
-        System.out.println(en.getName() + " send message "+receiver.getName());
+        System.out.println(en.getName() + " send message "+message+" to "+receiver.getName());
     }
 
     /**

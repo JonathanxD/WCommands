@@ -34,8 +34,16 @@ import java.util.List;
  */
 public class WCommandCommon extends WCommand<List<CommandData<CommandHolder>>> {
 
+    public WCommandCommon(Processor<List<CommandData<CommandHolder>>> processor) {
+        this(processor, (e, d, l, v, r, k) -> {
+            if(e != null)
+                e.printStackTrace();
+            return e != null && e.getType().getExceptionType() != ErrorType.Type.ERROR;
+        });
+    }
+
     public WCommandCommon() {
-        this(new CommonProcessor(), (e, d, l, v, r, k) -> e != null && e.getType().getExceptionType() != ErrorType.Type.ERROR);
+        this(new CommonProcessor());
     }
 
     public WCommandCommon(ErrorHandler<List<CommandData<CommandHolder>>> errorHandler) {

@@ -43,6 +43,8 @@ public @interface Argument {
 
     boolean isOptional() default false;
 
+    boolean isInfinite() default false;
+
     Class<?> type() default PR.class;
 
     final class PR {}

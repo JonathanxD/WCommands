@@ -46,4 +46,9 @@ public class CommandData<C> {
     public C getParent() {
         return parent;
     }
+
+    @Override
+    public int hashCode() {
+        return command.hashCode();
+    }
 }

@@ -26,6 +26,8 @@ import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 
+import org.junit.Test;
+
 import java.util.Optional;
 
 /**
@@ -33,7 +35,8 @@ import java.util.Optional;
  */
 public class Readme {
 
-    public static void main(String[] args) throws ProcessingError {
+    @Test
+    public void readme() throws ProcessingError {
         Readme readme = new Readme();
         ReflectionCommandProcessor commandProcessor = ReflectionAPI.createWCommand(readme);
 

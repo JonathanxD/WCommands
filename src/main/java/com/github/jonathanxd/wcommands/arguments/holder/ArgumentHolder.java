@@ -19,7 +19,11 @@
 package com.github.jonathanxd.wcommands.arguments.holder;
 
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
-import com.github.jonathanxd.wcommands.text.Text;
+import com.github.jonathanxd.wcommands.util.reflection.ToString;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by jonathan on 26/02/16.
@@ -38,15 +42,15 @@ public class ArgumentHolder<ID, T> {
     /**
      * String representation of argumentSpec input value.
      */
-    private String value;
+    private final List<String> values;
 
     /**
      * ArgumentSpec instance
      */
     private final ArgumentSpec<ID, T> argumentSpec;
 
-    public ArgumentHolder(String value, ArgumentSpec<ID, T> argumentSpec) {
-        this.value = value;
+    public ArgumentHolder(List<String> values, ArgumentSpec<ID, T> argumentSpec) {
+        this.values = values == null ? null : new ArrayList<>(values);
         this.argumentSpec = argumentSpec;
     }
 
@@ -55,17 +59,26 @@ public class ArgumentHolder<ID, T> {
      *
      * @return Text representation of input string
      */
-    public String getValue() {
-        return value;
+    public String getFirstValue() {
+        return !values.isEmpty() ? values.get(0) : null;
     }
 
+    public List<String> getValues() {
+        return values;
+    }
 
     /**
-     * Set ArgumentSpec value (input string)
-     * @param value Value
+     * Set ArgumentSpec values (input strings)
+     * @param values Values
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setValues(String... values) {
+        this.values.clear();
+        this.values.addAll(Arrays.asList(values));
+    }
+
+    public void setValues(List<String> values) {
+        this.values.clear();
+        this.values.addAll(values);
     }
 
     /**
@@ -79,12 +92,12 @@ public class ArgumentHolder<ID, T> {
     }
 
     /**
-     * Convert from Text representation {@link #getValue()} to Object representation
+     * Convert from Text List representation {@link #getValues()} to Object representation
      *
      * @return Object representation
      */
     public T convertValue() {
-        return argumentSpec.getConverter().apply(getValue());
+        return argumentSpec.getConverter().apply(getValues());
     }
 
     /**
@@ -93,11 +106,12 @@ public class ArgumentHolder<ID, T> {
      * @return True if the argumentSpec is present, false otherwise
      */
     public boolean isPresent() {
-        return value != null;
+        return values != null && !values.isEmpty();
     }
 
     @Override
     public String toString() {
-        return "ArgumentHolder[value=" + value + ", argumentSpec=" + argumentSpec + ", isPresent=" + isPresent() + "]";
+        return "ArgumentHolder["+ToString.toString(this)+"]";
+        //return "ArgumentHolder[values={" + values + "}, argumentSpec=" + argumentSpec + ", isPresent=" + isPresent() + "]";
     }
 }
