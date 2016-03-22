@@ -48,12 +48,11 @@ public class ReflectionAPI extends Extension {
         return createWCommand(instance, instance.getClass());
     }
 
-
     public static ReflectionCommandProcessor createWCommand(Object instance, Class<?> commandClass) {
         ReflectionCommandProcessor commandProcessor = new ReflectionCommandProcessor();
 
         if (instance != null)
-            commandProcessor.addCommands(instance, commandClass);
+            commandProcessor.addAsFuture(instance, commandClass);
 
         return commandProcessor;
     }
@@ -62,7 +61,7 @@ public class ReflectionAPI extends Extension {
         ReflectionCommandProcessor commandProcessor = new ReflectionCommandProcessor(handler);
 
         if (instance != null)
-            commandProcessor.addCommands(instance, instance.getClass());
+            commandProcessor.addAsFuture(instance, instance.getClass());
 
         return commandProcessor;
     }
@@ -71,7 +70,7 @@ public class ReflectionAPI extends Extension {
         ReflectionCommandProcessor commandProcessor = new ReflectionCommandProcessor(handler);
 
         if (instance != null)
-            commandProcessor.addCommands(instance, commandClass);
+            commandProcessor.addAsFuture(instance, commandClass);
 
         return commandProcessor;
     }
@@ -80,7 +79,7 @@ public class ReflectionAPI extends Extension {
         ReflectionCommandProcessor commandProcessor = new ReflectionCommandProcessor(processor, handler);
 
         if (instance != null)
-            commandProcessor.addCommands(instance, instance.getClass());
+            commandProcessor.addAsFuture(instance, instance.getClass());
 
         return commandProcessor;
     }
@@ -89,9 +88,19 @@ public class ReflectionAPI extends Extension {
         ReflectionCommandProcessor commandProcessor = new ReflectionCommandProcessor(processor, handler);
 
         if (instance != null)
-            commandProcessor.addCommands(instance, commandClass);
+            commandProcessor.addAsFuture(instance, commandClass);
 
         return commandProcessor;
+    }
+
+    /***************** NEW METHODS *****************/
+
+    public static ReflectionCommandProcessor createWCommand(ErrorHandler<List<CommandData<CommandHolder>>> handler) {
+        return new ReflectionCommandProcessor(handler);
+    }
+
+    public static ReflectionCommandProcessor createWCommand(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler<List<CommandData<CommandHolder>>> handler) {
+        return new ReflectionCommandProcessor(processor, handler);
     }
 
 }

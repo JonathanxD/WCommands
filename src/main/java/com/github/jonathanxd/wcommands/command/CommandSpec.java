@@ -19,12 +19,16 @@
 package com.github.jonathanxd.wcommands.command;
 
 import com.github.jonathanxd.iutils.annotations.Immutable;
+import com.github.jonathanxd.iutils.reflection.RClass;
+import com.github.jonathanxd.iutils.reflection.Reflection;
+import com.github.jonathanxd.wcommands.WCommand;
 import com.github.jonathanxd.wcommands.arguments.Arguments;
 import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.common.alias.AliasList;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.handler.Handler;
 import com.github.jonathanxd.wcommands.text.Text;
+import com.github.jonathanxd.wcommands.util.Functions;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -95,8 +100,10 @@ public class CommandSpec implements Matchable<String> {
 
     /**
      * List of commands
+     *
+     * Doesn't modify field name, if you want to modify see method {@link #withHandledCommandList(WCommand, CommandSpec)}
      */
-    private final CommandList subCommands = new CommandList();
+    private final CommandList subCommands = new CommandList(this);
 
     /**
      * Create a new CommandSpec instance
@@ -130,6 +137,7 @@ public class CommandSpec implements Matchable<String> {
             throw new RuntimeException(e);
         }
     }
+
 
     public static String toString(CommandSpec commandSpec, Appendable append) throws IOException {
         return toAppendable(commandSpec, append).toString();
@@ -291,7 +299,7 @@ public class CommandSpec implements Matchable<String> {
      */
     @Immutable
     public CommandList getSubCommands() {
-        return new CommandList(Collections.unmodifiableList(subCommands));
+        return new CommandList(Collections.unmodifiableList(subCommands), this);
     }
 
     /**
@@ -421,4 +429,35 @@ public class CommandSpec implements Matchable<String> {
     }
 
 
+    public static CommandSpec withHandledCommandList(WCommand<?> wCommand, CommandSpec commandSpec) {
+        CommandSpec newCommandSpec = new CommandSpec(commandSpec.getName(), commandSpec.getDescription(), commandSpec.getArguments(), commandSpec.isOptional(), commandSpec.getPrefix(), commandSpec.getSuffix(), commandSpec.getDefaultHandler());
+        try {
+            //--------------------------------------------------------------------------------|SUB COMMANDS FIELD HERE|
+            Reflection.changeFinalField(RClass.getRClass(newCommandSpec.getClass(), newCommandSpec), "subCommands", new CommandList(wCommand, newCommandSpec));
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot convert command", e);
+        }
+
+        if(commandSpec.getSubCommands().size() > 0) {
+            for(CommandSpec childCommandSpec : commandSpec.getSubCommands()) {
+                newCommandSpec.addSub(withHandledCommandList(wCommand, childCommandSpec));
+            }
+        }
+
+        return newCommandSpec;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (!(obj instanceof CommandSpec))
+            return super.equals(obj);
+
+        CommandSpec spec = (CommandSpec) obj;
+
+        Optional<Text> textOptional = Functions.return_(spec.allTexts(), nameOrAlias -> spec.getName().compareTo(nameOrAlias) == 0 || spec.getAliases().contains(nameOrAlias));
+
+        return textOptional.isPresent() || super.equals(obj);
+
+    }
 }

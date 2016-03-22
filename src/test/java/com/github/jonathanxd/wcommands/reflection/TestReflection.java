@@ -23,6 +23,7 @@ import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
+import com.github.jonathanxd.wcommands.handler.registration.RegistrationHandleResult;
 
 import org.junit.Test;
 
@@ -36,6 +37,13 @@ public class TestReflection {
     @Test
     public void reflectionTest() {
         ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new TestReflection());
+
+        processor.registerRegistrationHandler((registrationHandleResults, targetList, manager) -> {
+            System.out.println("Process List: "+registrationHandleResults);
+
+            return RegistrationHandleResult.accept();
+        });
+
         processor.processAndInvoke("say", "hello", "special");
 
         Optional<CommandSpec> cmdOpt = processor.getCommand("say");

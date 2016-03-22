@@ -21,10 +21,9 @@ package com.github.jonathanxd.wcommands.reflection;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
-import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.infos.Info;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
-import com.github.jonathanxd.wcommands.infos.Information;
+import com.github.jonathanxd.wcommands.handler.registration.RegistrationHandleResult;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 
 import org.junit.Test;
@@ -37,6 +36,12 @@ public class TestNewInformationAPI {
     @Test
     public void newInformationAPITest() {
         ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new TestNewInformationAPI());
+
+        processor.registerRegistrationHandler((registrationHandleResults, targetList, manager) -> {
+            System.out.println("Results: "+registrationHandleResults+" Manager: "+manager);
+
+            return RegistrationHandleResult.accept();
+        });
 
         InformationRegister information = InformationRegister
                 // Create information builder

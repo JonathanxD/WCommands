@@ -243,7 +243,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
             ArgumentsHolder argumentHolders = new ArgumentsHolder();
 
             // ArgumentSpec parsing
-            CommandList parentSubCommands = parent != null ? parent.getSubCommands() : new CommandList();
+            CommandList parentSubCommands = parent != null ? parent.getSubCommands() : new CommandList(this);
 
             // Check if any sub command matches this name, if matches, will return the 'empty arguments holder'.
 

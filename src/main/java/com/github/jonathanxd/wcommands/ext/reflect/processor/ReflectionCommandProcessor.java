@@ -34,9 +34,9 @@ import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Transla
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TypeTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.BooleanTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.NumberTranslator;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.StringTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.list.EnumListTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.list.StringListTranslator;
-import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.StringTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
@@ -53,6 +53,8 @@ import com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults.ArgumentVis
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults.CommandVisitor;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults.SubCommandVisitor;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
+import com.github.jonathanxd.wcommands.infos.InformationRegister;
+import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 import com.github.jonathanxd.wcommands.interceptor.Order;
 import com.github.jonathanxd.wcommands.processor.Processor;
 import com.github.jonathanxd.wcommands.util.ListUtils;
@@ -67,9 +69,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.StringJoiner;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
@@ -83,6 +87,7 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
 
     private final TranslatorList translatorList = new TranslatorList();
     private final AnnotationVisitors annotationVisitors = new AnnotationVisitors();
+    private Queue<Runnable> waitingQueue = new LinkedList<>();
 
     public ReflectionCommandProcessor() {
         super();
@@ -104,6 +109,17 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
         initBasics();
     }
 
+    /**
+     * Instance only will be added when {@link #process(List, Requirements, InformationRegister)} is
+     * called!
+     *
+     * @param o     Instance
+     * @param clazz Commands Clazz
+     */
+    public void addAsFuture(Object o, Class<?> clazz) {
+        waitingQueue.offer(() -> addCommands(o, clazz));
+    }
+
     private void initBasics() {
         addGlobalTranslator(Reference.aEnd(Boolean.class), BooleanTranslator.class);
         addGlobalTranslator(Reference.aEnd(Number.class), NumberTranslator.class);
@@ -116,6 +132,20 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
         registerVisitor(new ArgumentVisitor(Argument.class));
         registerVisitor(new SubCommandVisitor(SubCommand.class));
 
+    }
+
+    @Override
+    public List<CommandData<CommandHolder>> process(List<String> arguments, Requirements requirements, InformationRegister informationRegister) {
+
+        if (!this.waitingQueue.isEmpty()) {
+            Runnable runnable;
+
+            while ((runnable = waitingQueue.poll()) != null) {
+                runnable.run();
+            }
+        }
+
+        return super.process(arguments, requirements, informationRegister);
     }
 
     @Override
@@ -394,4 +424,5 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
             this.postpone.clear();
         }
     }
+
 }

@@ -29,12 +29,8 @@ import java.util.StringJoiner;
  */
 public class CommonCommandStringParser implements CommandStringParser {
     @Override
-    public List<String> parse(String[] commandString) {
+    public List<String> parse(String commandString) {
 
-        StringJoiner sj = new StringJoiner(" ");
-
-        Arrays.stream(commandString).forEach(sj::add);
-
-        return StringUtil.argToList(sj.toString(), new char[]{'[', ']', '"', '"'});
+        return StringUtil.argToList(commandString, new char[]{'[', ']', '"', '"'});
     }
 }

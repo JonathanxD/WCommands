@@ -25,6 +25,7 @@ import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.infos.Info;
 import com.github.jonathanxd.wcommands.ext.reflect.infos.require.Require;
+import com.github.jonathanxd.wcommands.handler.registration.RegistrationHandleResult;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.infos.requirements.ProvidedRequirement;
 import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
@@ -54,6 +55,10 @@ public class TestList {
 
 
         WCommandCommon wCommandCommon = ReflectionAPI.createWCommand(new TestList());
+
+        wCommandCommon.registerRegistrationHandler((registrationHandleResults, targetList, manager) -> {
+            return RegistrationHandleResult.accept();
+        });
 
         Results results = wCommandCommon.processAndInvoke(requirements, informationRegister, "show", "list", "a", "b", "c", "named", "Xy");
 

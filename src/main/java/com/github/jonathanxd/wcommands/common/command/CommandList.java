@@ -18,6 +18,7 @@
  */
 package com.github.jonathanxd.wcommands.common.command;
 
+import com.github.jonathanxd.wcommands.WCommand;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.infos.InfoId;
 import com.github.jonathanxd.wcommands.text.Text;
@@ -26,6 +27,7 @@ import com.github.jonathanxd.wcommands.util.Functions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -39,17 +41,43 @@ public class CommandList implements List<CommandSpec> {
     public static final InfoId COMMANDLIST_INFOID = new InfoId("CommandList", CommandList.class);
 
     private final List<CommandSpec> commandSpecs;
+    private final Optional<WCommand<?>> wCommandOptional;
+    private final Object holdingObject;
 
-    public CommandList() {
-        this(new ArrayList<>());
+    public CommandList(Object holdingObject) {
+        this(new ArrayList<>(), holdingObject);
+    }
+
+    public CommandList(WCommand<?> wCommand, Object holdingObject) {
+        this(new ArrayList<>(), Optional.ofNullable(wCommand), holdingObject);
+    }
+
+    public CommandList(List<CommandSpec> list, Object holdingObject) {
+        this(list, Optional.empty(), holdingObject);
+    }
+
+    public CommandList(List<CommandSpec> list, Optional<WCommand<?>> wCommandOptional, Object holdingObject) {
+        this.commandSpecs = list;
+        this.wCommandOptional = wCommandOptional;
+        this.holdingObject = holdingObject;
     }
 
     public static CommandList singleton(CommandSpec commandSpec) {
-        return new CommandList(Collections.singletonList(commandSpec));
+        return new CommandList(Collections.singletonList(commandSpec), null);
     }
 
-    public CommandList(List<CommandSpec> list) {
-        this.commandSpecs = list;
+    public static Collection<CommandSpec> findParentsIn(CommandList commandList, CommandSpec parentTo) {
+
+        Collection<CommandSpec> commandSpecs = new HashSet<>();
+
+        for (CommandSpec spec : commandList) {
+            if (spec.equals(parentTo)) {
+                commandSpecs.add(spec);
+            }
+            commandSpecs.addAll(findParentsIn(spec.getSubCommands(), parentTo));
+        }
+
+        return commandSpecs;
     }
 
     public Optional<CommandSpec> getCommandOf(Collection<Text> namesAndAliases) {
@@ -92,16 +120,30 @@ public class CommandList implements List<CommandSpec> {
     }
 
     public CommandSpec getAnyMatching(String match) {
-        for(CommandSpec commandSpec : this) {
-            if(commandSpec.matches(match))
+        for (CommandSpec commandSpec : this) {
+            if (commandSpec.matches(match))
                 return commandSpec;
         }
 
         return null;
     }
 
+    /**
+     * Commonly gets the source (likely parent) was created this CommandList, normally it can be a
+     * WCommand instance or CommandSpec (parent)
+     *
+     * @return Commonly object that hold this instance.
+     */
+    public Optional<Object> getHoldingObject() {
+        return Optional.ofNullable(holdingObject);
+    }
+
     public CommandList toUnmodifiable() {
-        return new CommandList(Collections.unmodifiableList(commandSpecs));
+        return new CommandList(Collections.unmodifiableList(commandSpecs), this.holdingObject);
+    }
+
+    public Optional<WCommand<?>> getwCommandOptional() {
+        return wCommandOptional;
     }
 
     @Override
@@ -141,47 +183,96 @@ public class CommandList implements List<CommandSpec> {
 
     @Override
     public boolean containsAll(Collection<?> c) {
+
         return commandSpecs.containsAll(c);
     }
 
     // FILTER
+    // HANDLE
     @Override
     public boolean add(CommandSpec commandSpec) {
         int len = commandSpecs.size();
-        filter(Collections.singleton(commandSpec)).forEach(commandSpecs::add);
+        handle(filter(Collections.singleton(commandSpec))).forEach(commandSpecs::add);
 
         return commandSpecs.size() != len;
     }
 
     // FILTER
+    // HANDLE
     @Override
     public boolean addAll(Collection<? extends CommandSpec> c) {
-        return commandSpecs.addAll(filter(c));
+        return commandSpecs.addAll(handle(filter(c)));
 
     }
 
     // FILTER
+    // HANDLE
     @Override
     public boolean addAll(int index, Collection<? extends CommandSpec> c) {
-        return commandSpecs.addAll(index, filter(c));
+        return commandSpecs.addAll(index, handle(filter(c)));
     }
 
     // FILTER
+    // HANDLE
     @Override
     public CommandSpec set(int index, CommandSpec element) {
-        if (filter(Collections.singleton(element)).size() == 1) {
-            return commandSpecs.set(index, element);
+        Collection<? extends CommandSpec> coll = filter(Collections.singleton(element));
+
+        if (coll.size() == 1) {
+
+            for (CommandSpec spec : handle(coll, 1)) {
+                return commandSpecs.set(index, spec);
+            }
+
         }
 
         return element;
     }
 
     // FILTER
+    // HANDLE
     @Override
     public void add(int index, CommandSpec element) {
-        if (filter(Collections.singleton(element)).size() == 1) {
-            commandSpecs.add(index, element);
+
+        Collection<? extends CommandSpec> coll = filter(Collections.singleton(element));
+
+        if (coll.size() == 1) {
+
+            for (CommandSpec spec : handle(coll, 1)) {
+                commandSpecs.add(index, spec);
+            }
+
         }
+    }
+
+    private Collection<? extends CommandSpec> handle(Collection<? extends CommandSpec> collection) {
+        return handle(collection, -1);
+    }
+
+    private Collection<? extends CommandSpec> handle(Collection<? extends CommandSpec> collection, int maxHandle) {
+
+        Collection<CommandSpec> commandSpecCollection = new ArrayList<>();
+
+        if (this.getwCommandOptional().isPresent()) {
+
+            int x = 0;
+            for (CommandSpec commandSpec : collection) {
+
+                if (maxHandle > -1 && x >= maxHandle)
+                    break;
+
+                Optional<CommandSpec> specOptional = this.getwCommandOptional().get().handleRegistration(commandSpec, this);
+
+                if (specOptional.isPresent()) {
+                    commandSpecCollection.add(specOptional.get());
+                }
+
+                ++x;
+
+            }
+        }
+
+        return commandSpecCollection;
     }
 
     private Collection<? extends CommandSpec> filter(Collection<? extends CommandSpec> commands) {
@@ -192,7 +283,8 @@ public class CommandList implements List<CommandSpec> {
 
             Optional<CommandSpec> commandOptional = getCommandOf(commandSpec.allTexts());
             if (!commandOptional.isPresent()) {
-                commandSpecCollection.add(commandSpec);
+                // CONVERT
+                commandSpecCollection.add(convert(commandSpec));
             }
         }
 
@@ -202,6 +294,14 @@ public class CommandList implements List<CommandSpec> {
         return commandSpecCollection;
     }
 
+    private CommandSpec convert(CommandSpec commandSpec) {
+        if (this.getwCommandOptional().isPresent()
+                && !commandSpec.getSubCommands().getwCommandOptional().isPresent()) {
+            commandSpec = CommandSpec.withHandledCommandList(this.getwCommandOptional().get(), commandSpec);
+        }
+
+        return commandSpec;
+    }
 
     @Override
     public boolean removeAll(Collection<?> c) {
@@ -254,9 +354,13 @@ public class CommandList implements List<CommandSpec> {
     }
 
     public CommandList copy() {
-        CommandList list = new CommandList();
+        CommandList list = new CommandList(this, this.holdingObject);
         list.addAll(this);
         return list;
     }
 
+    @Override
+    public String toString() {
+        return commandSpecs.toString();
+    }
 }
