@@ -29,6 +29,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.util.Arrays;
 
 /**
  * Created by jonathan on 27/02/16.
@@ -75,8 +76,21 @@ public class ElementBridge implements AnnotatedElement {
             Object val = args[x];
             Class<?> type = types[x];
 
-            if (val != null && !type.isAssignableFrom(val.getClass()))
-                return false;
+            if (val != null) {
+                Class<?> test = val.getClass();
+
+                if (type.isPrimitive() && !test.isPrimitive()) {
+                    type = Primitive.asBoxed(type);
+                } else if (!type.isPrimitive() && test.isPrimitive()) {
+                    test = Primitive.asBoxed(test);
+                }
+
+                if (type == null || test == null || !type.isAssignableFrom(test)) {
+                    return false;
+                }
+
+            }
+
         }
 
         return true;
@@ -156,7 +170,9 @@ public class ElementBridge implements AnnotatedElement {
         if (forceAccess)
             method.setAccessible(true);
 
-        check(args, method);
+        if (!check(args, method)) {
+            throw new IllegalArgumentException("wrong number of arguments. Provided arguments: '" + Arrays.toString(args) + "'. Expected: '" + Arrays.toString(method.getParameterTypes()) + "'");
+        }
 
         return method.invoke(instance, args);
     }

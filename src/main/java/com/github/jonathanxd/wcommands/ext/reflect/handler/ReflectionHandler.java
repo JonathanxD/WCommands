@@ -141,7 +141,7 @@ public class ReflectionHandler implements CommonHandler {
                     test(requirements, requires, commandData, informationRegister, Arrays.copyOf(argObjects, argObjects.length));
                 }
                 theReturn = bridge.invoke(instance.get(), argObjects, true);
-            } catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
+            } catch (Exception e) {
 
                 if (informationRegister == null) {
                     throw new RuntimeException(e);
@@ -154,7 +154,8 @@ public class ReflectionHandler implements CommonHandler {
                 try {
                     theReturn = bridge.invoke(instance.get(), os, true);
                 } catch (Throwable tt) {
-                    throw new RuntimeException(tt.getMessage(), e);
+                    e.printStackTrace();
+                    throw new RuntimeException(tt.getMessage(), tt);
                 }
             }
 
