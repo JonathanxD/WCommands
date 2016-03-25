@@ -24,8 +24,6 @@ import com.github.jonathanxd.wcommands.WCommand;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.handler.registration.RegistrationHandleResult;
 
-import java.util.Optional;
-
 /**
  * Created by jonathan on 21/03/16.
  */
@@ -37,10 +35,10 @@ public interface CommandRegistrationHandler {
      * @param registrationHandleResults Results returned by handlers, if it is the first, a new
      *                                  Deque with singleton {@link RegistrationHandleResult} will
      *                                  be passed.
-     * @param manager                   {@link WCommand} or {@link Optional#empty()}
+     * @param manager                   A {@link WCommand} instance
      * @return a {@link RegistrationHandleResult} with the specifications or null if your handle
      * command does nothing!
      */
-    RegistrationHandleResult handle(@Immutable Arrays<RegistrationHandleResult> registrationHandleResults, @Immutable CommandList targetList, Optional<WCommand<?>> manager);
+    RegistrationHandleResult handle(@Immutable Arrays<RegistrationHandleResult> registrationHandleResults, @Immutable CommandList targetList, WCommand<?> manager);
 
 }

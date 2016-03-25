@@ -392,9 +392,9 @@ public class WCommand<T> {
             RegistrationHandleResult result;
 
             if (results.isEmpty()) {
-                result = handler.handle(new ImmutableArrays<>(main), targetList, Optional.of(this));
+                result = handler.handle(new ImmutableArrays<>(main), targetList, this);
             } else {
-                result = handler.handle(new ImmutableArrays<>(results), targetList, Optional.of(this));
+                result = handler.handle(new ImmutableArrays<>(results), targetList, this);
             }
 
             if(result != null) {
