@@ -39,6 +39,6 @@ public class HelperAPI extends Extension {
     }
 
     public static void help(CommandSpec command, InformationRegister informationRegister, Printer printer) {
-        printer.printCommands(CommandList.singleton(command), informationRegister);
+        printer.printCommands(CommandList.singleton(command, command), informationRegister);
     }
 }

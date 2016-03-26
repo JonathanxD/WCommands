@@ -18,9 +18,11 @@
  */
 package com.github.jonathanxd.wcommands.reflection;
 
+import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
+import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.infos.Info;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.handler.registration.RegistrationHandleResult;
@@ -28,17 +30,33 @@ import com.github.jonathanxd.wcommands.infos.InformationRegister;
 
 import org.junit.Test;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Optional;
+
 /**
  * Created by jonathan on 11/03/16.
  */
 public class TestNewInformationAPI {
+
+    public static void main(String[] args) {
+        new TestNewInformationAPI().newInformationAPITest();
+    }
 
     @Test
     public void newInformationAPITest() {
         ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new TestNewInformationAPI());
 
         processor.registerRegistrationHandler((registrationHandleResults, targetList, manager) -> {
-            System.out.println("Results: "+registrationHandleResults+" Manager: "+manager);
+            System.out.println("Results: " + registrationHandleResults + " Manager: " + manager);
+
+            RegistrationHandleResult result = registrationHandleResults.getLast();
+            Optional<CommandSpec> commandSpecOpt = result.getResult();
+
+            if (commandSpecOpt.isPresent()) {
+                CommandSpec commandSpec = commandSpecOpt.get();
+                System.out.println("Command spec = " + commandSpec + " -> target = "+targetList.getHoldingObject());
+            }
 
             return RegistrationHandleResult.accept();
         });
@@ -53,17 +71,25 @@ public class TestNewInformationAPI {
                 // Build
                 .build();
 
+        Instant instant = Instant.now();
         processor.processAndInvoke(information,
                 // Pass arguments, not needed to pass "User" as argument
                 "pm", "Hi :D");
+        Duration duration = Duration.between(instant, Instant.now());
 
+        System.out.println("Time to process: "+duration.toMillis());
     }
 
     @Command(desc = "Send a private message!")
     public void pm(@Argument String message,
                    @Info(type = Sender.class, description = "etc") Entity en,
                    @Info(type = Receiver.class) Entity receiver) {
-        System.out.println(en.getName() + " send message "+message+" to "+receiver.getName());
+        System.out.println(en.getName() + " send message " + message + " to " + receiver.getName());
+    }
+
+    @SubCommand(value = "pm", commandSpec = @Command(name = "player"))
+    public void pmPlayer() {
+        System.out.println("Pm Player");
     }
 
     /**

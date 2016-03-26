@@ -26,6 +26,9 @@ import java.util.List;
 @FunctionalInterface
 public interface CommandStringParser {
 
-    List<String> parse(String commandString);
+    List<String> parse(String[] commandString);
+    default List<String> parseSingle(String commandString) {
+        return parse(commandString.split(" "));
+    }
 
 }

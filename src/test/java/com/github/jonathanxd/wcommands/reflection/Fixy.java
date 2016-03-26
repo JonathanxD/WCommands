@@ -22,6 +22,7 @@ import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
+import com.github.jonathanxd.wcommands.handler.registration.RegistrationHandleResult;
 
 import org.junit.Test;
 
@@ -36,6 +37,11 @@ public class Fixy {
             error.printStackTrace();
             return false;
         }, new Fixy.Vim());
+
+        wCommandCommon.registerRegistrationHandler((registrationHandleResults, targetList, manager) -> {
+            System.out.println("Received: "+registrationHandleResults + " -from> "+targetList.getHoldingObject());
+            return RegistrationHandleResult.accept();
+        });
 
         wCommandCommon.addCommands(new Fixy.DD());
 

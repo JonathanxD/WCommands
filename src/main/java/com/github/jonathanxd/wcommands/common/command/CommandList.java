@@ -20,6 +20,7 @@ package com.github.jonathanxd.wcommands.common.command;
 
 import com.github.jonathanxd.wcommands.WCommand;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
+import com.github.jonathanxd.wcommands.exceptions.CommandAlreadyRegisteredException;
 import com.github.jonathanxd.wcommands.infos.InfoId;
 import com.github.jonathanxd.wcommands.text.Text;
 import com.github.jonathanxd.wcommands.util.Functions;
@@ -31,11 +32,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 import java.util.Optional;
+
+import javax.annotation.Nonnull;
 
 /**
  * Created by jonathan on 23/02/16.
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class CommandList implements List<CommandSpec> {
 
     public static final InfoId COMMANDLIST_INFOID = new InfoId("CommandList", CommandList.class);
@@ -44,26 +49,26 @@ public class CommandList implements List<CommandSpec> {
     private final Optional<WCommand<?>> wCommandOptional;
     private final Object holdingObject;
 
-    public CommandList(Object holdingObject) {
+    public CommandList(@Nonnull Object holdingObject) {
         this(new ArrayList<>(), holdingObject);
     }
 
-    public CommandList(WCommand<?> wCommand, Object holdingObject) {
+    public CommandList(WCommand<?> wCommand, @Nonnull Object holdingObject) {
         this(new ArrayList<>(), Optional.ofNullable(wCommand), holdingObject);
     }
 
-    public CommandList(List<CommandSpec> list, Object holdingObject) {
+    public CommandList(List<CommandSpec> list, @Nonnull Object holdingObject) {
         this(list, Optional.empty(), holdingObject);
     }
 
-    public CommandList(List<CommandSpec> list, Optional<WCommand<?>> wCommandOptional, Object holdingObject) {
+    public CommandList(List<CommandSpec> list, Optional<WCommand<?>> wCommandOptional, @Nonnull Object holdingObject) {
         this.commandSpecs = list;
         this.wCommandOptional = wCommandOptional;
-        this.holdingObject = holdingObject;
+        this.holdingObject = Objects.requireNonNull(holdingObject, "Please don't create a CommandList with empty holdingObject");
     }
 
-    public static CommandList singleton(CommandSpec commandSpec) {
-        return new CommandList(Collections.singletonList(commandSpec), null);
+    public static CommandList singleton(CommandSpec commandSpec, Object holdingObject) {
+        return new CommandList(Collections.singletonList(commandSpec), holdingObject);
     }
 
     public static Collection<CommandSpec> findParentsIn(CommandList commandList, CommandSpec parentTo) {
@@ -270,6 +275,8 @@ public class CommandList implements List<CommandSpec> {
                 ++x;
 
             }
+        } else {
+            commandSpecCollection.addAll(collection);
         }
 
         return commandSpecCollection;
@@ -289,14 +296,14 @@ public class CommandList implements List<CommandSpec> {
         }
 
         if (commandSpecCollection.size() == 0)
-            throw new IllegalArgumentException("Already in list! : " + commands);
+            throw new CommandAlreadyRegisteredException("Command '" + commands + "' already registered!");
 
         return commandSpecCollection;
     }
 
     private CommandSpec convert(CommandSpec commandSpec) {
         if (this.getwCommandOptional().isPresent()
-                && !commandSpec.getSubCommands().getwCommandOptional().isPresent()) {
+                && (commandSpec.getSubCommands().isEmpty() || !commandSpec.getSubCommands().getwCommandOptional().isPresent())) {
             commandSpec = CommandSpec.withHandledCommandList(this.getwCommandOptional().get(), commandSpec);
         }
 

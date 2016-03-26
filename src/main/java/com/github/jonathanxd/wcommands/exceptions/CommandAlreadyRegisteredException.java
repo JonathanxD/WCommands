@@ -16,23 +16,29 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.commandstring;
-
-import com.github.jonathanxd.wcommands.util.StringUtil;
-
-import java.util.List;
+package com.github.jonathanxd.wcommands.exceptions;
 
 /**
- * Created by jonathan on 19/03/16.
+ * Created by jonathan on 25/03/16.
  */
-public class CommonCommandStringParser implements CommandStringParser {
-    @Override
-    public List<String> parse(String[] commandString) {
-        return StringUtil.toList(commandString);
+public class CommandAlreadyRegisteredException extends RuntimeException {
+    public CommandAlreadyRegisteredException() {
+        super();
     }
 
-    @Override
-    public List<String> parseSingle(String commandString) {
-        return StringUtil.argToList(commandString, new char[]{'[', ']', '"', '"'});
+    public CommandAlreadyRegisteredException(String message) {
+        super(message);
+    }
+
+    public CommandAlreadyRegisteredException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public CommandAlreadyRegisteredException(Throwable cause) {
+        super(cause);
+    }
+
+    protected CommandAlreadyRegisteredException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

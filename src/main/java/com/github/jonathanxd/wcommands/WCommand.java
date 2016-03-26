@@ -174,7 +174,7 @@ public class WCommand<T> {
      * @see #invoke(Object, Requirements, InformationRegister)
      */
     public Results processAndInvoke(String argumentToBeParsed) {
-        return processAndInvoke(this.commandStringParser.parse(argumentToBeParsed), null, null);
+        return processAndInvoke(this.commandStringParser.parseSingle(argumentToBeParsed), null, null);
     }
 
     /**
@@ -186,7 +186,7 @@ public class WCommand<T> {
      * @see #invoke(Object, Requirements, InformationRegister)
      */
     public Results processAndInvoke(String... arguments) {
-        return processAndInvoke(Arrays.asList(arguments), null, null);
+        return processAndInvoke(this.commandStringParser.parse(arguments), null, null);
     }
 
     /**
@@ -199,7 +199,7 @@ public class WCommand<T> {
      * @see #invoke(Object, Requirements, InformationRegister)
      */
     public Results processAndInvoke(InformationRegister informationRegister, String... arguments) {
-        return processAndInvoke(Arrays.asList(arguments), null, informationRegister);
+        return processAndInvoke(this.commandStringParser.parse(arguments), null, informationRegister);
     }
 
     /**
@@ -212,20 +212,20 @@ public class WCommand<T> {
      * @see #invoke(Object, Requirements, InformationRegister)
      */
     public Results processAndInvoke(Requirements requirements, InformationRegister informationRegister, String... arguments) {
-        return processAndInvoke(Arrays.asList(arguments), requirements, informationRegister);
+        return processAndInvoke(this.commandStringParser.parse(arguments), requirements, informationRegister);
     }
 
     /**
      * Process and invoke
      *
-     * @param arguments           List of arguments
+     * @param parsedArguments           List of parsedArguments
      * @param informationRegister Information register
      * @see InformationRegister
      * @see #process(List, Requirements, InformationRegister)
      * @see #invoke(Object, Requirements, InformationRegister)
      */
-    public Results processAndInvoke(List<String> arguments, Requirements requirements, InformationRegister informationRegister) {
-        return invoke(process(arguments, requirements, informationRegister), requirements, informationRegister);
+    public Results processAndInvoke(List<String> parsedArguments, Requirements requirements, InformationRegister informationRegister) {
+        return invoke(process(parsedArguments, requirements, informationRegister), requirements, informationRegister);
     }
 
     /**

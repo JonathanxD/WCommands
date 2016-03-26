@@ -16,23 +16,34 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.commandstring;
+package com.github.jonathanxd.wcommands.reflection.fails;
 
-import com.github.jonathanxd.wcommands.util.StringUtil;
+import com.github.jonathanxd.wcommands.exceptions.CommandAlreadyRegisteredException;
+import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
+import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
+import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 
-import java.util.List;
+import org.junit.Test;
 
 /**
- * Created by jonathan on 19/03/16.
+ * Created by jonathan on 25/03/16.
  */
-public class CommonCommandStringParser implements CommandStringParser {
-    @Override
-    public List<String> parse(String[] commandString) {
-        return StringUtil.toList(commandString);
+public class EqualName {
+
+    @Test(expected = CommandAlreadyRegisteredException.class)
+    public void equalNameTest() {
+        ReflectionCommandProcessor processor = ReflectionAPI.createWCommand();
+        processor.addCommands(this);
     }
 
-    @Override
-    public List<String> parseSingle(String commandString) {
-        return StringUtil.argToList(commandString, new char[]{'[', ']', '"', '"'});
+    @Command
+    @Argument
+    public String nn;
+
+    @Command
+    public void nn() {
+
     }
+
 }

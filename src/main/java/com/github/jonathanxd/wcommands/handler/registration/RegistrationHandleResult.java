@@ -46,38 +46,9 @@ public class RegistrationHandleResult {
         this.action = action;
     }
 
-    public enum Action {
-        ACCEPT,
-        CANCEL,
-        MODIFY
-    }
-
-    /**
-     * Get original command
-     * @return original command
-     */
-    public Optional<CommandSpec> getOriginal() {
-        return Optional.ofNullable(original);
-    }
-
-    /**
-     * Get original or modified command
-     * @return Original or modified command
-     */
-    public Optional<CommandSpec> getModifiedCommandSpec() {
-        return Optional.ofNullable(modifiedCommandSpec);
-    }
-
-    /**
-     * Get action
-     * @return Action
-     */
-    public Action getAction() {
-        return action;
-    }
-
     /**
      * Cancel registration
+     *
      * @return Canceller
      */
     public static RegistrationHandleResult cancel() {
@@ -86,6 +57,7 @@ public class RegistrationHandleResult {
 
     /**
      * Accept registration
+     *
      * @return Acceptor
      */
     public static RegistrationHandleResult accept() {
@@ -94,6 +66,7 @@ public class RegistrationHandleResult {
 
     /**
      * Modify registration
+     *
      * @param modified Modified command
      * @return Modifier
      */
@@ -103,9 +76,10 @@ public class RegistrationHandleResult {
 
     /**
      * Create a new instance with known instances
-     * @param original Original Command
+     *
+     * @param original    Original Command
      * @param commandSpec Modified or Original command
-     * @param action Action
+     * @param action      Action
      * @return Return instance with known values
      */
     public static RegistrationHandleResult newInstance(@Nullable CommandSpec original, @Nullable CommandSpec commandSpec, Action action) {
@@ -114,15 +88,53 @@ public class RegistrationHandleResult {
 
     /**
      * Apply specified values and {@code registrationHandleResult} values to new instance.
-     * @param original Original command
-     * @param registrationHandleResult    Created result
-     * @return New instance of registration result with mixed values of a non-null instance of {@code registrationHandleResult}
+     *
+     * @param original                 Original command
+     * @param registrationHandleResult Created result
+     * @return New instance of registration result with mixed values of a non-null instance of
+     * {@code registrationHandleResult}
      */
     public static RegistrationHandleResult applyTo(CommandSpec original, RegistrationHandleResult registrationHandleResult) {
-        if(registrationHandleResult.getOriginal().isPresent())
-            throw new IllegalStateException("Invalid RegistrationHandleResult! Original Command is present! Desc: "+registrationHandleResult);
+        if (registrationHandleResult.getOriginal().isPresent())
+            throw new IllegalStateException("Invalid RegistrationHandleResult! Original Command is present! Desc: " + registrationHandleResult);
 
         return new RegistrationHandleResult(original, registrationHandleResult.getModifiedCommandSpec().orElse(null), registrationHandleResult.getAction());
+    }
+
+    /**
+     * If Modified CommandSpec is present, return it, otherwise return original CommandSpec
+     *
+     * @return If Modified CommandSpec is present, return it, otherwise returns original CommandSpec
+     */
+    public Optional<CommandSpec> getResult() {
+        return getModifiedCommandSpec().isPresent() ? getModifiedCommandSpec() : getOriginal();
+    }
+
+    /**
+     * Get original command
+     *
+     * @return original command
+     */
+    public Optional<CommandSpec> getOriginal() {
+        return Optional.ofNullable(original);
+    }
+
+    /**
+     * Get original or modified command
+     *
+     * @return Original or modified command
+     */
+    public Optional<CommandSpec> getModifiedCommandSpec() {
+        return Optional.ofNullable(modifiedCommandSpec);
+    }
+
+    /**
+     * Get action
+     *
+     * @return Action
+     */
+    public Action getAction() {
+        return action;
     }
 
     @Override
@@ -130,11 +142,11 @@ public class RegistrationHandleResult {
 
         List<Object> objectList = new ArrayList<>();
 
-        if(this.getOriginal().isPresent()) {
+        if (this.getOriginal().isPresent()) {
             objectList.add(this.getOriginal().get());
         }
 
-        if(this.getModifiedCommandSpec().isPresent()) {
+        if (this.getModifiedCommandSpec().isPresent()) {
             objectList.add(this.getModifiedCommandSpec().get());
         }
 
@@ -146,5 +158,11 @@ public class RegistrationHandleResult {
     @Override
     public String toString() {
         return ToString.toString(this);
+    }
+
+    public enum Action {
+        ACCEPT,
+        CANCEL,
+        MODIFY
     }
 }
