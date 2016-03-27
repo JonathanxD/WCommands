@@ -21,6 +21,7 @@ package com.github.jonathanxd.wcommands.infos;
 import com.github.jonathanxd.iutils.optional.Require;
 import com.github.jonathanxd.wcommands.WCommand;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
+import com.github.jonathanxd.wcommands.util.reflection.ToString;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -65,7 +66,7 @@ public class InformationRegister {
     }
 
     @SuppressWarnings("unchecked")
-    private Optional<Information<?>> getById(InfoId informationId) {
+    public Optional<Information<?>> getById(InfoId informationId) {
         return informationList
                 .stream()
                 .filter(i -> i.getId().equals(informationId))
@@ -74,7 +75,7 @@ public class InformationRegister {
     }
 
     @SuppressWarnings("unchecked")
-    private Optional<Information<?>> getById(Predicate<Information<?>> predicate) {
+    public Optional<Information<?>> get(Predicate<Information<?>> predicate) {
         return informationList
                 .stream()
                 .filter(predicate)
@@ -93,8 +94,8 @@ public class InformationRegister {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> Optional<T> getValById(Predicate<Information<?>> predicate) {
-        Optional<Information<?>> optional = getById(predicate);
+    private <T> Optional<T> getVal(Predicate<Information<?>> predicate) {
+        Optional<Information<?>> optional = get(predicate);
 
         if (!optional.isPresent())
             return Optional.empty();
@@ -115,22 +116,22 @@ public class InformationRegister {
 
     @SuppressWarnings("unchecked")
     public <T> Optional<T> getOptional(String tag, Class<?> informationId) {
-        return this.getValById(i -> i.isPresent() && i.getId().matchRequirements(tag, informationId));
+        return this.getVal(i -> i.isPresent() && i.getId().matchRequirements(tag, informationId));
     }
 
     @SuppressWarnings("unchecked")
     public <T> Optional<T> getOptional(String[] tags, Class<?> informationId) {
-        return this.getValById(i -> i.isPresent() && i.getId().matchRequirements(tags, informationId));
+        return this.getVal(i -> i.isPresent() && i.getId().matchRequirements(tags, informationId));
     }
 
     @SuppressWarnings("unchecked")
     public <T> Optional<T> getOptional(Class<?> informationId) {
-        return this.getValById(i -> i.isPresent() && i.getId().matchRequirements((String) null, informationId));
+        return this.getVal(i -> i.isPresent() && i.getId().matchRequirements((String) null, informationId));
     }
 
     @SuppressWarnings("unchecked")
     public <T> Optional<T> getOptional(String[] tags) {
-        return this.getValById(i -> i.isPresent() && i.getId().matchRequirements(tags, null));
+        return this.getVal(i -> i.isPresent() && i.getId().matchRequirements(tags, null));
     }
 
     @SuppressWarnings("unchecked")
@@ -150,6 +151,11 @@ public class InformationRegister {
     public Stream<Information<?>> stream() {
 
         return informationList.stream();
+    }
+
+    @Override
+    public String toString() {
+        return ToString.toString(this);
     }
 
     public static final class InformationBuilder {

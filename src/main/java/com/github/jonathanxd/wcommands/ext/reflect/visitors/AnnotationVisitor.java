@@ -24,6 +24,7 @@ import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.NamedContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeHead;
 import com.github.jonathanxd.wcommands.interceptor.Order;
+import com.github.jonathanxd.wcommands.ticket.RegistrationTicket;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.annotation.Annotation;
@@ -51,11 +52,11 @@ public abstract class AnnotationVisitor<T extends Annotation, C extends NamedCon
      * @param last       Last Container
      * @param bridge     Element Bridge
      */
-    public void visitElementAnnotation(T annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead) {
+    public void visitElementAnnotation(T annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket) {
 
     }
 
-    public void visitElementArguments(T annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location) {
+    public void visitElementArguments(T annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, RegistrationTicket<?> ticket) {
 
     }
 
@@ -70,7 +71,7 @@ public abstract class AnnotationVisitor<T extends Annotation, C extends NamedCon
      * @param common    Command register
      * @param parent    Parent caller
      * @return True to accept and call {@link #process(NamedContainer, InstanceContainer,
-     * AnnotationVisitorSupport, WCommandCommon, ElementType, TreeHead, Optional)}. or False to postpone the
+     * AnnotationVisitorSupport, WCommandCommon, ElementType, TreeHead, RegistrationTicket, Optional)}. or False to postpone the
      * process.
      */
     public boolean dependencyCheck(C container,
@@ -79,6 +80,7 @@ public abstract class AnnotationVisitor<T extends Annotation, C extends NamedCon
                                    WCommandCommon common,
                                    ElementType location,
                                    TreeHead treeHead,
+                                   RegistrationTicket<?> ticket,
                                    Optional<NamedContainer> parent) {
         return true;
     }
@@ -89,6 +91,7 @@ public abstract class AnnotationVisitor<T extends Annotation, C extends NamedCon
                               WCommandCommon common,
                               ElementType location,
                               TreeHead treeHead,
+                              RegistrationTicket<?> ticket,
                               Optional<NamedContainer> parent);
 
     public Class<? extends Annotation> getAnnotationClass() {

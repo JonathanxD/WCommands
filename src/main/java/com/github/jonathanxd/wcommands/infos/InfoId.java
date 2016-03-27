@@ -58,7 +58,7 @@ public class InfoId implements Matchable<String> {
     @Override
     public boolean matches(String other) {
 
-        if(other == null || other.isEmpty())
+        if (other == null || other.isEmpty())
             return true;
 
         for (String tag : tags) {
@@ -72,7 +72,7 @@ public class InfoId implements Matchable<String> {
     @Override
     public boolean matchesIgnoreCase(String other) {
 
-        if(other == null || other.isEmpty())
+        if (other == null || other.isEmpty())
             return true;
 
         for (String tag : tags) {
@@ -92,7 +92,7 @@ public class InfoId implements Matchable<String> {
         InfoId other = (InfoId) obj;
 
         return (
-                (this.getTags() == null && other.tags == null) || Arrays.deepEquals(this.getTags(), other.getTags())
+                (other.getTags().length == 0 || other.getTags()[0].isEmpty() || (this.getTags() == null && other.tags == null) || Arrays.deepEquals(this.getTags(), other.getTags()))
         ) && this.getIdentification().equals(other.getIdentification());
 
     }
@@ -106,5 +106,12 @@ public class InfoId implements Matchable<String> {
         result = 31 * result + (identification == null ? 0 : identification.hashCode());
 
         return result;
+    }
+
+    @Override
+    public String toString() {
+
+        return "tags=(" + Arrays.toString(tags) + "), identification=(" + getIdentification().getSimpleName() + ")";
+
     }
 }

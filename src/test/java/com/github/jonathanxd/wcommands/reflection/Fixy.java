@@ -22,7 +22,9 @@ import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
+import com.github.jonathanxd.wcommands.handler.ProcessAction;
 import com.github.jonathanxd.wcommands.handler.registration.RegistrationHandleResult;
+import com.github.jonathanxd.wcommands.ticket.CommonTicket;
 
 import org.junit.Test;
 
@@ -35,15 +37,15 @@ public class Fixy {
     public void fixyTest() {
         ReflectionCommandProcessor wCommandCommon = ReflectionAPI.createWCommand((error, commandSpecs, currentCommand, processed, requirements, informationRegister) -> {
             error.printStackTrace();
-            return false;
+            return ProcessAction.STOP;
         }, new Fixy.Vim());
 
-        wCommandCommon.registerRegistrationHandler((registrationHandleResults, targetList, manager) -> {
+        wCommandCommon.registerRegistrationHandler((registrationHandleResults, targetList, manager, ticket) -> {
             System.out.println("Received: "+registrationHandleResults + " -from> "+targetList.getHoldingObject());
             return RegistrationHandleResult.accept();
         });
 
-        wCommandCommon.addCommands(new Fixy.DD());
+        wCommandCommon.getRegister(new CommonTicket<>(this)).addCommands(new Fixy.DD());
 
 
         wCommandCommon.processAndInvoke("vim", "p", "ads", "dld");

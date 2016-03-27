@@ -21,6 +21,7 @@ package com.github.jonathanxd.wcommands.logi;
 import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.factory.CommandFactory;
+import com.github.jonathanxd.wcommands.ticket.CommonTicket;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -46,7 +47,7 @@ public class EqualTest {
 
         WCommandCommon wCommandCommon = new WCommandCommon();
 
-        wCommandCommon.registerCommand(commandSpec);
+        wCommandCommon.getRegister(new CommonTicket<>(this)).registerCommand(commandSpec);
 
         Optional<CommandSpec> callCommand = wCommandCommon.getCommand("call");
 

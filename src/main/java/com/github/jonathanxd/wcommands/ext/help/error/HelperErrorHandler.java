@@ -27,6 +27,7 @@ import com.github.jonathanxd.wcommands.exceptions.ProcessingError;
 import com.github.jonathanxd.wcommands.ext.help.HelperAPI;
 import com.github.jonathanxd.wcommands.ext.help.printer.Printer;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
+import com.github.jonathanxd.wcommands.handler.ProcessAction;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 
@@ -43,7 +44,7 @@ public class HelperErrorHandler implements ErrorHandler<List<CommandData<Command
     }
 
     @Override
-    public boolean handle(ProcessingError error, CommandList commandSpecs, CommandSpec current, List<CommandData<CommandHolder>> processed, Requirements requirements, InformationRegister informationRegister) {
+    public ProcessAction handle(ProcessingError error, CommandList commandSpecs, CommandSpec current, List<CommandData<CommandHolder>> processed, Requirements requirements, InformationRegister informationRegister) {
         if (error.getType() == ErrorType.MISSING_SUB_COMMAND || error.getType() == ErrorType.MISSING_ARGUMENT) {
 
 
@@ -55,7 +56,7 @@ public class HelperErrorHandler implements ErrorHandler<List<CommandData<Command
                 CommandSpec commandSpec = current != null ? current : processed.get(processed.size() - 1).getCommand().getCommandSpec();
 
                 HelperAPI.help(commandSpec, informationRegister, printer);
-                return false;
+                return ProcessAction.STOP;
             }
         } else if (error.getType() == ErrorType.NO_COMMAND_PROVIDED) {
             printer.printString("<---> No Commands Provided. <--->");
@@ -64,6 +65,6 @@ public class HelperErrorHandler implements ErrorHandler<List<CommandData<Command
         } else {
             throw new RuntimeException(error);
         }
-        return error.getType().getExceptionType() != ErrorType.Type.ERROR;
+        return (error.getType().getExceptionType() != ErrorType.Type.ERROR) ? ProcessAction.CONTINUE : ProcessAction.STOP;
     }
 }

@@ -27,6 +27,7 @@ import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
+import com.github.jonathanxd.wcommands.handler.ProcessAction;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 
@@ -73,8 +74,8 @@ public class TestCMD {
     public static class MyErrorHandler implements ErrorHandler {
 
         @Override
-        public boolean handle(ProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, Requirements requirements, InformationRegister informationRegister) {
-            return error.getType().getExceptionType() != ErrorType.Type.ERROR;
+        public ProcessAction handle(ProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, Requirements requirements, InformationRegister informationRegister) {
+            return (error.getType().getExceptionType() != ErrorType.Type.ERROR) ? ProcessAction.CONTINUE : ProcessAction.STOP;
         }
     }
 }

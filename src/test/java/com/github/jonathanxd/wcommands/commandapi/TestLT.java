@@ -28,12 +28,13 @@ import com.github.jonathanxd.wcommands.exceptions.ErrorType;
 import com.github.jonathanxd.wcommands.exceptions.ProcessingError;
 import com.github.jonathanxd.wcommands.factory.CommandBuilder;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
+import com.github.jonathanxd.wcommands.handler.ProcessAction;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 import com.github.jonathanxd.wcommands.processor.CommonProcessor;
 import com.github.jonathanxd.wcommands.text.Text;
+import com.github.jonathanxd.wcommands.ticket.CommonTicket;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -50,7 +51,7 @@ public class TestLT {
                 new BooleanArgumentSpec<IDs>(IDs.ALLOW_UPPER, false),
                 false,
                 "--"));*/
-        wCommandCommon.registerCommand(CommandBuilder.builder()
+        wCommandCommon.getRegister(new CommonTicket<>(this)).registerCommand(CommandBuilder.builder()
                 .withPrefix("--")
                 .withName(Text.of("allowUpper"))
                 .withArgument(new BooleanArgumentSpec<>(IDs.ALLOW_UPPER, false, false))
@@ -70,13 +71,13 @@ public class TestLT {
                 })
                 .build()
         );
-        wCommandCommon.registerCommand(CommandBuilder.builder()
+        wCommandCommon.getRegister(new CommonTicket<>(this)).registerCommand(CommandBuilder.builder()
                 .withPrefix("--")
                 .withName(Text.of("daemon"))
                 .withCommonHandler((commandData, requirements, ref) -> {System.out.println("Start Daemon"); return null;})
                 .build());
 
-        wCommandCommon.registerCommand(CommandBuilder.builder()
+        wCommandCommon.getRegister(new CommonTicket<>(this)).registerCommand(CommandBuilder.builder()
                 .withPrefix("--")
                 .withName(Text.of("rail"))
                 .withArgument(new BooleanArgumentSpec<>(IDs.RAIL, false, false))
@@ -106,8 +107,8 @@ public class TestLT {
     public static class MyErrorHandler implements ErrorHandler {
 
         @Override
-        public boolean handle(ProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, Requirements requirements, InformationRegister register) {
-            return error.getType().getExceptionType() != ErrorType.Type.ERROR;
+        public ProcessAction handle(ProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, Requirements requirements, InformationRegister register) {
+            return (error.getType().getExceptionType() != ErrorType.Type.ERROR) ? ProcessAction.CONTINUE : ProcessAction.STOP;
         }
     }
 }

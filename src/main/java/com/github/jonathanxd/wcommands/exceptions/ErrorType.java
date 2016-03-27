@@ -23,6 +23,7 @@ package com.github.jonathanxd.wcommands.exceptions;
  */
 public enum ErrorType {
     MISSING_ARGUMENT(Type.ERROR),
+    MISSING_COMMAND(Type.ERROR),
     MISSING_SUB_COMMAND(Type.ERROR),
     NO_COMMAND_PROVIDED(Type.ERROR),
     POSSIBLE_BUG(Type.POSSIBLE_BUG),

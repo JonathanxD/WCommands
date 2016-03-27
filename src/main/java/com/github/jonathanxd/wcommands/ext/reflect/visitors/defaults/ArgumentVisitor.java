@@ -39,10 +39,12 @@ import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.factory.ArgumentBuilder;
 import com.github.jonathanxd.wcommands.interceptor.Order;
+import com.github.jonathanxd.wcommands.ticket.RegistrationTicket;
 import com.github.jonathanxd.wcommands.util.Require;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.annotation.ElementType;
+import java.lang.reflect.Type;
 import java.util.Optional;
 
 /**
@@ -72,7 +74,7 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
     }
 
     @Override
-    public void visitElementAnnotation(Argument annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead) {
+    public void visitElementAnnotation(Argument annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket) {
 
             String name = annotation.id().trim().isEmpty() ? bridge.getName() : annotation.id();
 
@@ -107,7 +109,7 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
 
 
     @Override
-    public ArgumentSpec<?, ?> process(SingleNamedContainer argumentContainer, InstanceContainer instance, AnnotationVisitorSupport support, WCommandCommon common, ElementType location, TreeHead treeHead, Optional<NamedContainer> parent) {
+    public ArgumentSpec<?, ?> process(SingleNamedContainer argumentContainer, InstanceContainer instance, AnnotationVisitorSupport support, WCommandCommon common, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket, Optional<NamedContainer> parent) {
         Argument argument = (Argument) argumentContainer.get();
 
         ArgumentBuilder<String, Object> argumentBuilder = ArgumentBuilder.builder();
@@ -157,6 +159,7 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
 
         if (argument.setFinal()) {
             argumentSpec1.getData().registerData(ReflectionCommandProcessor.PropSet.FINAL);
+            argumentSpec1.getReferenceData().registerData(Reference.a(Reference.class).hold(argumentContainer.getTypes()).build());
         }
 
         return argumentSpec1;

@@ -26,9 +26,11 @@ import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
+import com.github.jonathanxd.wcommands.handler.ProcessAction;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 import com.github.jonathanxd.wcommands.processor.CommonProcessor;
+import com.github.jonathanxd.wcommands.ticket.CommonTicket;
 
 import org.junit.Assert;
 
@@ -45,7 +47,7 @@ public class TestAnnotations {
 
         TestAnnotations testAnnotations = new TestAnnotations();
 
-        commandCommon.addCommands(testAnnotations, TestAnnotations.class);
+        commandCommon.getRegister(new CommonTicket<>(this)).addCommands(testAnnotations, TestAnnotations.class);
 
         commandCommon.processAndInvoke("--allowUpper", "true", "--daemon", "--rail", "false");
 
@@ -73,9 +75,9 @@ public class TestAnnotations {
     public static class MyErrorHandler implements ErrorHandler {
 
         @Override
-        public boolean handle(ProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, Requirements requirements, InformationRegister informationRegister) {
+        public ProcessAction handle(ProcessingError error, CommandList commandSpecs, CommandSpec current, Object processed, Requirements requirements, InformationRegister informationRegister) {
             error.printStackTrace();
-            return error.getType().getExceptionType() != ErrorType.Type.ERROR;
+            return (error.getType().getExceptionType() != ErrorType.Type.ERROR) ? ProcessAction.CONTINUE : ProcessAction.STOP;
         }
     }
 }

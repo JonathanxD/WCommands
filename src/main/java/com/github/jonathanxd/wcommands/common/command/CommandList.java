@@ -23,9 +23,12 @@ import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.exceptions.CommandAlreadyRegisteredException;
 import com.github.jonathanxd.wcommands.infos.InfoId;
 import com.github.jonathanxd.wcommands.text.Text;
+import com.github.jonathanxd.wcommands.ticket.CommonTicket;
+import com.github.jonathanxd.wcommands.ticket.RegistrationTicket;
 import com.github.jonathanxd.wcommands.util.Functions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -194,38 +197,61 @@ public class CommandList implements List<CommandSpec> {
 
     // FILTER
     // HANDLE
+    @Deprecated
     @Override
     public boolean add(CommandSpec commandSpec) {
-        int len = commandSpecs.size();
-        handle(filter(Collections.singleton(commandSpec))).forEach(commandSpecs::add);
+        System.err.println("Deprecated !!! -> " + Arrays.toString(Thread.currentThread().getStackTrace()));
+        throw new UnsupportedOperationException();
+    }
 
+    public boolean add(CommandSpec commandSpec, RegistrationTicket<?> ticket) {
+        int len = commandSpecs.size();
+        handle(filter(Collections.singleton(commandSpec), ticket), ticket).forEach(commandSpecs::add);
         return commandSpecs.size() != len;
     }
 
     // FILTER
     // HANDLE
+    @Deprecated
     @Override
     public boolean addAll(Collection<? extends CommandSpec> c) {
-        return commandSpecs.addAll(handle(filter(c)));
+        System.err.println("Deprecated !!! -> " + Arrays.toString(Thread.currentThread().getStackTrace()));
+        //return commandSpecs.addAll(handle(filter(c)));
+        throw new UnsupportedOperationException();
+    }
 
+    public boolean addAll(Collection<? extends CommandSpec> c, RegistrationTicket<?> ticket) {
+        return commandSpecs.addAll(handle(filter(c, ticket), ticket));
     }
 
     // FILTER
     // HANDLE
+    @Deprecated
     @Override
     public boolean addAll(int index, Collection<? extends CommandSpec> c) {
-        return commandSpecs.addAll(index, handle(filter(c)));
+        System.err.println("Deprecated !!! -> " + Arrays.toString(Thread.currentThread().getStackTrace()));
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean addAll(int index, Collection<? extends CommandSpec> c, RegistrationTicket<?> ticket) {
+        return commandSpecs.addAll(index, handle(filter(c, ticket), ticket));
     }
 
     // FILTER
     // HANDLE
+    @Deprecated
     @Override
     public CommandSpec set(int index, CommandSpec element) {
-        Collection<? extends CommandSpec> coll = filter(Collections.singleton(element));
+        System.err.println("Deprecated !!! -> " + Arrays.toString(Thread.currentThread().getStackTrace()));
+        throw new UnsupportedOperationException();
+    }
+
+    public CommandSpec set(int index, CommandSpec element, RegistrationTicket<?> ticket) {
+        Collection<? extends CommandSpec> coll = filter(Collections.singleton(element), ticket);
 
         if (coll.size() == 1) {
 
-            for (CommandSpec spec : handle(coll, 1)) {
+            for (CommandSpec spec : handle(coll, 1, ticket)) {
                 return commandSpecs.set(index, spec);
             }
 
@@ -238,23 +264,28 @@ public class CommandList implements List<CommandSpec> {
     // HANDLE
     @Override
     public void add(int index, CommandSpec element) {
+        System.err.println("Deprecated !!! -> " + Arrays.toString(Thread.currentThread().getStackTrace()));
+        //return commandSpecs.addAll(index, handle(filter(c)));
+        throw new UnsupportedOperationException();
+    }
 
-        Collection<? extends CommandSpec> coll = filter(Collections.singleton(element));
+    public void add(int index, CommandSpec element, RegistrationTicket<?> ticket) {
+        Collection<? extends CommandSpec> coll = filter(Collections.singleton(element), ticket);
 
         if (coll.size() == 1) {
 
-            for (CommandSpec spec : handle(coll, 1)) {
+            for (CommandSpec spec : handle(coll, 1, ticket)) {
                 commandSpecs.add(index, spec);
             }
 
         }
     }
 
-    private Collection<? extends CommandSpec> handle(Collection<? extends CommandSpec> collection) {
-        return handle(collection, -1);
+    private Collection<? extends CommandSpec> handle(Collection<? extends CommandSpec> collection, RegistrationTicket<?> ticket) {
+        return handle(collection, -1, ticket);
     }
 
-    private Collection<? extends CommandSpec> handle(Collection<? extends CommandSpec> collection, int maxHandle) {
+    private Collection<? extends CommandSpec> handle(Collection<? extends CommandSpec> collection, int maxHandle, RegistrationTicket<?> ticket) {
 
         Collection<CommandSpec> commandSpecCollection = new ArrayList<>();
 
@@ -266,10 +297,15 @@ public class CommandList implements List<CommandSpec> {
                 if (maxHandle > -1 && x >= maxHandle)
                     break;
 
-                Optional<CommandSpec> specOptional = this.getwCommandOptional().get().handleRegistration(commandSpec, this);
+                Optional<CommandSpec> specOptional = this.getwCommandOptional().get().handleRegistrationToTicket(commandSpec, this, ticket);
+
 
                 if (specOptional.isPresent()) {
-                    commandSpecCollection.add(specOptional.get());
+                    specOptional = this.getwCommandOptional().get().handleRegistration(commandSpec, this, ticket);
+
+                    if (specOptional.isPresent()) {
+                        commandSpecCollection.add(specOptional.get());
+                    }
                 }
 
                 ++x;
@@ -282,7 +318,7 @@ public class CommandList implements List<CommandSpec> {
         return commandSpecCollection;
     }
 
-    private Collection<? extends CommandSpec> filter(Collection<? extends CommandSpec> commands) {
+    private Collection<? extends CommandSpec> filter(Collection<? extends CommandSpec> commands, RegistrationTicket<?> ticket) {
 
         Collection<CommandSpec> commandSpecCollection = new ArrayList<>();
 
@@ -291,7 +327,7 @@ public class CommandList implements List<CommandSpec> {
             Optional<CommandSpec> commandOptional = getCommandOf(commandSpec.allTexts());
             if (!commandOptional.isPresent()) {
                 // CONVERT
-                commandSpecCollection.add(convert(commandSpec));
+                commandSpecCollection.add(convert(commandSpec, ticket));
             }
         }
 
@@ -301,10 +337,10 @@ public class CommandList implements List<CommandSpec> {
         return commandSpecCollection;
     }
 
-    private CommandSpec convert(CommandSpec commandSpec) {
+    private CommandSpec convert(CommandSpec commandSpec, RegistrationTicket<?> ticket) {
         if (this.getwCommandOptional().isPresent()
                 && (commandSpec.getSubCommands().isEmpty() || !commandSpec.getSubCommands().getwCommandOptional().isPresent())) {
-            commandSpec = CommandSpec.withHandledCommandList(this.getwCommandOptional().get(), commandSpec);
+            commandSpec = CommandSpec.withHandledCommandList(this.getwCommandOptional().get(), commandSpec, ticket);
         }
 
         return commandSpec;
@@ -362,7 +398,7 @@ public class CommandList implements List<CommandSpec> {
 
     public CommandList copy() {
         CommandList list = new CommandList(this, this.holdingObject);
-        list.addAll(this);
+        list.addAll(this, new CommonTicket<>(this));
         return list;
     }
 

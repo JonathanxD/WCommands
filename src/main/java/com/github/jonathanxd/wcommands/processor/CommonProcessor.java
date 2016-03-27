@@ -83,6 +83,8 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
     @Override
     public Results invokeCommands(List<CommandData<CommandHolder>> object, Interceptors interceptors, Requirements requirements, InformationRegister informationRegister) {
 
+
+
         Results results = new Results();
 
         Interceptors phasePreCall = interceptors.getPhase(Phase.PRE_CALL);
@@ -226,7 +228,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                 }
 
                 if (!matches && parent == null) {
-                    handlerContainer.handle(new ProcessingError("Cannot find command '" + argument + "'", ErrorType.MISSING_ARGUMENT), commandSpecs, null, commandDatas, requirements, informationRegister);
+                    handlerContainer.handle(new ProcessingError("Cannot find command '" + argument + "'", ErrorType.MISSING_COMMAND), commandSpecs, null, commandDatas, requirements, informationRegister);
                 }
             }
         }

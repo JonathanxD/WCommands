@@ -16,18 +16,20 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jonathanxd.wcommands.infos.requirements;
+package com.github.jonathanxd.wcommands.ext.reflect.infos.require;
 
-import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
-import com.github.jonathanxd.wcommands.data.CommandData;
-import com.github.jonathanxd.wcommands.infos.Information;
-import com.github.jonathanxd.wcommands.infos.InformationRegister;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Created by jonathan on 18/03/16.
  */
-public interface ProvidedRequirement {
-    //@RequireArgument(id = "ivk", predicate = Abl)
-    //@RequireInformation({"big"}, type = Sender.class)
-    boolean test(String data, Object[] parameters, CommandData<CommandHolder> commandData, InformationRegister informationRegister, Information<?> subject);
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Requires {
+
+    Require[] value();
+
 }

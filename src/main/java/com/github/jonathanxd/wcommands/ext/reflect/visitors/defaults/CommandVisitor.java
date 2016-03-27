@@ -36,6 +36,7 @@ import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
 import com.github.jonathanxd.wcommands.factory.CommandBuilder;
 import com.github.jonathanxd.wcommands.handler.Handler;
 import com.github.jonathanxd.wcommands.text.Text;
+import com.github.jonathanxd.wcommands.ticket.RegistrationTicket;
 import com.github.jonathanxd.wcommands.util.Require;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
@@ -54,7 +55,7 @@ public class CommandVisitor extends AnnotationVisitor<Command, TreeNamedContaine
     }
 
     @Override
-    public void visitElementAnnotation(Command annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead) {
+    public void visitElementAnnotation(Command annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket) {
         String name = annotation.name().trim().isEmpty() ? bridge.getName() : annotation.name();
         Common.visit(name, annotation, current, last, bridge, location, treeHead);
     }
@@ -86,7 +87,7 @@ public class CommandVisitor extends AnnotationVisitor<Command, TreeNamedContaine
 
     @SuppressWarnings("unchecked")
     @Override
-    public CommandSpec process(TreeNamedContainer command, InstanceContainer instance, AnnotationVisitorSupport support, WCommandCommon common, ElementType location, TreeHead treeHead, Optional<NamedContainer> parent) {
+    public CommandSpec process(TreeNamedContainer command, InstanceContainer instance, AnnotationVisitorSupport support, WCommandCommon common, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket, Optional<NamedContainer> parent) {
         Command commandAnnotation = (Command) command.get();
         List<SingleNamedContainer> arguments = command.getArgumentContainers();
 
@@ -128,13 +129,13 @@ public class CommandVisitor extends AnnotationVisitor<Command, TreeNamedContaine
             if(visitorOpt.isPresent()) {
 
                 // ?
-                ArgumentSpec argSpec = visitorOpt.get().process(argumentContainer, instance, support, common, location, treeHead, Optional.of(command));
+                ArgumentSpec argSpec = visitorOpt.get().process(argumentContainer, instance, support, common, location, treeHead, ticket, Optional.of(command));
                 commandBuilder.withArgument(argSpec);
             }
 
         }
 
-        command.getChild().forEach(commandContainer -> commandBuilder.withChild(process(commandContainer, instance, support, common, location, treeHead, parent)));
+        command.getChild().forEach(commandContainer -> commandBuilder.withChild(process(commandContainer, instance, support, common, location, treeHead, ticket, parent)));
 
         CommandSpec cmd = commandBuilder.build();
 

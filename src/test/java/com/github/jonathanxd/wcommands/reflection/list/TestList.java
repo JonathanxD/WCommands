@@ -43,8 +43,9 @@ public class TestList {
 
     @Test
     public void listTest() {
-        ProvidedRequirement providedRequirement = (data, reg) -> {
-            Sender sender = reg.<Sender>getOptional(Sender.class).get();
+        ProvidedRequirement providedRequirement = (data, parameters, commandData, informationRegister, subject) -> {
+            Sender sender = (Sender) subject.get();
+
             return sender.hasPerm(data);
         };
 
@@ -56,7 +57,7 @@ public class TestList {
 
         WCommandCommon wCommandCommon = ReflectionAPI.createWCommand(new TestList());
 
-        wCommandCommon.registerRegistrationHandler((registrationHandleResults, targetList, manager) -> {
+        wCommandCommon.registerRegistrationHandler((registrationHandleResults, targetList, manager, ticket) -> {
             return RegistrationHandleResult.accept();
         });
 

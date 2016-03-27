@@ -22,6 +22,7 @@ import com.github.jonathanxd.wcommands.ext.help.HelperAPI;
 import com.github.jonathanxd.wcommands.ext.help.printer.CommonPrinter;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
+import com.github.jonathanxd.wcommands.ticket.CommonTicket;
 import com.github.jonathanxd.wcommands.util.reflection.Creator;
 
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class TestSuperCommand {
         ReflectionCommandProcessor commandProcessor = ReflectionAPI.createWCommand(/*commandFurious*/);
 
         //commandProcessor.addCommands(new SuperCommand.CommandCTRL());
-        commandProcessor.addCommandFromClass(SuperCommand.class, Creator::createEmpty);
+        commandProcessor.getRegister(new CommonTicket<>(this)).addCommandFromClass(SuperCommand.class, Creator::createEmpty);
 
         HelperAPI.help(commandProcessor.getCommandList(), null, CommonPrinter.TO_SYS_OUT);
     }

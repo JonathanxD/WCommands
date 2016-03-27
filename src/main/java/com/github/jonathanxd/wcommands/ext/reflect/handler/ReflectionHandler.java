@@ -29,12 +29,14 @@ import com.github.jonathanxd.wcommands.ext.reflect.infos.require.Require;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeNamedContainer;
 import com.github.jonathanxd.wcommands.handler.Handler;
+import com.github.jonathanxd.wcommands.infos.InfoId;
+import com.github.jonathanxd.wcommands.infos.Information;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,9 +65,10 @@ public class ReflectionHandler implements CommonHandler {
 
         Require[] requires = null;
 
-        try{
+        try {
             requires = bridge.getDeclaredAnnotationsByType(Require.class);
-        } catch (Exception e){}
+        } catch (Exception e) {
+        }
 
         if (bridge.isField()) {
             Optional<ArgumentHolder<String, Object>> argumentHolder = holder.getArgument(bridge.getName(), true);
@@ -87,15 +90,15 @@ public class ReflectionHandler implements CommonHandler {
                     }
 
                     //if(!
-                    test(requirements, requires, commandData, informationRegister, new Object[] {value});
+                    test(requirements, requires, commandData, informationRegister, new Object[]{value});
                     //) { throw Exception };
 
                     boolean force = argumentHolder.get().getArgumentSpec().getData().findData(ReflectionCommandProcessor.PropSet.FINAL.getClass());
 
                     if (arg.isPresent()) {
                         bridge.setValue(instance.get(), value, true, force);
-                    }else if(arg.getArgumentSpec().isOptional()) {
-                        if(Boolean.class.isAssignableFrom(bridge.getType()) || Boolean.TYPE.isAssignableFrom(bridge.getType())) {
+                    } else if (arg.getArgumentSpec().isOptional()) {
+                        if (Boolean.class.isAssignableFrom(bridge.getType()) || Boolean.TYPE.isAssignableFrom(bridge.getType())) {
                             bridge.setValue(instance.get(), true, true, force);
                         }
                     }
@@ -137,10 +140,11 @@ public class ReflectionHandler implements CommonHandler {
             Object[] argObjects = methodArguments.toArray(new Object[methodArguments.size()]);
 
             try {
-                if(ElementBridge.check(argObjects, (Method) bridge.getMember())) {
+                if (ElementBridge.check(argObjects, (Method) bridge.getMember())) {
                     test(requirements, requires, commandData, informationRegister, Arrays.copyOf(argObjects, argObjects.length));
                 }
                 theReturn = bridge.invoke(instance.get(), argObjects, true);
+
             } catch (Exception e) {
 
                 if (informationRegister == null) {
@@ -154,6 +158,12 @@ public class ReflectionHandler implements CommonHandler {
                 try {
                     theReturn = bridge.invoke(instance.get(), os, true);
                 } catch (Throwable tt) {
+
+                    if (find(tt, NullPointerException.class)) {
+                        System.err.println("Make sure the NullPointerException isn't caused by missing information.");
+                        testInformations(bridge, informationRegister, os);
+                    }
+
                     e.printStackTrace();
                     throw new RuntimeException(tt.getMessage(), tt);
                 }
@@ -164,10 +174,10 @@ public class ReflectionHandler implements CommonHandler {
 
             test(requirements, requires, commandData, informationRegister, new Object[]{});
 
-            if(Handler.class.isAssignableFrom(clazz)) {
+            if (Handler.class.isAssignableFrom(clazz)) {
                 @SuppressWarnings("unchecked") Handler<CommandHolder> handler = (Handler<CommandHolder>) instance.get();
                 theReturn = handler.handle(commandData, requirements, informationRegister);
-            }else {
+            } else {
                 throw new InvalidCommand("The command '" + commandData.getCommand() + "' for input '" + commandData.getInputArgument() + "' is invalid! Classes has no Executors to run!");
             }
         }
@@ -176,18 +186,67 @@ public class ReflectionHandler implements CommonHandler {
         return theReturn;
     }
 
+    private boolean find(Throwable tt, Class<? extends Throwable> thClass) {
+        if(thClass.isInstance(tt)) {
+            return true;
+        }
+
+        while((tt = tt.getCause()) != null) {
+            if(thClass.isInstance(tt)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void testInformations(ElementBridge bridge, InformationRegister register, Object[] passedParameters) {
+        if (bridge.isMethod()) {
+            Method method = (Method) bridge.getMember();
+
+            Parameter[] parameters = method.getParameters();
+
+            for (int x = 0; x < parameters.length; ++x) {
+                Parameter parameter = parameters[x];
+                Info info = parameter.getDeclaredAnnotation(Info.class);
+
+                if (info != null) {
+                    Object o = passedParameters[x];
+
+                    if (o == null) {
+                        System.err.println("Information '" + Info.InformationUtil.toString(info) + "' is missing, argument at index '" + x + "' is null!");
+                    }
+                }
+            }
+
+            System.err.println("Provided information = '"+register+"'");
+        }
+    }
+
     public void test(Requirements requirements, Require[] requires, CommandData<CommandHolder> commandData, InformationRegister informationRegister, Object[] args) {
-        if(requires == null)
+        if (requires == null)
             return;
 
-        for(Require require : requires) {
-            test(requirements.test(require.type(), require.data(), args, commandData, informationRegister), require);
+        for (Require require : requires) {
+
+            Information<?> subject = Information.empty();
+
+            Info infoSubject = require.subject();
+            if (infoSubject.type() != Object.class || infoSubject.tags().length > 0) {
+                Optional<Information<?>> byId = informationRegister.getById(new InfoId(infoSubject.tags(), infoSubject.type()));
+
+                if (byId.isPresent()) {
+                    subject = byId.get();
+                }
+
+            }
+
+            test(requirements.test(require.type(), require.data(), args, commandData, informationRegister, subject), require);
         }
     }
 
     public void test(boolean b, Require require) {
-        if(!b) {
-            throw new UnsatisfiedRequirementException("Requirement: '"+ require +"'", require.type(), require.data());
+        if (!b) {
+            throw new UnsatisfiedRequirementException("Requirement: '" + require + "'", require.type(), require.data());
         }
     }
 

@@ -40,7 +40,7 @@ public interface ErrorHandler<T> {
      * @param error Exception
      * @return True to STOP the process and print the error, or false to continue processing.
      */
-    boolean handle(ProcessingError error, @Immutable CommandList commandSpecs, @Nullable CommandSpec currentCommand, @Nullable T processed, Requirements requirements, InformationRegister informationRegister);
+    ProcessAction handle(ProcessingError error, @Immutable CommandList commandSpecs, @Nullable CommandSpec currentCommand, @Nullable T processed, Requirements requirements, InformationRegister informationRegister);
 
     class Container<T> {
         private final ErrorHandler<T> handler;
@@ -50,7 +50,7 @@ public interface ErrorHandler<T> {
         }
 
         public void handle(ProcessingError error, @Immutable CommandList commandSpecs, @Nullable CommandSpec currentCommand, @Nullable T processed, Requirements requirements, InformationRegister informationRegister) throws ProcessingError {
-            if (!handler.handle(error, commandSpecs, currentCommand, processed, requirements, informationRegister)) {
+            if (handler.handle(error, commandSpecs, currentCommand, processed, requirements, informationRegister) == ProcessAction.STOP) {
                 throw error;
             }
         }

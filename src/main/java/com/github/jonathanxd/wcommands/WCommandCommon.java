@@ -23,8 +23,10 @@ import com.github.jonathanxd.wcommands.commandstring.CommandStringParser;
 import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.exceptions.ErrorType;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
+import com.github.jonathanxd.wcommands.handler.ProcessAction;
 import com.github.jonathanxd.wcommands.processor.CommonProcessor;
 import com.github.jonathanxd.wcommands.processor.Processor;
+import com.github.jonathanxd.wcommands.ticket.RegistrationTicket;
 
 import java.util.List;
 
@@ -37,7 +39,7 @@ public class WCommandCommon extends WCommand<List<CommandData<CommandHolder>>> {
         this(processor, (e, d, l, v, r, k) -> {
             if(e != null)
                 e.printStackTrace();
-            return e != null && e.getType().getExceptionType() != ErrorType.Type.ERROR;
+            return (e != null && e.getType().getExceptionType() != ErrorType.Type.ERROR) ? ProcessAction.CONTINUE : ProcessAction.STOP ;
         });
     }
 
@@ -74,7 +76,7 @@ public class WCommandCommon extends WCommand<List<CommandData<CommandHolder>>> {
         if (commandCommon == this)
             throw new UnsupportedOperationException("Cannot import from same WCommandCommon");
 
-        commandCommon.getCommands().stream().filter(spec -> !this.getCommands().contains(spec)).forEach(spec -> this.getCommands().add(spec));
+        commandCommon.getCommands().stream().filter(spec -> !this.getCommands().contains(spec)).forEach(spec -> this.getCommands().add(spec, RegistrationTicket.empty(this)));
         commandCommon.getInterceptors().stream().filter(invokeInterceptor -> !this.getInterceptors().contains(invokeInterceptor)).forEach(invokeInterceptor -> this.getInterceptors().add(invokeInterceptor));
 
     }

@@ -26,9 +26,10 @@ import com.github.jonathanxd.wcommands.commandstring.CommonCommandStringParser;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.exceptions.ErrorType;
 import com.github.jonathanxd.wcommands.exceptions.ProcessingError;
-import com.github.jonathanxd.wcommands.handler.CommandRegistrationHandler;
+import com.github.jonathanxd.wcommands.handler.CommandRegistrationListener;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.handler.Handler;
+import com.github.jonathanxd.wcommands.handler.ProcessAction;
 import com.github.jonathanxd.wcommands.handler.registration.RegistrationHandleResult;
 import com.github.jonathanxd.wcommands.infos.InfoId;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
@@ -37,8 +38,8 @@ import com.github.jonathanxd.wcommands.interceptor.Interceptors;
 import com.github.jonathanxd.wcommands.interceptor.InvokeInterceptor;
 import com.github.jonathanxd.wcommands.processor.Processor;
 import com.github.jonathanxd.wcommands.result.Results;
+import com.github.jonathanxd.wcommands.ticket.RegistrationTicket;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -52,14 +53,12 @@ import java.util.Set;
 public class WCommand<T> {
 
     public static final InfoId WCOMMAND_INFOID = new InfoId(new String[]{"Manager", "WCommand"}, WCommand.class);
-
+    protected final CommandList commands;
     private final Processor<T> processor;
     private final ErrorHandler<T> errorHandler;
     private final Interceptors interceptors = new Interceptors();
     private final CommandStringParser commandStringParser;
-
-    private final Set<CommandRegistrationHandler> commandRegistrationHandlers = new HashSet<>();
-    private final CommandList commands;
+    private final Set<CommandRegistrationListener> commandRegistrationListeners = new HashSet<>();
 
     /**
      * Create WCommand with specified Processor and ErrorHandler
@@ -114,20 +113,8 @@ public class WCommand<T> {
     }
 
     /**
-     * Register command
-     *
-     * @param commandSpec Command Specification
-     */
-    public void registerCommand(CommandSpec... commandSpec) {
-        if (commandSpec.length == 1) {
-            commands.add(commandSpec[0]);
-        } else {
-            commands.addAll(Arrays.asList(commandSpec));
-        }
-    }
-
-    /**
      * Unregister command specification
+     *
      * @param commandSpec Command Specification
      * @return True if element is removed, false otherwise.
      */
@@ -136,33 +123,24 @@ public class WCommand<T> {
     }
 
     /**
-     * Register all commands from another list
-     *
-     * @param commands Command list
-     */
-    public void registerAllFrom(CommandList commands) {
-        this.commands.addAll(commands);
-    }
-
-    /**
      * Register command registration handler
      *
-     * @param commandRegistrationHandler Handler
-     * @see CommandRegistrationHandler
+     * @param commandRegistrationListener Handler
+     * @see CommandRegistrationListener
      */
-    public void registerRegistrationHandler(CommandRegistrationHandler commandRegistrationHandler) {
-        commandRegistrationHandlers.add(commandRegistrationHandler);
+    public void registerRegistrationHandler(CommandRegistrationListener commandRegistrationListener) {
+        commandRegistrationListeners.add(commandRegistrationListener);
     }
 
     /**
      * Unregister command registration handler
      *
-     * @param commandRegistrationHandler Handler
+     * @param commandRegistrationListener Handler
      * @return False if element is not present in list, or true if element is removed
-     * @see CommandRegistrationHandler
+     * @see CommandRegistrationListener
      */
-    public boolean unregisterRegistrationHandler(CommandRegistrationHandler commandRegistrationHandler) {
-        return commandRegistrationHandlers.remove(commandRegistrationHandler);
+    public boolean unregisterRegistrationHandler(CommandRegistrationListener commandRegistrationListener) {
+        return commandRegistrationListeners.remove(commandRegistrationListener);
     }
 
     /**
@@ -218,7 +196,7 @@ public class WCommand<T> {
     /**
      * Process and invoke
      *
-     * @param parsedArguments           List of parsedArguments
+     * @param parsedArguments     List of parsedArguments
      * @param informationRegister Information register
      * @see InformationRegister
      * @see #process(List, Requirements, InformationRegister)
@@ -238,7 +216,7 @@ public class WCommand<T> {
         try {
             return processor.process(arguments, commands, errorHandler, requirements, informationRegister);
         } catch (Throwable e) {
-            if (errorHandler.handle(new ProcessingError(e, ErrorType.FAIL), this.getCommandList(), null, null, requirements, informationRegister)) {
+            if (errorHandler.handle(new ProcessingError(e, ErrorType.FAIL), this.getCommandList(), null, null, requirements, informationRegister) == ProcessAction.STOP) {
                 throw e;
             } else {
                 return null;
@@ -303,7 +281,7 @@ public class WCommand<T> {
         try {
             return processor.invokeCommands(object, interceptors, requirements, informationRegister);
         } catch (Throwable e) {
-            if (errorHandler.handle(new ProcessingError(e, ErrorType.FAIL), this.getCommandList(), null, null, requirements, informationRegister)) {
+            if (errorHandler.handle(new ProcessingError(e, ErrorType.FAIL), this.getCommandList(), null, null, requirements, informationRegister) == ProcessAction.STOP) {
                 throw e;
             } else {
                 return null;
@@ -370,16 +348,27 @@ public class WCommand<T> {
     }
 
     @Immutable
-    public Set<CommandRegistrationHandler> getCommandRegistrationHandlers() {
-        return Collections.unmodifiableSet(commandRegistrationHandlers);
+    public Set<CommandRegistrationListener> getCommandRegistrationListeners() {
+        return Collections.unmodifiableSet(commandRegistrationListeners);
+    }
+
+    public <V> Register<V> getRegister(RegistrationTicket<V> registrationTicket) {
+        return new Register<>(this, registrationTicket);
     }
 
     /**
-     * Handle command registration
+     * Handle command registration to ticket
      *
      * @param commandSpec CommandSpec
+     * @param targetList  Target list
+     * @param ticket      Ticket to receive commands
      */
-    public Optional<CommandSpec> handleRegistration(CommandSpec commandSpec, CommandList targetList) {
+    @SuppressWarnings("Duplicates")
+    public Optional<CommandSpec> handleRegistrationToTicket(CommandSpec commandSpec, CommandList targetList, RegistrationTicket<?> ticket) {
+
+        if(!ticket.isOpenRegistration()) {
+            return Optional.of(commandSpec);
+        }
 
         targetList = targetList.toUnmodifiable();
 
@@ -387,22 +376,84 @@ public class WCommand<T> {
 
         RegistrationHandleResult main = RegistrationHandleResult.newInstance(commandSpec, null, RegistrationHandleResult.Action.ACCEPT);
 
-        for (CommandRegistrationHandler handler : getCommandRegistrationHandlers()) {
+        for (CommandRegistrationListener handler : ticket.getListeners()) {
 
             RegistrationHandleResult result;
 
             if (results.isEmpty()) {
-                result = handler.handle(new ImmutableArrays<>(main), targetList, this);
+                result = handler.handle(new ImmutableArrays<>(main), targetList, this, ticket);
             } else {
-                result = handler.handle(new ImmutableArrays<>(results), targetList, this);
+                result = handler.handle(new ImmutableArrays<>(results), targetList, this, ticket);
             }
 
-            if(result != null) {
+            if (result != null) {
                 result = RegistrationHandleResult.applyTo(commandSpec, result);
                 results.add(result);
                 main = null;
             } else {
-                if(results.isEmpty() && main != null) {
+                if (results.isEmpty() && main != null) {
+                    results.add(main);
+                    main = null;
+                }
+            }
+        }
+
+        if (results.isEmpty()) {
+            return Optional.of(commandSpec);
+        }
+
+        RegistrationHandleResult result = results.getFirst();
+
+        switch (result.getAction()) {
+            case ACCEPT: {
+                return Optional.of(commandSpec);
+            }
+            case CANCEL: {
+                return Optional.empty();
+            }
+            case MODIFY: {
+
+                if (!result.getModifiedCommandSpec().isPresent()) {
+                    throw new RuntimeException("RegistrationHandleResult with Action 'MODIFY' has empty modified command spec");
+                }
+
+                return Optional.of(result.getModifiedCommandSpec().get());
+            }
+        }
+
+        return Optional.of(commandSpec);
+    }
+
+    /**
+     * Handle command registration
+     *
+     * @param commandSpec CommandSpec
+     */
+    @Deprecated
+    public Optional<CommandSpec> handleRegistration(CommandSpec commandSpec, CommandList targetList, RegistrationTicket<?> ticket) {
+
+        targetList = targetList.toUnmodifiable();
+
+        com.github.jonathanxd.iutils.arrays.Arrays<RegistrationHandleResult> results = new com.github.jonathanxd.iutils.arrays.Arrays<>();
+
+        RegistrationHandleResult main = RegistrationHandleResult.newInstance(commandSpec, null, RegistrationHandleResult.Action.ACCEPT);
+
+        for (CommandRegistrationListener handler : getCommandRegistrationListeners()) {
+
+            RegistrationHandleResult result;
+
+            if (results.isEmpty()) {
+                result = handler.handle(new ImmutableArrays<>(main), targetList, this, ticket);
+            } else {
+                result = handler.handle(new ImmutableArrays<>(results), targetList, this, ticket);
+            }
+
+            if (result != null) {
+                result = RegistrationHandleResult.applyTo(commandSpec, result);
+                results.add(result);
+                main = null;
+            } else {
+                if (results.isEmpty() && main != null) {
                     results.add(main);
                     main = null;
                 }

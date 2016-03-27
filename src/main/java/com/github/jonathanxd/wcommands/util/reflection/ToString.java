@@ -19,6 +19,7 @@
 package com.github.jonathanxd.wcommands.util.reflection;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.StringJoiner;
 
@@ -33,17 +34,43 @@ public class ToString {
 
         Class<?> clazz = object.getClass();
 
-        for(Field f : clazz.getDeclaredFields()) {
+        for (Field f : clazz.getDeclaredFields()) {
+            if(Modifier.isStatic(f.getModifiers()))
+                continue;
+
             f.setAccessible(true);
             try {
                 Object o = f.get(object);
 
-                if(o instanceof Collection) {
-                    stringJoiner.add(f.getName() + " = {" + f.get(object) + "}");
-                }else {
-                    stringJoiner.add(f.getName() + " = '" + f.get(object) + "'");
+                if(o != null && object.getClass().isAssignableFrom(o.getClass())) {
+                    stringJoiner.add(f.getName() + " = { ? }");
+                    continue;
                 }
-            } catch (IllegalAccessException ignored) {}
+
+                if (o instanceof Collection) {
+                    stringJoiner.add(f.getName() + " = {" + f.get(object) + "}");
+                    continue;
+                } else if (o != null) {
+                    if (o.getClass().isArray()) {
+                        StringJoiner joiner = new StringJoiner(", ", "(", ")");
+
+                        for (Object oth : (Object[]) o) {
+                            joiner.add(String.valueOf(oth));
+                        }
+
+                        stringJoiner.add(f.getName() + " = " + joiner.toString());
+                        continue;
+                    }
+
+                    if (o instanceof Class) {
+                        stringJoiner.add(f.getName() + " = '" + ((Class) o).getSimpleName() + "'");
+                        continue;
+                    }
+                }
+                stringJoiner.add(f.getName() + " = '" + o + "'");
+
+            } catch (IllegalAccessException ignored) {
+            }
         }
 
         return stringJoiner.toString();

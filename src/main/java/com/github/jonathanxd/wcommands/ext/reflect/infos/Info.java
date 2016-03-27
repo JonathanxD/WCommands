@@ -20,6 +20,7 @@ package com.github.jonathanxd.wcommands.ext.reflect.infos;
 
 import com.github.jonathanxd.wcommands.infos.Information;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
+import com.github.jonathanxd.wcommands.util.reflection.ToString;
 import com.github.jonathanxd.wcommands.util.reflection.TypeUtil;
 
 import java.lang.annotation.ElementType;
@@ -162,6 +163,19 @@ public @interface Info {
             }
 
             return null;
+        }
+
+        public static String toString(Info info) {
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("tags=(").append(Arrays.toString(info.tags())).append(')');
+            sb.append(',').append(' ');
+            sb.append("type=(").append(info.type().getSimpleName()).append(')');
+            sb.append(',').append(' ');
+            sb.append("description=(").append(info.description()).append(')');
+
+            return sb.toString();
         }
 
     }

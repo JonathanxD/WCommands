@@ -28,6 +28,7 @@ import com.github.jonathanxd.wcommands.ext.Extension;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.handler.ErrorHandler;
 import com.github.jonathanxd.wcommands.processor.Processor;
+import com.github.jonathanxd.wcommands.ticket.RegistrationTicket;
 
 import java.util.List;
 
@@ -49,46 +50,67 @@ public class ReflectionAPI extends Extension {
     }
 
     public static ReflectionCommandProcessor createWCommand(Object instance, Class<?> commandClass) {
+        return createWCommand(instance, commandClass, RegistrationTicket.empty(instance));
+    }
+
+    public static ReflectionCommandProcessor createWCommand(Object instance, Class<?> commandClass, RegistrationTicket<?> ticket) {
         ReflectionCommandProcessor commandProcessor = new ReflectionCommandProcessor();
 
         if (instance != null)
-            commandProcessor.addAsFuture(instance, commandClass);
+            commandProcessor.getRegister(ticket).addAsFuture(instance, commandClass);
 
         return commandProcessor;
     }
 
+
     public static ReflectionCommandProcessor createWCommand(ErrorHandler<List<CommandData<CommandHolder>>> handler, Object instance) {
+       return createWCommand(handler, instance, RegistrationTicket.empty(instance));
+    }
+
+    public static ReflectionCommandProcessor createWCommand(ErrorHandler<List<CommandData<CommandHolder>>> handler, Object instance, RegistrationTicket<?> ticket) {
         ReflectionCommandProcessor commandProcessor = new ReflectionCommandProcessor(handler);
 
         if (instance != null)
-            commandProcessor.addAsFuture(instance, instance.getClass());
+            commandProcessor.getRegister(ticket).addAsFuture(instance, instance.getClass());
 
         return commandProcessor;
     }
 
     public static ReflectionCommandProcessor createWCommand(ErrorHandler<List<CommandData<CommandHolder>>> handler, Object instance, Class<?> commandClass) {
+       return createWCommand(handler, instance, commandClass, RegistrationTicket.empty(instance));
+    }
+
+    public static ReflectionCommandProcessor createWCommand(ErrorHandler<List<CommandData<CommandHolder>>> handler, Object instance, Class<?> commandClass, RegistrationTicket<?> ticket) {
         ReflectionCommandProcessor commandProcessor = new ReflectionCommandProcessor(handler);
 
         if (instance != null)
-            commandProcessor.addAsFuture(instance, commandClass);
+            commandProcessor.getRegister(ticket).addAsFuture(instance, commandClass);
 
         return commandProcessor;
     }
 
     public static ReflectionCommandProcessor createWCommand(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler<List<CommandData<CommandHolder>>> handler, Object instance) {
+        return createWCommand(processor, handler, instance, RegistrationTicket.empty(instance));
+    }
+
+    public static ReflectionCommandProcessor createWCommand(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler<List<CommandData<CommandHolder>>> handler, Object instance, RegistrationTicket<?> ticket) {
         ReflectionCommandProcessor commandProcessor = new ReflectionCommandProcessor(processor, handler);
 
         if (instance != null)
-            commandProcessor.addAsFuture(instance, instance.getClass());
+            commandProcessor.getRegister(ticket).addAsFuture(instance, instance.getClass());
 
         return commandProcessor;
     }
 
+
     public static ReflectionCommandProcessor createWCommand(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler<List<CommandData<CommandHolder>>> handler, Object instance, Class<?> commandClass) {
+        return createWCommand(processor, handler, instance, commandClass, RegistrationTicket.empty(instance));
+    }
+    public static ReflectionCommandProcessor createWCommand(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler<List<CommandData<CommandHolder>>> handler, Object instance, Class<?> commandClass, RegistrationTicket<?> ticket    ) {
         ReflectionCommandProcessor commandProcessor = new ReflectionCommandProcessor(processor, handler);
 
         if (instance != null)
-            commandProcessor.addAsFuture(instance, commandClass);
+            commandProcessor.getRegister(ticket).addAsFuture(instance, commandClass);
 
         return commandProcessor;
     }

@@ -28,6 +28,7 @@ import com.github.jonathanxd.wcommands.common.alias.AliasList;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.handler.Handler;
 import com.github.jonathanxd.wcommands.text.Text;
+import com.github.jonathanxd.wcommands.ticket.RegistrationTicket;
 import com.github.jonathanxd.wcommands.util.Functions;
 
 import java.io.IOException;
@@ -101,7 +102,7 @@ public class CommandSpec implements Matchable<String> {
     /**
      * List of commands
      *
-     * Doesn't modify field name, if you want to modify see method {@link #withHandledCommandList(WCommand, CommandSpec)}
+     * Doesn't modify field name, if you want to modify see method {@link #withHandledCommandList(WCommand, CommandSpec, RegistrationTicket)}
      */
     private final CommandList subCommands = new CommandList(this);
 
@@ -196,8 +197,20 @@ public class CommandSpec implements Matchable<String> {
      * @param commandSpec CommandSpec
      * @return This
      */
+    public CommandSpec addSub(CommandSpec commandSpec, RegistrationTicket<?> ticket) {
+        this.subCommands.add(commandSpec, ticket);
+        return this;
+    }
+
+    /**
+     * Add child commandSpec
+     *
+     * @param commandSpec CommandSpec
+     * @return This
+     */
+    @Deprecated
     public CommandSpec addSub(CommandSpec commandSpec) {
-        this.subCommands.add(commandSpec);
+        this.subCommands.add(commandSpec, RegistrationTicket.empty(this));
         return this;
     }
 
@@ -207,8 +220,8 @@ public class CommandSpec implements Matchable<String> {
      * @param commandSpecs Commands*
      * @return This
      */
-    public CommandSpec subCommands(CommandSpec... commandSpecs) {
-        addSubs(commandSpecs);
+    public CommandSpec subCommands(RegistrationTicket<?> ticket, CommandSpec... commandSpecs) {
+        addSubs(ticket, commandSpecs);
         return this;
     }
 
@@ -218,9 +231,9 @@ public class CommandSpec implements Matchable<String> {
      * @param commandSpecs Commands
      * @return This
      */
-    public CommandSpec addSubs(List<CommandSpec> commandSpecs) {
+    public CommandSpec addSubs(List<CommandSpec> commandSpecs, RegistrationTicket<?> ticket) {
         if (commandSpecs.size() > 0)
-            this.subCommands.addAll(commandSpecs);
+            this.subCommands.addAll(commandSpecs, ticket);
         return this;
     }
 
@@ -230,8 +243,8 @@ public class CommandSpec implements Matchable<String> {
      * @param commandSpecs Child commandSpecs
      * @return This
      */
-    public CommandSpec addSubs(CommandSpec... commandSpecs) {
-        this.subCommands.addAll(Arrays.asList(commandSpecs));
+    public CommandSpec addSubs(RegistrationTicket<?> ticket, CommandSpec... commandSpecs) {
+        this.subCommands.addAll(Arrays.asList(commandSpecs), ticket);
         return this;
     }
 
@@ -429,7 +442,7 @@ public class CommandSpec implements Matchable<String> {
     }
 
 
-    public static CommandSpec withHandledCommandList(WCommand<?> wCommand, CommandSpec commandSpec) {
+    public static CommandSpec withHandledCommandList(WCommand<?> wCommand, CommandSpec commandSpec, RegistrationTicket<?> ticket) {
         CommandSpec newCommandSpec = new CommandSpec(commandSpec.getName(), commandSpec.getDescription(), commandSpec.getArguments(), commandSpec.isOptional(), commandSpec.getPrefix(), commandSpec.getSuffix(), commandSpec.getDefaultHandler());
         try {
             //--------------------------------------------------------------------------------|SUB COMMANDS FIELD HERE|
@@ -440,7 +453,7 @@ public class CommandSpec implements Matchable<String> {
 
         if(commandSpec.getSubCommands().size() > 0) {
             for(CommandSpec childCommandSpec : commandSpec.getSubCommands()) {
-                newCommandSpec.addSub(withHandledCommandList(wCommand, childCommandSpec));
+                newCommandSpec.addSub(withHandledCommandList(wCommand, childCommandSpec, ticket), ticket);
             }
         }
 

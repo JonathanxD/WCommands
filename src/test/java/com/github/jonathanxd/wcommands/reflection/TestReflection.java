@@ -38,7 +38,7 @@ public class TestReflection {
     public void reflectionTest() {
         ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new TestReflection());
 
-        processor.registerRegistrationHandler((registrationHandleResults, targetList, manager) -> {
+        processor.registerRegistrationHandler((registrationHandleResults, targetList, manager, ticket) -> {
             System.out.println("Process List: "+registrationHandleResults);
 
             return RegistrationHandleResult.accept();

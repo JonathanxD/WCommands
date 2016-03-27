@@ -47,7 +47,7 @@ public class TestNewInformationAPI {
     public void newInformationAPITest() {
         ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new TestNewInformationAPI());
 
-        processor.registerRegistrationHandler((registrationHandleResults, targetList, manager) -> {
+        processor.registerRegistrationHandler((registrationHandleResults, targetList, manager, ticket) -> {
             System.out.println("Results: " + registrationHandleResults + " Manager: " + manager);
 
             RegistrationHandleResult result = registrationHandleResults.getLast();

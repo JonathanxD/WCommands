@@ -19,6 +19,7 @@
 package com.github.jonathanxd.wcommands.arguments;
 
 import com.github.jonathanxd.iutils.data.ExtraData;
+import com.github.jonathanxd.iutils.data.ReferenceData;
 import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.text.Text;
 
@@ -81,6 +82,12 @@ public class ArgumentSpec<ID, T> {
      * and 2nd/3rd APIs
      */
     private final ExtraData data = new ExtraData();
+
+    /**
+     * Reference Data's, AdditionalData provided by {@link com.github.jonathanxd.wcommands.ext.Extension}
+     * and 2nd/3rd APIs
+     */
+    private final ReferenceData referenceData = new ReferenceData();
 
     public ArgumentSpec(ID id, boolean isInfinite, Supplier<Matchable<String>> checker, Predicate<List<String>> predicateChecker, boolean optional, Function<List<String>, T> converter) {
         this.id = id;
@@ -152,6 +159,15 @@ public class ArgumentSpec<ID, T> {
      */
     public ExtraData getData() {
         return data;
+    }
+
+    /**
+     * Reference Data (Additional Data)
+     *
+     * @return Reference Data (Additional Data)
+     */
+    public ReferenceData getReferenceData() {
+        return referenceData;
     }
 
     @Override

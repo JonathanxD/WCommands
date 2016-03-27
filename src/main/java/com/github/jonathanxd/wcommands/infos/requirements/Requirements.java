@@ -22,6 +22,7 @@ import com.github.jonathanxd.iutils.function.stream.MapStream;
 import com.github.jonathanxd.iutils.object.Node;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.data.CommandData;
+import com.github.jonathanxd.wcommands.infos.Information;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 
 import java.util.HashMap;
@@ -51,7 +52,7 @@ public class Requirements {
 
     // provide(new InformationProvided("deep"));
 
-    public boolean test(Class<?> type, String data, Object[] arguments, CommandData<CommandHolder> commandData, InformationRegister informationRegister) {
+    public boolean test(Class<?> type, String data, Object[] arguments, CommandData<CommandHolder> commandData, InformationRegister informationRegister, Information<?> subject) {
         Optional<Node<Class<?>, ProvidedRequirement>> opt;
 
         if (providedRequirementMap.containsKey(type)) {
@@ -60,7 +61,7 @@ public class Requirements {
             opt = MapStream.of(providedRequirementMap).filter((mapType, req) -> mapType.isAssignableFrom(type)).findFirst();
         }
 
-        return opt.isPresent() && opt.get().getValue().test(data, arguments, commandData, informationRegister);
+        return opt.isPresent() && opt.get().getValue().test(data, arguments, commandData, informationRegister, subject);
 
     }
 

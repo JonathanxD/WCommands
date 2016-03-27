@@ -24,6 +24,7 @@ import com.github.jonathanxd.wcommands.ext.reflect.infos.Info;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.reflection.Fixy;
+import com.github.jonathanxd.wcommands.ticket.CommonTicket;
 
 import org.junit.Test;
 
@@ -57,7 +58,7 @@ public class Fixy2 {
     public void test() {
         ReflectionCommandProcessor processor = new ReflectionCommandProcessor();
 
-        processor.addCommands(this);
+        processor.getRegister(new CommonTicket<>(this)).addCommands(this);
 
         processor.processAndInvoke(InformationRegister
                 .blankBuilder()

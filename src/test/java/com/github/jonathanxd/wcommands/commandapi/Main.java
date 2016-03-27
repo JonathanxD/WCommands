@@ -26,8 +26,10 @@ import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.exceptions.ProcessingError;
 import com.github.jonathanxd.wcommands.factory.CommandFactory;
+import com.github.jonathanxd.wcommands.handler.ProcessAction;
 import com.github.jonathanxd.wcommands.processor.CommonProcessor;
 import com.github.jonathanxd.wcommands.text.Text;
+import com.github.jonathanxd.wcommands.ticket.CommonTicket;
 
 import org.junit.Test;
 
@@ -38,7 +40,7 @@ public class Main {
 
     @Test
     public void mainTest() throws ProcessingError {
-        WCommand<List<CommandData<CommandHolder>>> wCommand = CommonProcessor.newWCommand((e, d, l, v, r, t) -> true);
+        WCommand<List<CommandData<CommandHolder>>> wCommand = CommonProcessor.newWCommand((e, d, l, v, r, t) -> ProcessAction.STOP);
 
         CommonProcessor.CommonHandler handler = (data, req, ref) -> {
             System.out.println("|CommandSpec|: " + data.getCommand());
@@ -61,13 +63,13 @@ public class Main {
         ArgumentSpec argumentSpecName = CommandFactory.create(ArgumentIDs.REGION_NAME, Matchable::acceptAny);
         ArgumentSpec argumentSpecRegionName = CommandFactory.createOptional(ArgumentIDs.REGION_NAME, () -> s -> !s.equals("allow"));
 
-        wCommand.registerCommand(
+        wCommand.getRegister(new CommonTicket<>(this)).registerCommand(
                 CommandFactory.create("give", handler)
                         .addSub(CommandFactory.create("xp", Arguments.of(argumentSpecXP), handler))
                         .addSub(CommandFactory.create("item", Arguments.of(argumentSpec), handler))
         );
 
-        wCommand.registerCommand(
+        wCommand.getRegister(new CommonTicket<>(this)).registerCommand(
                 CommandFactory.create("region", Arguments.of(argumentSpecRegionName), handler)
                         .addSub(
                                 CommandFactory.createOptional("allow", Arguments.of(argumentSpecName), handler)

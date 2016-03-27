@@ -18,7 +18,10 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.infos.require;
 
+import com.github.jonathanxd.wcommands.ext.reflect.infos.Info;
+
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -28,10 +31,13 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
+@Repeatable(Requires.class)
 public @interface Require {
 
     Class<?> type();
 
     String data();
+
+    Info subject() default @Info;
 
 }

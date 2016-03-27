@@ -26,6 +26,7 @@ import com.github.jonathanxd.wcommands.exceptions.ProcessingError;
 import com.github.jonathanxd.wcommands.factory.ArgumentBuilder;
 import com.github.jonathanxd.wcommands.factory.CommandBuilder;
 import com.github.jonathanxd.wcommands.text.Text;
+import com.github.jonathanxd.wcommands.ticket.CommonTicket;
 
 import org.junit.Test;
 
@@ -67,7 +68,7 @@ public class Readme {
                                 .build()
                 ).build();
 
-        manager.registerCommand(spec);
+        manager.getRegister(new CommonTicket<>(this)).registerCommand(spec);
 
         manager.processAndInvoke("say", "foo bar");
 

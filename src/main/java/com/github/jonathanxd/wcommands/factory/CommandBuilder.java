@@ -24,6 +24,7 @@ import com.github.jonathanxd.wcommands.arguments.Arguments;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.handler.Handler;
 import com.github.jonathanxd.wcommands.text.Text;
+import com.github.jonathanxd.wcommands.ticket.RegistrationTicket;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,7 +134,7 @@ public class CommandBuilder<H> {
         return this;
     }
 
-
+    @Deprecated
     public CommandSpec build() {
         return new CommandSpec(Objects.requireNonNull(name),
                 description,
@@ -141,6 +142,17 @@ public class CommandBuilder<H> {
                 isOptional,
                 Objects.requireNonNull(prefix),
                 Objects.requireNonNull(suffix),
-                Objects.requireNonNull(handler)).addSubs(preChilds);
+                Objects.requireNonNull(handler)).addSubs(preChilds, RegistrationTicket.empty(this));
     }
+
+    public CommandSpec build(RegistrationTicket<?> ticket) {
+        return new CommandSpec(Objects.requireNonNull(name),
+                description,
+                Objects.requireNonNull(arguments),
+                isOptional,
+                Objects.requireNonNull(prefix),
+                Objects.requireNonNull(suffix),
+                Objects.requireNonNull(handler)).addSubs(preChilds, ticket);
+    }
+
 }

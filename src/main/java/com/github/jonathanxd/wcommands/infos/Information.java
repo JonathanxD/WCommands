@@ -47,6 +47,11 @@ public class Information<T> implements Cloneable {
     }
 
     @SuppressWarnings("unchecked")
+    public static <T> Information<T> empty() {
+        return (Information<T>) EMPTY;
+    }
+
+    @SuppressWarnings("unchecked")
     public InfoId getId() {
         return id;
     }
@@ -75,8 +80,9 @@ public class Information<T> implements Cloneable {
         return (this.id != null && this.info != null) || (this != EMPTY);
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Information<T> empty() {
-        return (Information<T>) EMPTY;
+    @Override
+    public String toString() {
+
+        return "id=(" + getId() + ")";
     }
 }

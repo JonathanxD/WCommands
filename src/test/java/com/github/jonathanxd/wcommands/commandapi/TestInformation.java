@@ -23,6 +23,7 @@ import com.github.jonathanxd.wcommands.arguments.converters.CollectionConverter;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.factory.CommandFactory;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
+import com.github.jonathanxd.wcommands.ticket.CommonTicket;
 
 import org.junit.Test;
 
@@ -48,7 +49,7 @@ public class TestInformation {
         WCommandCommon wCommandCommon = new WCommandCommon();
 
         // Register command
-        wCommandCommon.registerCommand(CommandFactory
+        wCommandCommon.getRegister(new CommonTicket<>(this)).registerCommand(CommandFactory
                 .commandBuilder()
                 // Create command "message"
                 .withName("message")
