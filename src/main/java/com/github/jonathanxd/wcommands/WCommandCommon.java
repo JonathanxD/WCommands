@@ -39,7 +39,7 @@ public class WCommandCommon extends WCommand<List<CommandData<CommandHolder>>> {
         this(processor, (e, d, l, v, r, k) -> {
             if(e != null)
                 e.printStackTrace();
-            return (e != null && e.getType().getExceptionType() != ErrorType.Type.ERROR) ? ProcessAction.CONTINUE : ProcessAction.STOP ;
+            return (e != null && e.getType().getExceptionType() != ErrorType.Type.ERROR) ? ProcessAction.CONTINUE : ProcessAction.STOP;
         });
     }
 
