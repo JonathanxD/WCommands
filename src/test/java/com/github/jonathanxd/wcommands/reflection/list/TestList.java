@@ -84,7 +84,7 @@ public class TestList {
     }
 
     @Command
-    public void myList(@Argument(isInfinite = true) List<EN> ens) {
+    public void myList(@Argument(isArray = true) List<EN> ens) {
         System.out.println("En: "+ens);
         EN en = ens.get(0);
     }
@@ -96,7 +96,7 @@ public class TestList {
     }
 
     @SubCommand({"show"})
-    public Result<List<String>> list(@Argument(isInfinite = true) List<String> stringList) {
+    public Result<List<String>> list(@Argument(isArray = true) List<String> stringList) {
         System.out.println("A List "+stringList);
         return new Result<>(stringList, IDs.DATA);
     }

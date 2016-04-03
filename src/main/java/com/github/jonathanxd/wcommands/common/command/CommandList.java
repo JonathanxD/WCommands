@@ -88,6 +88,53 @@ public class CommandList implements List<CommandSpec> {
         return commandSpecs;
     }
 
+    /**
+     * Get command by name
+     *
+     * @param name Command name
+     * @return {@link Optional} of {@link CommandSpec} if find, or {@link Optional#empty()}
+     */
+    public Optional<CommandSpec> getCommand(String name) {
+        for (CommandSpec spec : this) {
+            if (spec.matches(name)) {
+                return Optional.of(spec);
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Get command by path
+     *
+     * @param path Path, first is main command and others is the sub commands.
+     * @return {@link Optional} of {@link CommandSpec} if find, or {@link Optional#empty()}
+     */
+    public Optional<CommandSpec> getCommand(String[] path) {
+
+        List<CommandSpec> commandSpecs = this;
+
+        Iterator<CommandSpec> commandSpecIterator = commandSpecs.iterator();
+
+        int pathIndex = 0;
+
+        while (commandSpecIterator.hasNext()) {
+
+            CommandSpec spec = commandSpecIterator.next();
+
+            if (spec.matches(path[pathIndex])) {
+
+                if (pathIndex + 1 >= path.length)
+                    return Optional.of(spec);
+
+                ++pathIndex;
+
+                commandSpecIterator = spec.getSubCommands().iterator();
+            }
+        }
+
+        return Optional.empty();
+    }
+
     public Optional<CommandSpec> getCommandOf(Collection<Text> namesAndAliases) {
         for (CommandSpec commandSpec : this.commandSpecs) {
 

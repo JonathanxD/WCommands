@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class Fixy2 {
     @Command(prefix = "--")
-    public void high(@Argument(id = "high", isInfinite = true) List<String> highs,
+    public void high(@Argument(id = "high", isArray = true) List<String> highs,
                      @Info(type = Fixy.class) Fixy fixy,
                      @Info(type = Fixy2.class) Fixy2 fixy2) {
 
@@ -45,7 +45,7 @@ public class Fixy2 {
     }
 
     @Command(prefix = "--")
-    public void low(@Argument(id = "low", isInfinite = true) List<String> lows,
+    public void low(@Argument(id = "low", isArray = true) List<String> lows,
                     @Info(type = Fixy.class) Fixy fixy) {
 
         System.out.println("Lows: "+lows);

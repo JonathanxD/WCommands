@@ -21,6 +21,8 @@ package com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults;
 import com.github.jonathanxd.iutils.extra.Container;
 import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
+import com.github.jonathanxd.wcommands.common.command.CommandList;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
@@ -75,7 +77,7 @@ public class SubCommandVisitor extends AnnotationVisitor<SubCommand, TreeNamedCo
 
     @SuppressWarnings("unchecked")
     @Override
-    public CommandSpec process(TreeNamedContainer command, InstanceContainer instance, AnnotationVisitorSupport support, WCommandCommon common, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket, Optional<NamedContainer> parent) {
+    public CommandSpec process(TreeNamedContainer command, InstanceContainer instance, AnnotationVisitorSupport support, CommandList common, TranslatorSupport translatorSupport, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket, Optional<NamedContainer> parent) {
         SubCommand subCommandAnnotation = (SubCommand) command.get();
         Command commandAnnotation = subCommandAnnotation.commandSpec();
 
@@ -91,7 +93,7 @@ public class SubCommandVisitor extends AnnotationVisitor<SubCommand, TreeNamedCo
 
             AnnotationVisitor<Command, TreeNamedContainer, CommandSpec> visitor = com.github.jonathanxd.iutils.optional.Require.require(support.<Command, TreeNamedContainer, CommandSpec>getVisitorFor(Command.class), "Cannot get @Command Visitor");
 
-            CommandSpec spec = visitor.process(tree, instance, support, common, location, treeHead, ticket, parent);
+            CommandSpec spec = visitor.process(tree, instance, support, common, translatorSupport, location, treeHead, ticket, parent);
 
             main.addSub(spec, ticket);
 
@@ -103,10 +105,10 @@ public class SubCommandVisitor extends AnnotationVisitor<SubCommand, TreeNamedCo
     }
 
     @Override
-    public boolean dependencyCheck(TreeNamedContainer container, InstanceContainer instance, AnnotationVisitorSupport support, WCommandCommon common, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket, Optional<NamedContainer> parent) {
+    public boolean dependencyCheck(TreeNamedContainer container, InstanceContainer instance, AnnotationVisitorSupport support, CommandList commandList, TranslatorSupport translatorSupport, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket, Optional<NamedContainer> parent) {
         SubCommand subCommandAnnotation = (SubCommand) container.get();
 
-        return common.getCommand(subCommandAnnotation.value()).isPresent();
+        return commandList.getCommand(subCommandAnnotation.value()).isPresent();
     }
 
     @Override

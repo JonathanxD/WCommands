@@ -61,9 +61,9 @@ public class ArgumentSpec<ID, T> {
     private final boolean optional;
 
     /**
-     * Infinite arguments = List
+     * Arrays arguments (List for example)
      */
-    private final boolean isInfinite;
+    private final boolean isArray;
 
     /**
      * Converter
@@ -89,9 +89,9 @@ public class ArgumentSpec<ID, T> {
      */
     private final ReferenceData referenceData = new ReferenceData();
 
-    public ArgumentSpec(ID id, boolean isInfinite, Supplier<Matchable<String>> checker, Predicate<List<String>> predicateChecker, boolean optional, Function<List<String>, T> converter) {
+    public ArgumentSpec(ID id, boolean isArray, Supplier<Matchable<String>> checker, Predicate<List<String>> predicateChecker, boolean optional, Function<List<String>, T> converter) {
         this.id = id;
-        this.isInfinite = isInfinite;
+        this.isArray = isArray;
         this.checker = checker;
         this.predicate = predicateChecker;
         this.optional = optional;
@@ -139,8 +139,8 @@ public class ArgumentSpec<ID, T> {
      *
      * @return True if is a infinite ArgumentSpec (lists/arrays)
      */
-    public boolean isInfinite() {
-        return isInfinite;
+    public boolean isArray() {
+        return isArray;
     }
 
     /**

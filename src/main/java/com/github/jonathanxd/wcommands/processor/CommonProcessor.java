@@ -47,7 +47,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.stream.Stream;
 
 /**
  * Created by jonathan on 26/02/16.
@@ -340,7 +339,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
                     if (anyMatches != null && anyMatches) {
 
-                        if(argumentSpecParse.isInfinite() && argumentSpecParse.isInfinite() && (nextArg == null || commandSpecs.getAnyMatching(nextArg) == null)) {
+                        if(argumentSpecParse.isArray() && argumentSpecParse.isArray() && (nextArg == null || commandSpecs.getAnyMatching(nextArg) == null)) {
                             next = false;
                         }else{
                             ArgumentHolder argument = new ArgumentHolder<>(matchedList, argumentSpecParse);
@@ -351,7 +350,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
                         break;
                     } else {
-                        if (argumentSpecParse.isOptional() || (argumentSpecParse.isInfinite() && !matchedList.isEmpty())) {
+                        if (argumentSpecParse.isOptional() || (argumentSpecParse.isArray() && !matchedList.isEmpty())) {
                             argumentIter.previous();
                             ArgumentHolder argument = new ArgumentHolder<>(matchedList, argumentSpecParse);
                             argumentHolders.add(argument);

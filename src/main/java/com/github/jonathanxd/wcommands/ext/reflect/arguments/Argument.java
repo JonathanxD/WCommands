@@ -43,7 +43,7 @@ public @interface Argument {
 
     boolean isOptional() default false;
 
-    boolean isInfinite() default false;
+    boolean isArray() default false;
 
     Class<?> type() default PR.class;
 

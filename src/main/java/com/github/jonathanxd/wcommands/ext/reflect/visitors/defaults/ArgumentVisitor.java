@@ -25,6 +25,7 @@ import com.github.jonathanxd.iutils.object.Reference;
 import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
+import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.IsOptional;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
@@ -44,7 +45,6 @@ import com.github.jonathanxd.wcommands.util.Require;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.annotation.ElementType;
-import java.lang.reflect.Type;
 import java.util.Optional;
 
 /**
@@ -109,7 +109,7 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
 
 
     @Override
-    public ArgumentSpec<?, ?> process(SingleNamedContainer argumentContainer, InstanceContainer instance, AnnotationVisitorSupport support, WCommandCommon common, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket, Optional<NamedContainer> parent) {
+    public ArgumentSpec<?, ?> process(SingleNamedContainer argumentContainer, InstanceContainer instance, AnnotationVisitorSupport support, CommandList common, TranslatorSupport translatorSupport, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket, Optional<NamedContainer> parent) {
         Argument argument = (Argument) argumentContainer.get();
 
         ArgumentBuilder<String, Object> argumentBuilder = ArgumentBuilder.builder();
@@ -121,7 +121,7 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
 
         Translator<?> translator = null;
         try {
-            data.registerData((TranslatorSupport) common);
+            data.registerData((TranslatorSupport) translatorSupport);
 
             if (parent.isPresent()) {
                 data.registerData(parent.get());
@@ -152,7 +152,7 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
 
 
         argumentBuilder.setOptional(argument.isOptional());
-        argumentBuilder.setInfinite(argument.isInfinite());
+        argumentBuilder.setInfinite(argument.isArray());
 
 
         ArgumentSpec argumentSpec1 = argumentBuilder.build();

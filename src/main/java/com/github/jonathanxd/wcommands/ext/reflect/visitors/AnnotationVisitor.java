@@ -20,6 +20,8 @@ package com.github.jonathanxd.wcommands.ext.reflect.visitors;
 
 import com.github.jonathanxd.iutils.extra.Container;
 import com.github.jonathanxd.wcommands.WCommandCommon;
+import com.github.jonathanxd.wcommands.common.command.CommandList;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.NamedContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeHead;
@@ -68,16 +70,17 @@ public abstract class AnnotationVisitor<T extends Annotation, C extends NamedCon
      * @param container Container
      * @param instance  Instance of the source
      * @param support   Visitor Support
-     * @param common    Command register
+     * @param commandList    Command List with all registered commands, modifying this list will not affect the WCommandCommon registration
      * @param parent    Parent caller
      * @return True to accept and call {@link #process(NamedContainer, InstanceContainer,
-     * AnnotationVisitorSupport, WCommandCommon, ElementType, TreeHead, RegistrationTicket, Optional)}. or False to postpone the
+     * AnnotationVisitorSupport, CommandList, TranslatorSupport, ElementType, TreeHead, RegistrationTicket, Optional)}. or False to postpone the
      * process.
      */
     public boolean dependencyCheck(C container,
                                    InstanceContainer instance,
                                    AnnotationVisitorSupport support,
-                                   WCommandCommon common,
+                                   CommandList commandList,
+                                   TranslatorSupport translatorSupport,
                                    ElementType location,
                                    TreeHead treeHead,
                                    RegistrationTicket<?> ticket,
@@ -88,7 +91,8 @@ public abstract class AnnotationVisitor<T extends Annotation, C extends NamedCon
     public abstract V process(C container,
                               InstanceContainer instance,
                               AnnotationVisitorSupport support,
-                              WCommandCommon common,
+                              CommandList commandList,
+                              TranslatorSupport translatorSupport,
                               ElementType location,
                               TreeHead treeHead,
                               RegistrationTicket<?> ticket,

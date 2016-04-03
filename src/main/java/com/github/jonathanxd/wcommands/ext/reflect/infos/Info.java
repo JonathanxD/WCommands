@@ -18,9 +18,9 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.infos;
 
+import com.github.jonathanxd.wcommands.infos.InfoId;
 import com.github.jonathanxd.wcommands.infos.Information;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
-import com.github.jonathanxd.wcommands.util.reflection.ToString;
 import com.github.jonathanxd.wcommands.util.reflection.TypeUtil;
 
 import java.lang.annotation.ElementType;
@@ -54,6 +54,15 @@ public @interface Info {
 
     Class<?> type() default Object.class;
 
+    /**
+     * Default: True
+     *
+     * True to search for statically provided information before ProvidedInformation.
+     *
+     * False to search for ProvidedInformation before Statically Information
+     */
+    boolean staticFirst() default true;
+
     String description() default "";
 
 
@@ -79,8 +88,22 @@ public @interface Info {
 
                         Objects.requireNonNull(raw, "Cannot get Raw Type!");
 
-                        Optional<Information<?>> info = informationSet.stream().filter(i -> check(raw, infoAnn, i))//i -> i.isPresent() && raw.isAssignableFrom(i.get().getClass())
-                                .findFirst();
+
+                        Optional<Information<?>> info;
+                        if(infoAnn.staticFirst()) {
+                             info = informationSet.stream().filter(i -> check(raw, infoAnn, i))//i -> i.isPresent() && raw.isAssignableFrom(i.get().getClass())
+                                    .findFirst();
+                            if(!info.isPresent()) {
+                                info = register.getProvided(from(infoAnn), raw);
+                            }
+                        } else {
+                            info = register.getProvided(from(infoAnn), raw);
+                            if(!info.isPresent()) {
+                                info = informationSet.stream().filter(i -> check(raw, infoAnn, i))//i -> i.isPresent() && raw.isAssignableFrom(i.get().getClass())
+                                        .findFirst();
+                            }
+                        }
+
 
                         if (info.isPresent()) {
                             informationSet.remove(info.get());
@@ -94,26 +117,47 @@ public @interface Info {
                         }
 
                     } else {
-                        defaultHandle(passParameters, informationSet, parameter, infoAnn);
+                        defaultHandle(passParameters, register, parameter, infoAnn);
                     }
 
                 } else {
-                    defaultHandle(passParameters, informationSet, parameter, infoAnn);
+                    defaultHandle(passParameters, register, parameter, infoAnn);
                 }
             }
             return passParameters.toArray();
 
         }
 
-        private static void defaultHandle(List<Object> passParameters, Set<Information<?>> informationSet, Parameter parameter, Info annotation) {
-            Optional<Information<?>> info = informationSet.stream().filter(i -> check(parameter.getType(), annotation, i))
-                    .findFirst();
+        private static void defaultHandle(List<Object> passParameters, InformationRegister informationRegister, Parameter parameter, Info annotation) {
+
+            Optional<Information<?>> info;
+
+            if(annotation.staticFirst()) {
+                info = informationRegister.getInformationList().stream().filter(i -> check(parameter.getType(), annotation, i))
+                        .findFirst();
+
+                if(!info.isPresent()) {
+                    info = informationRegister.getProvided(from(annotation), parameter.getType());
+                }
+            } else {
+                info = informationRegister.getProvided(from(annotation), parameter.getType());
+
+                if(!info.isPresent()) {
+                    info = informationRegister.getInformationList().stream().filter(i -> check(parameter.getType(), annotation, i))
+                            .findFirst();
+                }
+            }
+
 
             if (info.isPresent()) {
                 passParameters.add(info.get().get());
             } else {
                 passParameters.add(null);
             }
+        }
+
+        private static InfoId from(Info annotation) {
+            return new InfoId(annotation.tags(), annotation.type());
         }
 
         private static boolean check(Class<?> type, Info annotation, Information<?> info) {

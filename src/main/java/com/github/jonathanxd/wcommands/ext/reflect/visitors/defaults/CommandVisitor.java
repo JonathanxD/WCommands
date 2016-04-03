@@ -25,6 +25,7 @@ import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
+import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitorSupport;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitor;
@@ -87,7 +88,7 @@ public class CommandVisitor extends AnnotationVisitor<Command, TreeNamedContaine
 
     @SuppressWarnings("unchecked")
     @Override
-    public CommandSpec process(TreeNamedContainer command, InstanceContainer instance, AnnotationVisitorSupport support, WCommandCommon common, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket, Optional<NamedContainer> parent) {
+    public CommandSpec process(TreeNamedContainer command, InstanceContainer instance, AnnotationVisitorSupport support, CommandList common, TranslatorSupport translatorSupport, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket, Optional<NamedContainer> parent) {
         Command commandAnnotation = (Command) command.get();
         List<SingleNamedContainer> arguments = command.getArgumentContainers();
 
@@ -129,13 +130,13 @@ public class CommandVisitor extends AnnotationVisitor<Command, TreeNamedContaine
             if(visitorOpt.isPresent()) {
 
                 // ?
-                ArgumentSpec argSpec = visitorOpt.get().process(argumentContainer, instance, support, common, location, treeHead, ticket, Optional.of(command));
+                ArgumentSpec argSpec = visitorOpt.get().process(argumentContainer, instance, support, common, translatorSupport, location, treeHead, ticket, Optional.of(command));
                 commandBuilder.withArgument(argSpec);
             }
 
         }
 
-        command.getChild().forEach(commandContainer -> commandBuilder.withChild(process(commandContainer, instance, support, common, location, treeHead, ticket, parent)));
+        command.getChild().forEach(commandContainer -> commandBuilder.withChild(process(commandContainer, instance, support, common, translatorSupport, location, treeHead, ticket, parent)));
 
         CommandSpec cmd = commandBuilder.build();
 

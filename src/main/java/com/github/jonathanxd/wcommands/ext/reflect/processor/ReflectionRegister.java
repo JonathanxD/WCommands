@@ -22,6 +22,7 @@ import com.github.jonathanxd.iutils.annotations.NotNull;
 import com.github.jonathanxd.iutils.extra.Container;
 import com.github.jonathanxd.wcommands.Register;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
+import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.processor.exception.InvalidDependency;
@@ -85,6 +86,14 @@ public class ReflectionRegister<T> extends Register<T> {
     }
 
     public void addCommands(Object instance, Class<?> clazz) {
+        objectToCommandList(instance, clazz).forEach(this::registerCommand);
+    }
+
+    @SuppressWarnings("Duplicates")
+    public List<CommandSpec> objectToCommandList(Object instance, Class<?> clazz) {
+
+        List<CommandSpec> commandSpecs = new ArrayList<>();
+
         Objects.requireNonNull(instance);
         Objects.requireNonNull(clazz);
 
@@ -120,10 +129,15 @@ public class ReflectionRegister<T> extends Register<T> {
 
         Postpone postpone = new Postpone();
 
+        List<CommandSpec> current = new ArrayList<>(this.wCommand.getCommandList());
+        current.addAll(commandSpecs);
+
+        CommandList currentCommands = new CommandList(current, this.wCommand.getCommandList().getHoldingObject());
+
         for (NamedContainer namedContainer : namedContainers) {
-            CommandSpec commandSpec = this.processCommand(namedContainer, new InstanceContainer(instance), postpone, treeHead);
+            CommandSpec commandSpec = this.processCommand(namedContainer, new InstanceContainer(instance), postpone, treeHead, currentCommands);
             if (commandSpec != null)
-                this.registerCommand(commandSpec);
+                alloc(commandSpecs, current, commandSpec);
         }
 
         // Postpone process
@@ -135,14 +149,21 @@ public class ReflectionRegister<T> extends Register<T> {
         while (postpone.hasNextInMain()) {
             NamedContainer container = postpone.next();
 
-            CommandSpec commandSpec = this.processCommand(container, new InstanceContainer(instance), postpone, treeHead);
+            CommandSpec commandSpec = this.processCommand(container, new InstanceContainer(instance), postpone, treeHead, currentCommands);
             if (commandSpec != null)
-                this.registerCommand(commandSpec);
+                alloc(commandSpecs, current, commandSpec);
 
             if (!postpone.hasNextInMain() && postpone.hasPostpone()) {
                 postpone.updateToPostpone();
             }
         }
+
+        return commandSpecs;
+    }
+
+    private void alloc(List<CommandSpec> toAlloc, List<CommandSpec> linked, CommandSpec commandSpec) {
+        toAlloc.add(commandSpec);
+        linked.add(commandSpec);
     }
 
     private void addToList(TreeNamedContainer head, List<NamedContainer> namedContainerList, NamedContainer namedContainer) {
@@ -202,28 +223,28 @@ public class ReflectionRegister<T> extends Register<T> {
     }
 
     @SuppressWarnings("unchecked")
-    private <C extends NamedContainer, T> T helpTo(AnnotationVisitor<?, C, T> t, NamedContainer named, InstanceContainer instance, TreeHead treeHead) {
-        return t.process((C) named, instance, wCommand, wCommand, named.getBridge().getLocation(), treeHead, getTicket(), Optional.empty());
+    private <C extends NamedContainer, T> T helpTo(AnnotationVisitor<?, C, T> t, NamedContainer named, InstanceContainer instance, TreeHead treeHead, CommandList commandList) {
+        return t.process((C) named, instance, wCommand, commandList, wCommand, named.getBridge().getLocation(), treeHead, getTicket(), Optional.empty());
     }
 
     @SuppressWarnings("unchecked")
-    private <C extends NamedContainer, T> boolean helpToCheck(AnnotationVisitor<?, C, T> t, NamedContainer named, InstanceContainer instance, TreeHead treeHead) {
-        return t.dependencyCheck((C) named, instance, wCommand, wCommand, named.getBridge().getLocation(), treeHead, getTicket(), Optional.empty());
+    private <C extends NamedContainer, T> boolean helpToCheck(AnnotationVisitor<?, C, T> t, NamedContainer named, InstanceContainer instance, TreeHead treeHead, CommandList registeredCommands) {
+        return t.dependencyCheck((C) named, instance, wCommand, registeredCommands, wCommand, named.getBridge().getLocation(), treeHead, getTicket(), Optional.empty());
     }
 
     @SuppressWarnings("unchecked")
-    private CommandSpec processCommand(NamedContainer namedContainer, InstanceContainer instance, Postpone postpone, TreeHead treeHead) {
+    private CommandSpec processCommand(NamedContainer namedContainer, InstanceContainer instance, Postpone postpone, TreeHead treeHead, CommandList registeredCommands) {
 
         Optional<AnnotationVisitor<Annotation, NamedContainer, CommandSpec>> visitorOptional = wCommand.getAnnotationVisitors().<Annotation, NamedContainer, CommandSpec>getFor(namedContainer.get().annotationType());
 
         if (visitorOptional.isPresent()) {
 
-            if (!helpToCheck(visitorOptional.get(), namedContainer, instance, treeHead)) {
+            if (!helpToCheck(visitorOptional.get(), namedContainer, instance, treeHead, registeredCommands)) {
                 postpone.postpone(namedContainer);
 
                 return null;
             } else {
-                CommandSpec spec = helpTo(visitorOptional.get(), namedContainer, instance, treeHead);
+                CommandSpec spec = helpTo(visitorOptional.get(), namedContainer, instance, treeHead, registeredCommands);
 
                 return spec != null && !spec.isEmpty() ? spec : null;
             }
@@ -235,9 +256,11 @@ public class ReflectionRegister<T> extends Register<T> {
     }
 
     private final static class Postpone {
+        private static final int MAX_STACKS = 256;
         private final List<NamedContainer> original = new ArrayList<>();
         private final List<NamedContainer> list = new ArrayList<>();
         private final List<NamedContainer> postpone = new ArrayList<>();
+        private int stacks = 0;
 
         public void postpone(NamedContainer container) {
             postpone.add(container);
@@ -284,7 +307,11 @@ public class ReflectionRegister<T> extends Register<T> {
                     throw new InvalidDependency("Possible invalid dependencies! Involved elements: '" + sj.toString() + "'. Involved dependencies " + dependencies.toString() + ". Postpone List: '" + postpone + "'. Current List: '" + original);
 
                 } else {
-                    throw new PossibleCyclicDependencies("Possible cyclic dependencies! Involved elements: '" + sj.toString() + "'. Postpone List: '" + postpone + "'. Current List: '" + original);
+                    if(stacks < MAX_STACKS) {
+                        ++stacks;
+                    } else {
+                        throw new PossibleCyclicDependencies("Possible cyclic dependencies! Involved elements: '" + sj.toString() + "'. Postpone List: '" + postpone + "'. Current List: '" + original);
+                    }
                 }
 
             }

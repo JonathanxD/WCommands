@@ -36,6 +36,8 @@ public class InformationRegister {
 
     Set<Information<?>> informationList = new HashSet<>();
 
+    Set<InformationProvider> informationProviders = new HashSet<>();
+
     public static InformationBuilder builder(WCommand<?> wCommand) {
         InformationBuilder builder = blankBuilder();
         builder.with(WCommand.WCOMMAND_INFOID, wCommand);
@@ -61,8 +63,24 @@ public class InformationRegister {
         informationList.add(new Information<>(informationId, information, description));
     }
 
+    public <T> void register(InformationProvider informationProvider) {
+        informationProviders.add(informationProvider);
+    }
+
     public void remove(InfoId informationId) {
         getById(informationId).ifPresent(info -> informationList.remove(info));
+    }
+
+    public Optional<Information<?>> getProvided(InfoId infoId, Class<?> requestingType) {
+
+        for(InformationProvider informationProvider : informationProviders) {
+            Optional<Information<?>> provide = informationProvider.provide(infoId, requestingType);
+            if(provide.isPresent()) {
+                return provide;
+            }
+        }
+
+        return Optional.empty();
     }
 
     @SuppressWarnings("unchecked")
@@ -161,6 +179,7 @@ public class InformationRegister {
     public static final class InformationBuilder {
 
         Set<Information<?>> informationSet = new HashSet<>();
+        Set<InformationProvider> providerSet = new HashSet<>();
 
         private InformationBuilder() {
 
@@ -242,6 +261,11 @@ public class InformationRegister {
 
         //////////////////////////////////////////////////////////////////////////////////////
 
+        public InformationBuilder withProvider(InformationProvider informationProvider) {
+            providerSet.add(informationProvider);
+            return this;
+        }
+
         public InformationBuilder remove(InfoId informationId) {
             informationSet.removeIf(info -> info.getId() == informationId);
             return this;
@@ -258,6 +282,7 @@ public class InformationRegister {
             InformationRegister informationRegister = new InformationRegister();
 
             informationRegister.informationList.addAll(informationSet);
+            informationRegister.informationProviders.addAll(providerSet);
 
             return informationRegister;
         }
