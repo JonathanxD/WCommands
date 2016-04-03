@@ -51,6 +51,14 @@ public class TypeUtil {
         }
     }
 
+    public static Reference<?> toReference(Type param) {
+        if(param instanceof ParameterizedType) {
+            return toReference((ParameterizedType) param);
+        }
+
+        return Reference.aEnd(from(param));
+    }
+
     public static Reference<?> toReference(ParameterizedType param) {
         ReferenceBuilder referenceBuilder = Reference.a(from(param.getRawType()));
         for(Type type : param.getActualTypeArguments()) {

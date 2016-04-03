@@ -18,6 +18,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.infos;
 
+import com.github.jonathanxd.iutils.object.Reference;
 import com.github.jonathanxd.wcommands.infos.InfoId;
 import com.github.jonathanxd.wcommands.infos.Information;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
@@ -84,7 +85,7 @@ public @interface Info {
                 if ((infoAnn = parameter.getAnnotation(Info.class)) != null) {
 
                     if (parameter.getType() == Information.class) {
-                        Class<?> raw = getRaw(parameter);
+                        Reference<?> raw = getRaw(parameter);
 
                         Objects.requireNonNull(raw, "Cannot get Raw Type!");
 
@@ -132,18 +133,20 @@ public @interface Info {
 
             Optional<Information<?>> info;
 
+            Reference<?> reference = TypeUtil.toReference(parameter.getType());
+
             if(annotation.staticFirst()) {
-                info = informationRegister.getInformationList().stream().filter(i -> check(parameter.getType(), annotation, i))
+                info = informationRegister.getInformationList().stream().filter(i -> check(reference, annotation, i))
                         .findFirst();
 
                 if(!info.isPresent()) {
-                    info = informationRegister.getProvided(from(annotation), parameter.getType());
+                    info = informationRegister.getProvided(from(annotation), reference);
                 }
             } else {
-                info = informationRegister.getProvided(from(annotation), parameter.getType());
+                info = informationRegister.getProvided(from(annotation), reference);
 
                 if(!info.isPresent()) {
-                    info = informationRegister.getInformationList().stream().filter(i -> check(parameter.getType(), annotation, i))
+                    info = informationRegister.getInformationList().stream().filter(i -> check(reference, annotation, i))
                             .findFirst();
                 }
             }
@@ -160,12 +163,12 @@ public @interface Info {
             return new InfoId(annotation.tags(), annotation.type());
         }
 
-        private static boolean check(Class<?> type, Info annotation, Information<?> info) {
+        private static boolean check(Reference<?> type, Info annotation, Information<?> info) {
             if (!info.isPresent())
                 return false;
 
 
-            if (type.isAssignableFrom(info.get().getClass())) {
+            if (type.compareToAssignable(info.getReference()) == 0) {
 
                 if (annotation == null)
                     return true;
@@ -185,7 +188,7 @@ public @interface Info {
         }
 
 
-        private static Class<?> getRaw(Parameter parameter) {
+        private static Reference<?> getRaw(Parameter parameter) {
 
             AnnotatedType type;
 
@@ -201,7 +204,7 @@ public @interface Info {
                         throw new RuntimeException("Cannot get raw type for type: '" + parameterizedType + "'");
                     }
 
-                    return TypeUtil.from(parameterizedType.getActualTypeArguments()[0]);
+                    return TypeUtil.toReference(parameterizedType).getRelated()[0];
                 }
 
             }

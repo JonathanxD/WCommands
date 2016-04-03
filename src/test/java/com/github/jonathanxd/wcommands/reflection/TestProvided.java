@@ -18,6 +18,7 @@
  */
 package com.github.jonathanxd.wcommands.reflection;
 
+import com.github.jonathanxd.iutils.object.Reference;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.infos.Info;
@@ -29,6 +30,8 @@ import com.github.jonathanxd.wcommands.ticket.RegistrationTicket;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -44,11 +47,14 @@ public class TestProvided {
 
         InformationRegister informationRegister = new InformationRegister();
 
-        informationRegister.register(new InfoId("name", String.class), "Name");
+        informationRegister.register(new InfoId("name", String.class), "Name", Reference.aEnd(String.class));
 
         informationRegister.register((requestId, requestingType) -> {
-            if(requestingType == String.class) {
-                return Optional.of(new Information<>(requestId, "Alt"));
+            if(requestingType.compareTo(Reference.aEnd(String.class)) == 0) {
+                return Optional.of(new Information<>(requestId, "Alt", Reference.aEnd(String.class)));
+            }
+            if(requestingType.compareToAssignable(Reference.a(Collection.class).of(String.class).build()) == 0) {
+                return Optional.of(new Information<Collection<String>>(requestId, Arrays.asList("A", "D", "B"), Reference.a(Collection.class).of(String.class).build()));
             }
 
             return Optional.empty();
@@ -59,7 +65,8 @@ public class TestProvided {
     }
 
     @Command
-    public void provided(@Info(staticFirst = false) String name) {
+    public void provided(@Info(staticFirst = false) String name,
+                         @Info Information<Collection<String>> gamers) {
         System.out.println("Name = "+name);
     }
 

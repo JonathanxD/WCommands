@@ -18,6 +18,7 @@
  */
 package com.github.jonathanxd.wcommands.reflection.list;
 
+import com.github.jonathanxd.iutils.object.Reference;
 import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
@@ -49,7 +50,7 @@ public class TestList {
             return sender.hasPerm(data);
         };
 
-        InformationRegister informationRegister = InformationRegister.blankBuilder().with(Sender.class, new Sender()).build();
+        InformationRegister informationRegister = InformationRegister.blankBuilder().with(Sender.class, new Sender(), Reference.aEnd(Sender.class)).build();
 
         Requirements requirements = new Requirements();
         requirements.add(Permission.class, providedRequirement);

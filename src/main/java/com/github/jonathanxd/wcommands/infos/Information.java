@@ -18,23 +18,27 @@
  */
 package com.github.jonathanxd.wcommands.infos;
 
+import com.github.jonathanxd.iutils.object.Reference;
+
 /**
  * Created by jonathan on 12/03/16.
  */
 public class Information<T> implements Cloneable {
 
-    private static final Information<?> EMPTY = new Information<>(null, null);
+    private static final Information<?> EMPTY = new Information<>(null, null, null);
 
     private final InfoId id;
+    private final Reference<?> reference;
     private final T info;
     private final Description description;
 
-    public Information(InfoId id, T info) {
-        this(id, info, (Description) null);
+    public Information(InfoId id, T info, Reference<?> reference) {
+        this(id, reference, info, (Description) null);
     }
 
-    protected Information(InfoId id, T info, Description description) {
+    protected Information(InfoId id, Reference<?> reference, T info, Description description) {
         this.id = id;
+        this.reference = reference;
         this.info = info;
         if (description == null)
             this.description = new Description(null);
@@ -42,8 +46,12 @@ public class Information<T> implements Cloneable {
             this.description = description;
     }
 
-    public Information(InfoId id, T info, String description) {
-        this(id, info, new Description(description));
+    public Information(InfoId id, T info, String description, Reference<?> reference) {
+        this(id, reference, info, new Description(description));
+    }
+
+    public Reference<?> getReference() {
+        return reference;
     }
 
     @SuppressWarnings("unchecked")
@@ -73,7 +81,7 @@ public class Information<T> implements Cloneable {
     @Override
     public Information<T> clone() {
 
-        return new Information<>(this.getId(), this.get(), this.getDescription().clone());
+        return new Information<>(this.getId(), reference, this.get(), this.getDescription().clone());
     }
 
     public boolean isPresent() {

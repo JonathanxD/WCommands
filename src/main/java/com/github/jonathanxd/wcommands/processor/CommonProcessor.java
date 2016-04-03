@@ -19,6 +19,7 @@
 package com.github.jonathanxd.wcommands.processor;
 
 import com.github.jonathanxd.iutils.extra.Container;
+import com.github.jonathanxd.iutils.object.Reference;
 import com.github.jonathanxd.wcommands.WCommand;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
@@ -92,7 +93,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
         if(informationRegister == null)
             informationRegister = new InformationRegister();
 
-        informationRegister.register(new InfoId("Result", Results.class), results, "Command call results");
+        informationRegister.register(new InfoId("Result", Results.class), results, "Command call results", Reference.aEnd(Results.class));
 
         for (CommandData<CommandHolder> data : object) {
 

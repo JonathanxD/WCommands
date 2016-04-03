@@ -18,6 +18,8 @@
  */
 package com.github.jonathanxd.wcommands.infos;
 
+import com.github.jonathanxd.iutils.object.Reference;
+
 import java.util.Optional;
 
 /**
@@ -25,6 +27,6 @@ import java.util.Optional;
  */
 public interface InformationProvider {
 
-    Optional<Information<?>> provide(InfoId requestId, Class<?> requestingType);
+    Optional<Information<?>> provide(InfoId requestId, Reference<?> requestingType);
 
 }
