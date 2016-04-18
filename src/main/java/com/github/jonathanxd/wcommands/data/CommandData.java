@@ -18,6 +18,8 @@
  */
 package com.github.jonathanxd.wcommands.data;
 
+import com.github.jonathanxd.wcommands.util.reflection.ToString;
+
 /**
  * Created by jonathan on 26/02/16.
  */
@@ -50,5 +52,10 @@ public class CommandData<C> {
     @Override
     public int hashCode() {
         return command.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return ToString.toString(this);
     }
 }

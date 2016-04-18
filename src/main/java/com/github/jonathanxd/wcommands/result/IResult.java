@@ -44,8 +44,8 @@ public interface IResult<T> {
 
 
     @SuppressWarnings("unchecked")
-    static IResult<?> create(Handler<?> source, CommandData<?> commandData, Object resultValue, Enum<?> id) {
-        return new Result<>(source, commandData, resultValue, id);
+    static IResult<?> create(Enum<?> id, Handler<?> source, CommandData<?> commandData, Object resultValue) {
+        return new Result<>(id, source, commandData, resultValue);
     }
 
 }

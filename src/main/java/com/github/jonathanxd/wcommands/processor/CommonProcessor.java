@@ -48,12 +48,15 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Optional;
 
 /**
  * Created by jonathan on 26/02/16.
  */
 // List of CommandData<CommandHolder>
 public class CommonProcessor implements Processor<List<CommandData<CommandHolder>>> {
+
+    private static final String SEPARATOR = "&";
 
     @Deprecated
     public static WCommand<List<CommandData<CommandHolder>>> newWCommand(ErrorHandler<List<CommandData<CommandHolder>>> handler) {
@@ -93,7 +96,15 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
         if(informationRegister == null)
             informationRegister = new InformationRegister();
 
-        informationRegister.register(new InfoId("Result", Results.class), results, "Command call results", Reference.aEnd(Results.class));
+        InfoId resultsInfoId = new InfoId("Result", Results.class);
+
+        Optional<Object> optional = informationRegister.getOptional(resultsInfoId);
+
+        if(!optional.isPresent() || !(optional.get() instanceof Results)) {
+            informationRegister.register(resultsInfoId, results, "Command call results", Reference.aEnd(Results.class));
+        }
+
+
 
         for (CommandData<CommandHolder> data : object) {
 
@@ -122,11 +133,11 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                 if(result instanceof IResult<?>) {
                     IResult<?> iResult = (IResult<?>) result;
 
-                    iResult = Result.fill(iResult, handler, data, result, null);
+                    iResult = Result.fill(iResult, null, handler, data, result);
 
                     results.add(iResult);
                 }else {
-                    results.add(IResult.create(handler, data, result, null));
+                    results.add(IResult.create(null, handler, data, result));
                 }
             }
         }
@@ -178,11 +189,27 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                 return;
             }
 
-            Iterator<CommandSpec> commandSpecIterator = commandSpecs.iterator();
+            //Iterator<CommandSpec> commandSpecIterator = commandSpecs.iterator();
+            Iterator<CommandSpec> commandSpecIterator  = commandSpecs.iterator();
+
+            String next = null;
 
             while (argIter.hasNext()) {
 
+                commandSpecIterator = commandSpecs.iterator();
+
                 String argument = argIter.next();
+
+                if(argument.equals(SEPARATOR) && commandSpecs.getAnyMatching(argument) == null) {
+                    return;
+                }
+
+                if(argIter.hasNext()) {
+                    next=argIter.next();
+                    argIter.previous();
+                } else {
+                    next = null;
+                }
 
                 boolean matches = false;
                 while (commandSpecIterator.hasNext()) {
@@ -213,6 +240,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                     } else {
                         continue;
                     }
+
                     ////////////////////////////////
                     if (last) {
                         List<CommandSpec> notOptional = commandSpec.getNotOptionalSubCommands();
@@ -253,6 +281,11 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
             if (argumentIter.hasNext()) {
                 String name = argumentIter.next();
                 argumentIter.previous();
+
+                if(name.equals(SEPARATOR)) {
+                    return argumentHolders;
+                }
+
                 CommandList subCommands = commandSpec.getSubCommands();
 
 
@@ -290,6 +323,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
                     String sub = argumentIter.next();
                     if(commandSpecs.getAnyMatching(sub) != null) {
+
                         argumentIter.previous();
 
                         ArgumentHolder argument = new ArgumentHolder<>(null, argumentSpecParse);
@@ -340,7 +374,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
                     if (anyMatches != null && anyMatches) {
 
-                        if(argumentSpecParse.isArray() && argumentSpecParse.isArray() && (nextArg == null || commandSpecs.getAnyMatching(nextArg) == null)) {
+                        if(argumentSpecParse.isArray() && argumentSpecParse.isArray() && (nextArg == null || commandSpecs.getAnyMatching(nextArg) == null) && (nextArg == null || !nextArg.equals(SEPARATOR))) {
                             next = false;
                         }else{
                             ArgumentHolder argument = new ArgumentHolder<>(matchedList, argumentSpecParse);
@@ -411,6 +445,13 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
             return argumentHolders;
         }
+    }
+
+    /**
+     * Continue processing
+     */
+    private static boolean conti(CommandList commandSpecs, String arg) {
+        return !arg.equals(SEPARATOR) && commandSpecs.getAnyMatching(arg) == null;
     }
 
 

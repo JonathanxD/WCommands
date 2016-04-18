@@ -34,21 +34,21 @@ public class Result<T> implements IResult<T> {
     private final Enum<?> id;
 
     Result(Handler<?> source, T resultValue, CommandData<?> commandData) {
-        this(source, commandData, resultValue, null);
+        this(null, source, commandData, resultValue);
     }
 
-    Result(Handler<?> source, CommandData<?> commandData, T resultValue, Enum<?> id) {
+    Result(Enum<?> id, Handler<?> source, CommandData<?> commandData, T resultValue) {
+        this.id = id;
         this.source = source;
         this.commandData = commandData;
         this.resultValue = resultValue;
-        this.id = id;
     }
 
-    public Result(T resultValue, Enum<?> id) {
+    public Result(Enum<?> id, T resultValue) {
+        this.id = id;
         this.source = null;
         this.commandData = null;
         this.resultValue = resultValue;
-        this.id = id;
     }
 
     @Override
@@ -98,7 +98,7 @@ public class Result<T> implements IResult<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public static IResult<?> fill(IResult<?> iResult, Handler<?> source, CommandData<?> commandData, Object resultValue, Enum<?> id) {
+    public static IResult<?> fill(IResult<?> iResult, Enum<?> id, Handler<?> source, CommandData<?> commandData, Object resultValue) {
 
         Handler<?> fSource = iResult.getSource();
         CommandData<?> fCommandData = iResult.getCommandData();
@@ -110,6 +110,6 @@ public class Result<T> implements IResult<T> {
         fResultValue = fResultValue != null ? fResultValue : resultValue;
         fId = fId != null ? fId : id;
 
-        return new Result<>(fSource, fCommandData, fResultValue, fId);
+        return new Result<>(fId, fSource, fCommandData, fResultValue);
     }
 }

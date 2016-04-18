@@ -26,6 +26,7 @@ import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
 import com.github.jonathanxd.wcommands.ext.reflect.infos.Info;
 import com.github.jonathanxd.wcommands.ext.reflect.infos.require.Require;
+import com.github.jonathanxd.wcommands.handler.ProcessAction;
 import com.github.jonathanxd.wcommands.handler.registration.RegistrationHandleResult;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.infos.requirements.ProvidedRequirement;
@@ -36,6 +37,7 @@ import com.github.jonathanxd.wcommands.result.Results;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by jonathan on 18/03/16.
@@ -56,13 +58,20 @@ public class TestList {
         requirements.add(Permission.class, providedRequirement);
 
 
-        WCommandCommon wCommandCommon = ReflectionAPI.createWCommand(new TestList());
+        WCommandCommon wCommandCommon = ReflectionAPI.createWCommand((error, commandSpecs, currentCommand, processed, requirements1, informationRegister1) -> {
+            System.out.println("E -> "+error);
+            return ProcessAction.CONTINUE;
+        }, new TestList());
 
         wCommandCommon.registerRegistrationHandler((registrationHandleResults, targetList, manager, ticket) -> {
             return RegistrationHandleResult.accept();
         });
 
         Results results = wCommandCommon.processAndInvoke(requirements, informationRegister, "show", "list", "a", "b", "c", "named", "Xy");
+
+        wCommandCommon.processAndInvoke(requirements, informationRegister, "show", "list", "a", "b", "c", "&", "zNamed", "Xy");
+
+        Results results3 = wCommandCommon.processAndInvoke(requirements, informationRegister, "show", "named", "Xy");
 
         System.out.println("Results: "+results);
 
@@ -91,6 +100,11 @@ public class TestList {
     }
 
     @Command
+    public void zNamed(@Argument String key) {
+        System.out.println("zNamed = "+key);
+    }
+
+    @Command
     @Require(type = Permission.class, data = "dup")
     public String show() {
         return "AAB";
@@ -99,12 +113,13 @@ public class TestList {
     @SubCommand({"show"})
     public Result<List<String>> list(@Argument(isArray = true) List<String> stringList) {
         System.out.println("A List "+stringList);
-        return new Result<>(stringList, IDs.DATA);
+        return new Result<>(IDs.DATA, stringList);
     }
 
     @SubCommand({"show"})
     public String named(@Argument String name,
                         @Info Results results) {
+        System.out.println("named!");
         System.out.println("Results: "+results.find(IDs.DATA));
         return "WM";
     }
