@@ -1,20 +1,29 @@
 /*
- * 	WCommands - Yet Another Command API! <https://github.com/JonathanxD/WCommands>
- *     Copyright (C) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      WCommands - Yet Another Command API! <https://github.com/JonathanxD/WCommands>
  *
- * 	GNU GPLv3
+ *         The MIT License (MIT)
  *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU Affero General Public License as published
- *     by the Free Software Foundation.
+ *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) contributors
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU Affero General Public License for more details.
  *
- *     You should have received a copy of the GNU Affero General Public License
- *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *      Permission is hereby granted, free of charge, to any person obtaining a copy
+ *      of this software and associated documentation files (the "Software"), to deal
+ *      in the Software without restriction, including without limitation the rights
+ *      to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *      copies of the Software, and to permit persons to whom the Software is
+ *      furnished to do so, subject to the following conditions:
+ *
+ *      The above copyright notice and this permission notice shall be included in
+ *      all copies or substantial portions of the Software.
+ *
+ *      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *      IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *      FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *      AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *      LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *      OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *      THE SOFTWARE.
  */
 package com.github.jonathanxd.wcommands.processor;
 
@@ -53,10 +62,11 @@ import java.util.Optional;
 /**
  * Created by jonathan on 26/02/16.
  */
-// List of CommandData<CommandHolder>
-public class CommonProcessor implements Processor<List<CommandData<CommandHolder>>> {
 
-    private static final String SEPARATOR = "&";
+/**
+ * TODO: Rewrite
+ */
+public class CommonProcessor implements Processor<List<CommandData<CommandHolder>>> {
 
     @Deprecated
     public static WCommand<List<CommandData<CommandHolder>>> newWCommand(ErrorHandler<List<CommandData<CommandHolder>>> handler) {
@@ -196,13 +206,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
             while (argIter.hasNext()) {
 
-                commandSpecIterator = commandSpecs.iterator();
-
                 String argument = argIter.next();
-
-                if(argument.equals(SEPARATOR) && commandSpecs.getAnyMatching(argument) == null) {
-                    return;
-                }
 
                 if(argIter.hasNext()) {
                     next=argIter.next();
@@ -236,9 +240,17 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                             commandDatas.remove(commandDatas.size() - 1);
                             commandDatas.add(new CommandData<>(argument, new CommandHolder(commandSpec, parent, argumentHolders, true, true), parent));
                         }
+
+                        commandSpecIterator = commandSpecs.iterator();
                         matches = true;
                     } else {
-                        continue;
+                        if(commandSpecIterator.hasNext() || parent == null) {
+                            continue;
+                        } else {
+                            argIter.previous();
+                            return;
+                        }
+                        //continue;
                     }
 
                     ////////////////////////////////
@@ -281,10 +293,6 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
             if (argumentIter.hasNext()) {
                 String name = argumentIter.next();
                 argumentIter.previous();
-
-                if(name.equals(SEPARATOR)) {
-                    return argumentHolders;
-                }
 
                 CommandList subCommands = commandSpec.getSubCommands();
 
@@ -374,7 +382,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
                     if (anyMatches != null && anyMatches) {
 
-                        if(argumentSpecParse.isArray() && argumentSpecParse.isArray() && (nextArg == null || commandSpecs.getAnyMatching(nextArg) == null) && (nextArg == null || !nextArg.equals(SEPARATOR))) {
+                        if(argumentSpecParse.isArray() && argumentSpecParse.isArray() && (nextArg == null || commandSpecs.getAnyMatching(nextArg) == null)) {
                             next = false;
                         }else{
                             ArgumentHolder argument = new ArgumentHolder<>(matchedList, argumentSpecParse);
@@ -445,13 +453,6 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
             return argumentHolders;
         }
-    }
-
-    /**
-     * Continue processing
-     */
-    private static boolean conti(CommandList commandSpecs, String arg) {
-        return !arg.equals(SEPARATOR) && commandSpecs.getAnyMatching(arg) == null;
     }
 
 

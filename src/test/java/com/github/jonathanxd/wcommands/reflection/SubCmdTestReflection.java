@@ -25,34 +25,58 @@
  *      OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *      THE SOFTWARE.
  */
-package com.github.jonathanxd.wcommands.reflection.intype;
+package com.github.jonathanxd.wcommands.reflection;
 
+import com.github.jonathanxd.wcommands.command.CommandSpec;
+import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.sub.SubCommand;
+import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
+import com.github.jonathanxd.wcommands.handler.registration.RegistrationHandleResult;
+
+import org.junit.Test;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
- * Created by jonathan on 18/03/16.
+ * Created by jonathan on 11/03/16.
  */
-@Command(name = "super")
-public class SuperCommand {
+public class SubCmdTestReflection {
 
-    @Command
-    @Argument(setFinal = true)
-    private final String name = null;
+    @Test
+    public void reflectionTest() {
+        ReflectionCommandProcessor processor = ReflectionAPI.createWCommand(new SubCmdTestReflection());
 
-    @Command
-    public void alt() {
-        System.out.println("Alt!");
+        processor.registerRegistrationHandler((registrationHandleResults, targetList, manager, ticket) -> {
+            System.out.println("Process List: "+registrationHandleResults);
+
+            return RegistrationHandleResult.accept();
+        });
+
+        processor.processAndInvoke("say", "hello", "special");
+
+        Optional<CommandSpec> cmdOpt = processor.getCommand("say");
+
+        cmdOpt.ifPresent(cmd -> System.out.println("Nome: " + cmd.getName() + ". Descrição: " + cmd.getDescription()));
+
     }
 
-    @SubCommand(value = "super", commandSpec = @Command(name = "ctrl", isOptional = true))
-    public static class CommandCTRL {
-
-        @Command
-        public void ctrl() {
-            System.out.println("ctrl!");
-        }
+    @SubCommand(value = {"say", "hello"}, commandSpec = @Command(isOptional = true))
+    public void special() {
+        System.out.println("Hello <3");
     }
+
+    @SubCommand(value = "say", commandSpec = @Command(isOptional = true))
+    public void hello() {
+        System.out.println("Hello :D");
+    }
+
+    @Command(desc = "Diz Olá :D")
+    public void say() {
+        System.out.println("Say...?");
+    }
+
 
 }
