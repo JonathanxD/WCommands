@@ -51,8 +51,8 @@ public class EnumConverter implements Function<String, Object> {
 
         Enum e = predicate.get(text);
 
-        if(e == null && text != null)
-            throw new IllegalStateException("Cannot get enum ("+enumClass.getCanonicalName()+") constant '"+text+"'");
+        if (e == null && text != null)
+            throw new IllegalStateException("Cannot get enum (" + enumClass.getCanonicalName() + ") constant '" + text + "'");
 
         return e;
     }

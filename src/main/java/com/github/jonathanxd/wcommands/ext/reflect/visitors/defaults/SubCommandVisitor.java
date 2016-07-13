@@ -27,8 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults;
 
-import com.github.jonathanxd.iutils.extra.Container;
-import com.github.jonathanxd.wcommands.WCommandCommon;
+import com.github.jonathanxd.iutils.containers.Container;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
@@ -43,7 +42,6 @@ import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeHead;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeNamedContainer;
 import com.github.jonathanxd.wcommands.interceptor.Order;
 import com.github.jonathanxd.wcommands.ticket.RegistrationTicket;
-import com.github.jonathanxd.wcommands.util.Require;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.annotation.ElementType;

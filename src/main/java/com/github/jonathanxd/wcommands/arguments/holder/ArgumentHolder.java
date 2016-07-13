@@ -76,18 +76,19 @@ public class ArgumentHolder<ID, T> {
         return values;
     }
 
+    public void setValues(List<String> values) {
+        this.values.clear();
+        this.values.addAll(values);
+    }
+
     /**
      * Set ArgumentSpec values (input strings)
+     *
      * @param values Values
      */
     public void setValues(String... values) {
         this.values.clear();
         this.values.addAll(Arrays.asList(values));
-    }
-
-    public void setValues(List<String> values) {
-        this.values.clear();
-        this.values.addAll(values);
     }
 
     /**
@@ -120,7 +121,7 @@ public class ArgumentHolder<ID, T> {
 
     @Override
     public String toString() {
-        return "ArgumentHolder["+ToString.toString(this)+"]";
+        return "ArgumentHolder[" + ToString.toString(this) + "]";
         //return "ArgumentHolder[values={" + values + "}, argumentSpec=" + argumentSpec + ", isPresent=" + isPresent() + "]";
     }
 }

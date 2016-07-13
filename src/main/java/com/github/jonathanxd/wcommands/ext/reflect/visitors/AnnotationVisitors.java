@@ -40,10 +40,10 @@ public class AnnotationVisitors extends TreeSet<AnnotationVisitor<?, ?, ?>> {
 
     public AnnotationVisitors() {
         super((o1, o2) -> {
-            if(o1.getAnnotationClass() == o2.getAnnotationClass()) {
+            if (o1.getAnnotationClass() == o2.getAnnotationClass()) {
                 return 0;
-            }else{
-                int compare =  o1.priority().compareTo(o2.priority());
+            } else {
+                int compare = o1.priority().compareTo(o2.priority());
                 return compare != 0 ? compare : compare + 1;
             }
         });
@@ -52,7 +52,7 @@ public class AnnotationVisitors extends TreeSet<AnnotationVisitor<?, ?, ?>> {
     @SuppressWarnings("unchecked")
     public <T extends Annotation, C extends NamedContainer, R> Optional<AnnotationVisitor<T, C, R>> getFor(Class<? extends Annotation> clazz) {
         Optional<AnnotationVisitor<?, ?, ?>> factory = this.stream().filter(c -> c.getAnnotationClass() == clazz).findFirst();
-        if(factory.isPresent()) {
+        if (factory.isPresent()) {
             return Optional.of((AnnotationVisitor<T, C, R>) factory.get());
         } else
             return Optional.empty();

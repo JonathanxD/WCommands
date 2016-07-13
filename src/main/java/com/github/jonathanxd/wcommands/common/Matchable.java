@@ -36,6 +36,13 @@ import java.util.function.Function;
  */
 public interface Matchable<T> {
 
+    Matchable<?> ACCEPTANY = new AcceptAny<>();
+
+    @SuppressWarnings("unchecked")
+    static <T> Matchable<T> acceptAny() {
+        return (Matchable<T>) ACCEPTANY;
+    }
+
     boolean matches(T other);
 
     default boolean matchesIgnoreCase(T other) {
@@ -47,14 +54,13 @@ public interface Matchable<T> {
     }
 
     default boolean matches(T other, Function<T, T>[] transformers) {
-        for(Function<T, T> function : transformers) {
-            if(matches(function.apply(other))) {
+        for (Function<T, T> function : transformers) {
+            if (matches(function.apply(other))) {
                 return true;
             }
         }
         return false;
     }
-
 
     default boolean matchesAny(T[] others) {
         return matchesAny(Arrays.asList(others));
@@ -65,19 +71,12 @@ public interface Matchable<T> {
     }
 
     default boolean matchesAny(Collection<T> others, Function<T, T> transformer) {
-        for(T t : others) {
-            if(matches(transformer.apply(t))) {
+        for (T t : others) {
+            if (matches(transformer.apply(t))) {
                 return true;
             }
         }
         return false;
-    }
-
-    Matchable<?> ACCEPTANY = new AcceptAny<>();
-
-    @SuppressWarnings("unchecked")
-    static <T> Matchable<T> acceptAny() {
-        return (Matchable<T>) ACCEPTANY;
     }
 
     class AcceptAny<T> implements Matchable<T> {

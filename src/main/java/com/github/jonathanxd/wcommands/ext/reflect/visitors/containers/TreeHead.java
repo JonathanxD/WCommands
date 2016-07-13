@@ -28,8 +28,6 @@
 package com.github.jonathanxd.wcommands.ext.reflect.visitors.containers;
 
 import com.github.jonathanxd.iutils.annotations.Immutable;
-import com.github.jonathanxd.iutils.object.Node;
-import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.util.ArrayList;
 import java.util.Collections;

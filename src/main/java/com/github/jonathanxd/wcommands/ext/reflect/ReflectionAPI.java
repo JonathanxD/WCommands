@@ -73,7 +73,7 @@ public class ReflectionAPI extends Extension {
 
 
     public static ReflectionCommandProcessor createWCommand(ErrorHandler<List<CommandData<CommandHolder>>> handler, Object instance) {
-       return createWCommand(handler, instance, RegistrationTicket.empty(instance));
+        return createWCommand(handler, instance, RegistrationTicket.empty(instance));
     }
 
     public static ReflectionCommandProcessor createWCommand(ErrorHandler<List<CommandData<CommandHolder>>> handler, Object instance, RegistrationTicket<?> ticket) {
@@ -86,7 +86,7 @@ public class ReflectionAPI extends Extension {
     }
 
     public static ReflectionCommandProcessor createWCommand(ErrorHandler<List<CommandData<CommandHolder>>> handler, Object instance, Class<?> commandClass) {
-       return createWCommand(handler, instance, commandClass, RegistrationTicket.empty(instance));
+        return createWCommand(handler, instance, commandClass, RegistrationTicket.empty(instance));
     }
 
     public static ReflectionCommandProcessor createWCommand(ErrorHandler<List<CommandData<CommandHolder>>> handler, Object instance, Class<?> commandClass, RegistrationTicket<?> ticket) {
@@ -115,7 +115,8 @@ public class ReflectionAPI extends Extension {
     public static ReflectionCommandProcessor createWCommand(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler<List<CommandData<CommandHolder>>> handler, Object instance, Class<?> commandClass) {
         return createWCommand(processor, handler, instance, commandClass, RegistrationTicket.empty(instance));
     }
-    public static ReflectionCommandProcessor createWCommand(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler<List<CommandData<CommandHolder>>> handler, Object instance, Class<?> commandClass, RegistrationTicket<?> ticket    ) {
+
+    public static ReflectionCommandProcessor createWCommand(Processor<List<CommandData<CommandHolder>>> processor, ErrorHandler<List<CommandData<CommandHolder>>> handler, Object instance, Class<?> commandClass, RegistrationTicket<?> ticket) {
         ReflectionCommandProcessor commandProcessor = new ReflectionCommandProcessor(processor, handler);
 
         if (instance != null)
@@ -124,7 +125,9 @@ public class ReflectionAPI extends Extension {
         return commandProcessor;
     }
 
-    /***************** NEW METHODS *****************/
+    /*****************
+     * NEW METHODS
+     *****************/
 
     public static ReflectionCommandProcessor createWCommand(ErrorHandler<List<CommandData<CommandHolder>>> handler) {
         return new ReflectionCommandProcessor(handler);

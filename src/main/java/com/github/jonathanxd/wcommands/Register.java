@@ -71,8 +71,9 @@ public class Register<T> {
 
     /**
      * Register sub command
-     * @param main Root/Main Command
-     *             @param subCommands Sub commands
+     *
+     * @param main        Root/Main Command
+     * @param subCommands Sub commands
      */
     public Register<T> registerSubCommand(CommandSpec main, CommandSpec... subCommands) {
         main.addSubs(getTicket(), subCommands);

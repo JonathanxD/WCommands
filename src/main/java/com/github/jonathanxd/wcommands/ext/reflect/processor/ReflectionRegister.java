@@ -28,7 +28,7 @@
 package com.github.jonathanxd.wcommands.ext.reflect.processor;
 
 import com.github.jonathanxd.iutils.annotations.NotNull;
-import com.github.jonathanxd.iutils.extra.Container;
+import com.github.jonathanxd.iutils.containers.Container;
 import com.github.jonathanxd.wcommands.Register;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
@@ -76,8 +76,8 @@ public class ReflectionRegister<T> extends Register<T> {
     }
 
     /**
-     * Instance only will be added when {@link ReflectionCommandProcessor#process(List, Requirements, InformationRegister)} is
-     * called!
+     * Instance only will be added when {@link ReflectionCommandProcessor#process(List,
+     * Requirements, InformationRegister)} is called!
      *
      * @param o     Instance
      * @param clazz Commands Clazz
@@ -316,7 +316,7 @@ public class ReflectionRegister<T> extends Register<T> {
                     throw new InvalidDependency("Possible invalid dependencies! Involved elements: '" + sj.toString() + "'. Involved dependencies " + dependencies.toString() + ". Postpone List: '" + postpone + "'. Current List: '" + original);
 
                 } else {
-                    if(stacks < MAX_STACKS) {
+                    if (stacks < MAX_STACKS) {
                         ++stacks;
                     } else {
                         throw new PossibleCyclicDependencies("Possible cyclic dependencies! Involved elements: '" + sj.toString() + "'. Postpone List: '" + postpone + "'. Current List: '" + original);

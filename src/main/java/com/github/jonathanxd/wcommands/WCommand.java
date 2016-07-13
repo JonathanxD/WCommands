@@ -28,7 +28,8 @@
 package com.github.jonathanxd.wcommands;
 
 import com.github.jonathanxd.iutils.annotations.Immutable;
-import com.github.jonathanxd.iutils.arrays.ImmutableArrays;
+import com.github.jonathanxd.iutils.arrays.ImmutableJwArray;
+import com.github.jonathanxd.iutils.arrays.JwArray;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.commandstring.CommandStringParser;
 import com.github.jonathanxd.wcommands.commandstring.CommonCommandStringParser;
@@ -51,7 +52,6 @@ import com.github.jonathanxd.wcommands.ticket.RegistrationTicket;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -349,13 +349,13 @@ public class WCommand<T> {
     @SuppressWarnings("Duplicates")
     public Optional<CommandSpec> handleRegistrationToTicket(CommandSpec commandSpec, CommandList targetList, RegistrationTicket<?> ticket) {
 
-        if(!ticket.isOpenRegistration()) {
+        if (!ticket.isOpenRegistration()) {
             return Optional.of(commandSpec);
         }
 
         targetList = targetList.toUnmodifiable();
 
-        com.github.jonathanxd.iutils.arrays.Arrays<RegistrationHandleResult> results = new com.github.jonathanxd.iutils.arrays.Arrays<>();
+        JwArray<RegistrationHandleResult> results = new JwArray<>();
 
         RegistrationHandleResult main = RegistrationHandleResult.newInstance(commandSpec, null, RegistrationHandleResult.Action.ACCEPT);
 
@@ -364,9 +364,9 @@ public class WCommand<T> {
             RegistrationHandleResult result;
 
             if (results.isEmpty()) {
-                result = handler.handle(new ImmutableArrays<>(main), targetList, this, ticket);
+                result = handler.handle(new ImmutableJwArray<>(main), targetList, this, ticket);
             } else {
-                result = handler.handle(new ImmutableArrays<>(results), targetList, this, ticket);
+                result = handler.handle(new ImmutableJwArray<>(results), targetList, this, ticket);
             }
 
             if (result != null) {
@@ -417,7 +417,7 @@ public class WCommand<T> {
 
         targetList = targetList.toUnmodifiable();
 
-        com.github.jonathanxd.iutils.arrays.Arrays<RegistrationHandleResult> results = new com.github.jonathanxd.iutils.arrays.Arrays<>();
+        JwArray<RegistrationHandleResult> results = new JwArray<>();
 
         RegistrationHandleResult main = RegistrationHandleResult.newInstance(commandSpec, null, RegistrationHandleResult.Action.ACCEPT);
 
@@ -426,9 +426,9 @@ public class WCommand<T> {
             RegistrationHandleResult result;
 
             if (results.isEmpty()) {
-                result = handler.handle(new ImmutableArrays<>(main), targetList, this, ticket);
+                result = handler.handle(new ImmutableJwArray<>(main), targetList, this, ticket);
             } else {
-                result = handler.handle(new ImmutableArrays<>(results), targetList, this, ticket);
+                result = handler.handle(new ImmutableJwArray<>(results), targetList, this, ticket);
             }
 
             if (result != null) {

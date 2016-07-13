@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.infos;
 
-import com.github.jonathanxd.iutils.object.Reference;
+import com.github.jonathanxd.iutils.object.GenericRepresentation;
 
 /**
  * Created by jonathan on 12/03/16.
@@ -37,17 +37,17 @@ public class Information<T> implements Cloneable {
     private static final Information<?> EMPTY = new Information<>(null, null, null);
 
     private final InfoId id;
-    private final Reference<?> reference;
+    private final GenericRepresentation<?> representation;
     private final T info;
     private final Description description;
 
-    public Information(InfoId id, T info, Reference<?> reference) {
-        this(id, reference, info, (Description) null);
+    public Information(InfoId id, T info, GenericRepresentation<?> representation) {
+        this(id, representation, info, (Description) null);
     }
 
-    protected Information(InfoId id, Reference<?> reference, T info, Description description) {
+    protected Information(InfoId id, GenericRepresentation<?> representation, T info, Description description) {
         this.id = id;
-        this.reference = reference;
+        this.representation = representation;
         this.info = info;
         if (description == null)
             this.description = new Description(null);
@@ -55,17 +55,17 @@ public class Information<T> implements Cloneable {
             this.description = description;
     }
 
-    public Information(InfoId id, T info, String description, Reference<?> reference) {
-        this(id, reference, info, new Description(description));
-    }
-
-    public Reference<?> getReference() {
-        return reference;
+    public Information(InfoId id, T info, String description, GenericRepresentation<?> representation) {
+        this(id, representation, info, new Description(description));
     }
 
     @SuppressWarnings("unchecked")
     public static <T> Information<T> empty() {
         return (Information<T>) EMPTY;
+    }
+
+    public GenericRepresentation<?> getRepresentation() {
+        return representation;
     }
 
     @SuppressWarnings("unchecked")
@@ -90,7 +90,7 @@ public class Information<T> implements Cloneable {
     @Override
     public Information<T> clone() {
 
-        return new Information<>(this.getId(), reference, this.get(), this.getDescription().clone());
+        return new Information<>(this.getId(), representation, this.get(), this.getDescription().clone());
     }
 
     public boolean isPresent() {

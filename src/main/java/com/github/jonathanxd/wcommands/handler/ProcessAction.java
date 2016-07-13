@@ -32,7 +32,8 @@ package com.github.jonathanxd.wcommands.handler;
  */
 public enum ProcessAction {
     /**
-     * Continue the process (may cause {@link StackOverflowError} if the exception type is {@link com.github.jonathanxd.wcommands.exceptions.ErrorType.Type#ERROR}
+     * Continue the process (may cause {@link StackOverflowError} if the exception type is {@link
+     * com.github.jonathanxd.wcommands.exceptions.ErrorType.Type#ERROR}
      */
     CONTINUE,
     /**

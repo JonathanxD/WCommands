@@ -84,8 +84,6 @@ public class CommandSpec implements Matchable<String> {
 
     /**
      * Is Optional CommandSpec (only works with sub-commands)?
-     *
-     *
      */
     private final boolean isOptional;
 
@@ -111,7 +109,8 @@ public class CommandSpec implements Matchable<String> {
     /**
      * List of commands
      *
-     * Doesn't modify field name, if you want to modify see method {@link #withHandledCommandList(WCommand, CommandSpec, RegistrationTicket)}
+     * Doesn't modify field name, if you want to modify see method {@link
+     * #withHandledCommandList(WCommand, CommandSpec, RegistrationTicket)}
      */
     private final CommandList subCommands = new CommandList(this);
 
@@ -194,6 +193,24 @@ public class CommandSpec implements Matchable<String> {
         }
 
         return Text.matches(commandSpec.getName(), withoutPAS, ignoreCase) || commandSpec.getAliases().anyMatches(withoutPAS, ignoreCase);
+    }
+
+    public static CommandSpec withHandledCommandList(WCommand<?> wCommand, CommandSpec commandSpec, RegistrationTicket<?> ticket) {
+        CommandSpec newCommandSpec = new CommandSpec(commandSpec.getName(), commandSpec.getDescription(), commandSpec.getArguments(), commandSpec.isOptional(), commandSpec.getPrefix(), commandSpec.getSuffix(), commandSpec.getDefaultHandler());
+        try {
+            //--------------------------------------------------------------------------------|SUB COMMANDS FIELD HERE|
+            Reflection.changeFinalField(RClass.getRClass(newCommandSpec.getClass(), newCommandSpec), "subCommands", new CommandList(wCommand, newCommandSpec));
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot convert command", e);
+        }
+
+        if (commandSpec.getSubCommands().size() > 0) {
+            for (CommandSpec childCommandSpec : commandSpec.getSubCommands()) {
+                newCommandSpec.addSub(withHandledCommandList(wCommand, childCommandSpec, ticket), ticket);
+            }
+        }
+
+        return newCommandSpec;
     }
 
     public boolean isEmpty() {
@@ -448,25 +465,6 @@ public class CommandSpec implements Matchable<String> {
     @Override
     public boolean matchesIgnoreCase(String other) {
         return matches(this, other, true);
-    }
-
-
-    public static CommandSpec withHandledCommandList(WCommand<?> wCommand, CommandSpec commandSpec, RegistrationTicket<?> ticket) {
-        CommandSpec newCommandSpec = new CommandSpec(commandSpec.getName(), commandSpec.getDescription(), commandSpec.getArguments(), commandSpec.isOptional(), commandSpec.getPrefix(), commandSpec.getSuffix(), commandSpec.getDefaultHandler());
-        try {
-            //--------------------------------------------------------------------------------|SUB COMMANDS FIELD HERE|
-            Reflection.changeFinalField(RClass.getRClass(newCommandSpec.getClass(), newCommandSpec), "subCommands", new CommandList(wCommand, newCommandSpec));
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot convert command", e);
-        }
-
-        if(commandSpec.getSubCommands().size() > 0) {
-            for(CommandSpec childCommandSpec : commandSpec.getSubCommands()) {
-                newCommandSpec.addSub(withHandledCommandList(wCommand, childCommandSpec, ticket), ticket);
-            }
-        }
-
-        return newCommandSpec;
     }
 
     @Override

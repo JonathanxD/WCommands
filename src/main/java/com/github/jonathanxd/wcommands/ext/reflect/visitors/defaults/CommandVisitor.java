@@ -27,22 +27,21 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults;
 
+import com.github.jonathanxd.iutils.containers.Container;
 import com.github.jonathanxd.iutils.data.ExtraData;
-import com.github.jonathanxd.iutils.extra.Container;
-import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
-import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitorSupport;
+import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitor;
+import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitorSupport;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.NamedContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.SingleNamedContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeHead;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeNamedContainer;
-import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
 import com.github.jonathanxd.wcommands.factory.CommandBuilder;
 import com.github.jonathanxd.wcommands.handler.Handler;
 import com.github.jonathanxd.wcommands.text.Text;
@@ -68,31 +67,6 @@ public class CommandVisitor extends AnnotationVisitor<Command, TreeNamedContaine
     public void visitElementAnnotation(Command annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket) {
         String name = annotation.name().trim().isEmpty() ? bridge.getName() : annotation.name();
         Common.visit(name, annotation, current, last, bridge, location, treeHead);
-    }
-
-    public static final class Common {
-        public static void visit(String nameResolved, Annotation annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead) {
-
-            TreeNamedContainer treeNamedContainer;
-
-            if (!current.isPresent()) {
-
-                current.set((treeNamedContainer = new TreeNamedContainer(nameResolved, annotation, bridge)));
-                last.set(current.get());
-
-            } else {
-                last.set((treeNamedContainer = new TreeNamedContainer(nameResolved, annotation, bridge)));
-
-                TreeNamedContainer container = Require.require(current.get(), TreeNamedContainer.class);
-                TreeNamedContainer lastTree = Require.require(last.get(), TreeNamedContainer.class);
-
-                container.getChild().add(lastTree);
-            }
-
-            if(location == ElementType.TYPE) {
-                treeHead.addHead(treeNamedContainer);
-            }
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -136,7 +110,7 @@ public class CommandVisitor extends AnnotationVisitor<Command, TreeNamedContaine
 
             Optional<AnnotationVisitor<Annotation, SingleNamedContainer, ArgumentSpec<?, ?>>> visitorOpt = support.<Annotation, SingleNamedContainer, ArgumentSpec<?, ?>>getVisitorFor(cla);
 
-            if(visitorOpt.isPresent()) {
+            if (visitorOpt.isPresent()) {
 
                 // ?
                 ArgumentSpec argSpec = visitorOpt.get().process(argumentContainer, instance, support, common, translatorSupport, location, treeHead, ticket, Optional.of(command));
@@ -150,6 +124,31 @@ public class CommandVisitor extends AnnotationVisitor<Command, TreeNamedContaine
         CommandSpec cmd = commandBuilder.build();
 
         return cmd;
+    }
+
+    public static final class Common {
+        public static void visit(String nameResolved, Annotation annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead) {
+
+            TreeNamedContainer treeNamedContainer;
+
+            if (!current.isPresent()) {
+
+                current.set((treeNamedContainer = new TreeNamedContainer(nameResolved, annotation, bridge)));
+                last.set(current.get());
+
+            } else {
+                last.set((treeNamedContainer = new TreeNamedContainer(nameResolved, annotation, bridge)));
+
+                TreeNamedContainer container = Require.require(current.get(), TreeNamedContainer.class);
+                TreeNamedContainer lastTree = Require.require(last.get(), TreeNamedContainer.class);
+
+                container.getChild().add(lastTree);
+            }
+
+            if (location == ElementType.TYPE) {
+                treeHead.addHead(treeNamedContainer);
+            }
+        }
     }
 
 }

@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators;
 
-import com.github.jonathanxd.iutils.object.Reference;
+import com.github.jonathanxd.iutils.object.GenericRepresentation;
 import com.github.jonathanxd.wcommands.interceptor.Order;
 
 import java.util.function.BiConsumer;
@@ -44,9 +44,9 @@ public interface TranslatorSupport {
      * @param translator Type Translator to Object
      * @param <T>        Type
      */
-    <T> void addGlobalTranslator(Reference<T> type, Class<? extends Translator<?>> translator, Order order);
+    <T> void addGlobalTranslator(GenericRepresentation<T> type, Class<? extends Translator<?>> translator, Order order);
 
-    default <T> void addGlobalTranslator(Reference<T> type, Class<? extends Translator<?>> translator) {
+    default <T> void addGlobalTranslator(GenericRepresentation<T> type, Class<? extends Translator<?>> translator) {
         addGlobalTranslator(type, translator, Order.SEVENTH);
     }
 
@@ -56,12 +56,12 @@ public interface TranslatorSupport {
      * @param type Type Class
      * @param <T>  Type
      */
-    <T> void removeGlobalTranslator(Reference<T> type);
+    <T> void removeGlobalTranslator(GenericRepresentation<T> type);
 
     /**
      * Foreach elements
      *
      * @param consumer Consumer
      */
-    void forEach(BiConsumer<Reference<?>, Class<? extends Translator<?>>> consumer);
+    void forEach(BiConsumer<GenericRepresentation<?>, Class<? extends Translator<?>>> consumer);
 }

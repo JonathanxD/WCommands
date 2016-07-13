@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.help.printer;
 
-import com.github.jonathanxd.iutils.extra.primitivecontainers.IntContainer;
+import com.github.jonathanxd.iutils.containers.primitivecontainers.IntContainer;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
@@ -104,19 +104,19 @@ public class CommonPrinter implements Printer {
     private static IntContainer appendDescriptions(Map<CommandSpec, List<String>> toPrint, IntContainer container) {
 
         toPrint.values().forEach(v -> v.forEach(str -> {
-            if(container.get() < str.length()) {
+            if (container.get() < str.length()) {
                 container.set(str.length() + 5);
             }
         }));
 
         toPrint.forEach(((commandSpec, stringList) -> {
-            if(!stringList.isEmpty()) {
+            if (!stringList.isEmpty()) {
                 String description = commandSpec.getDescription();
 
-                if(description != null && !description.isEmpty()){
+                if (description != null && !description.isEmpty()) {
                     String at0 = stringList.get(0);
 
-                    String formatted = String.format("%-"+container.get()+"s %s", at0, description(commandSpec));
+                    String formatted = String.format("%-" + container.get() + "s %s", at0, description(commandSpec));
                     stringList.set(0, formatted);
                 }
 
@@ -220,7 +220,7 @@ public class CommonPrinter implements Printer {
         IntContainer container = null;
 
         for (CommandSpec commandSpec : commandSpecs) {
-            if(container == null) {
+            if (container == null) {
                 container = print(stream, commandSpec);
             } else {
                 print(stream, commandSpec, container);

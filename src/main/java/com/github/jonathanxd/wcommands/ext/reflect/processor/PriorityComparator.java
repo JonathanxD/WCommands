@@ -55,13 +55,13 @@ public class PriorityComparator implements Comparator<ElementBridge> {
         Order firstOrder = biggerOrder(o1.getDeclaredAnnotations());
         Order secondOrder = biggerOrder(o2.getDeclaredAnnotations());
 
-        if(o1.getMember() == o2.getMember())
+        if (o1.getMember() == o2.getMember())
             return 0;
 
-        if(o1.hasAlternativePriority())
+        if (o1.hasAlternativePriority())
             firstOrder = o1.getPriority();
 
-        if(o2.hasAlternativePriority())
+        if (o2.hasAlternativePriority())
             secondOrder = o2.getPriority();
 
         int comp = firstOrder.compareTo(secondOrder);
@@ -72,13 +72,13 @@ public class PriorityComparator implements Comparator<ElementBridge> {
     private Order biggerOrder(Annotation[] annotations) {
         Order theOrder = null;
 
-        for(Annotation annotation : annotations) {
+        for (Annotation annotation : annotations) {
             Optional<AnnotationVisitor<Annotation, NamedContainer, Object>> visitorOptional = visitors.getFor(annotation.annotationType());
 
-            if(visitorOptional.isPresent()) {
+            if (visitorOptional.isPresent()) {
 
                 Order visitorOrder = visitorOptional.get().priority();
-                if(theOrder == null || theOrder.ordinal() < visitorOrder.ordinal()) {
+                if (theOrder == null || theOrder.ordinal() < visitorOrder.ordinal()) {
                     theOrder = visitorOrder;
                 }
             }

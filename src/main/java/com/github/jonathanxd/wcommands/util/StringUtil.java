@@ -50,7 +50,7 @@ public class StringUtil {
                     if (TagUtil.allOpenAllClose(currentString)) {
 
                         currentString += " " + arg;
-                        list.add(currentString.substring(0, currentString.length()-1));
+                        list.add(currentString.substring(0, currentString.length() - 1));
                         currentString = null;
                     }
                 }

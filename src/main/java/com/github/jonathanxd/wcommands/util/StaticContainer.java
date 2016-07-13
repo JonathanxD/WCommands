@@ -27,8 +27,8 @@
  */
 package com.github.jonathanxd.wcommands.util;
 
-import com.github.jonathanxd.iutils.extra.BaseContainer;
-import com.github.jonathanxd.iutils.extra.Container;
+import com.github.jonathanxd.iutils.containers.BaseContainer;
+import com.github.jonathanxd.iutils.containers.Container;
 
 import java.util.function.BiFunction;
 

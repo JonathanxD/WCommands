@@ -28,7 +28,7 @@
 package com.github.jonathanxd.wcommands.handler;
 
 import com.github.jonathanxd.iutils.annotations.Immutable;
-import com.github.jonathanxd.iutils.arrays.Arrays;
+import com.github.jonathanxd.iutils.arrays.JwArray;
 import com.github.jonathanxd.wcommands.WCommand;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.handler.registration.RegistrationHandleResult;
@@ -52,7 +52,7 @@ public interface CommandRegistrationListener {
      * @return a {@link RegistrationHandleResult} with the specifications or null if your handle
      * command does nothing!
      */
-    RegistrationHandleResult handle(@Immutable Arrays<RegistrationHandleResult> registrationHandleResults, @Immutable CommandList targetList, WCommand<?> manager, RegistrationTicket<?> ticket);
+    RegistrationHandleResult handle(@Immutable JwArray<RegistrationHandleResult> registrationHandleResults, @Immutable CommandList targetList, WCommand<?> manager, RegistrationTicket<?> ticket);
 
     default void onEnd(RegistrationTicket<?> ticket) {
 

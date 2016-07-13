@@ -37,8 +37,8 @@ public class Results extends HashSet<IResult<?>> {
 
     @SuppressWarnings("unchecked")
     public <T> Optional<Result<T>> find(Enum<?> uniqueId) {
-        for(IResult<?> result : this) {
-            if(result.getId() != null && result.getId() == uniqueId) {
+        for (IResult<?> result : this) {
+            if (result.getId() != null && result.getId() == uniqueId) {
                 return Optional.of((Result<T>) result);
             }
         }

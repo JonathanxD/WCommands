@@ -58,8 +58,8 @@ public class Functions {
     }
 
     public static <T, R> Optional<R> return_(Collection<? extends T> c, Predicate<T> predicate, Function<T, R> map) {
-        for(T element : c) {
-            if(predicate.test(element)) {
+        for (T element : c) {
+            if (predicate.test(element)) {
                 return Optional.of(map.apply(element));
             }
         }
@@ -68,8 +68,8 @@ public class Functions {
     }
 
     public static <T> Optional<T> return_(Collection<? extends T> c, Predicate<T> predicate) {
-        for(T element : c) {
-            if(predicate.test(element)) {
+        for (T element : c) {
+            if (predicate.test(element)) {
                 return Optional.of(element);
             }
         }

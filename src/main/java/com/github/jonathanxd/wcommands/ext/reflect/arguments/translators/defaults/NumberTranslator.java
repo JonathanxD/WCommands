@@ -28,7 +28,6 @@
 package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults;
 
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
-import com.github.jonathanxd.wcommands.text.Text;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -41,6 +40,46 @@ import java.util.regex.Pattern;
 public class NumberTranslator implements Translator<Number> {
     public static final Pattern NUMBER_REGEX = Pattern.compile("-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?");
 
+    private static Number numberConversion(String data) {
+
+        if (data.contains(".")) {
+            try {
+                return Long.valueOf(data);
+            } catch (Throwable ignored) {
+            }
+            try {
+                return Double.valueOf(data);
+            } catch (Throwable ignored) {
+            }
+            return new BigDecimal(data);
+        }
+
+        try {
+            return Byte.valueOf(data);
+        } catch (Throwable ignored) {
+        }
+
+        try {
+            return Short.valueOf(data);
+        } catch (Throwable ignored) {
+        }
+        try {
+            return Integer.valueOf(data);
+        } catch (Throwable ignored) {
+        }
+        try {
+            return Long.valueOf(data);
+        } catch (Throwable ignored) {
+        }
+
+        try {
+            return new BigInteger(data);
+        } catch (Throwable ignored) {
+        }
+
+        throw new IllegalArgumentException("Cannot convert '" + data + "' to Number Representation!");
+    }
+
     @Override
     public boolean isAcceptable(List<String> text) {
         return !text.isEmpty() && NUMBER_REGEX.matcher(text.get(0)).matches();
@@ -49,40 +88,6 @@ public class NumberTranslator implements Translator<Number> {
     @Override
     public Number translate(List<String> text) {
         return numberConversion(text.get(0));
-    }
-
-
-    private static Number numberConversion(String data) {
-
-        if(data.contains(".")) {
-            try{
-                return Long.valueOf(data);
-            }catch (Throwable ignored){}
-            try{
-                return Double.valueOf(data);
-            }catch (Throwable ignored){}
-            return new BigDecimal(data);
-        }
-
-        try{
-            return Byte.valueOf(data);
-        }catch (Throwable ignored){}
-
-        try{
-            return Short.valueOf(data);
-        }catch (Throwable ignored){}
-        try{
-            return Integer.valueOf(data);
-        }catch (Throwable ignored){}
-        try{
-            return Long.valueOf(data);
-        }catch (Throwable ignored){}
-
-        try{
-            return new BigInteger(data);
-        }catch (Throwable ignored){}
-
-        throw new IllegalArgumentException("Cannot convert '"+data+"' to Number Representation!");
     }
 
 }

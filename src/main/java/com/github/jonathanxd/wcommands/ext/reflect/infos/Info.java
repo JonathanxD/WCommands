@@ -27,11 +27,10 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.infos;
 
-import com.github.jonathanxd.iutils.object.Reference;
+import com.github.jonathanxd.iutils.object.GenericRepresentation;
 import com.github.jonathanxd.wcommands.infos.InfoId;
 import com.github.jonathanxd.wcommands.infos.Information;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
-import com.github.jonathanxd.wcommands.util.reflection.TypeUtil;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -94,21 +93,21 @@ public @interface Info {
                 if ((infoAnn = parameter.getAnnotation(Info.class)) != null) {
 
                     if (parameter.getType() == Information.class) {
-                        Reference<?> raw = getRaw(parameter);
+                        GenericRepresentation<?> raw = getRaw(parameter);
 
                         Objects.requireNonNull(raw, "Cannot get Raw Type!");
 
 
                         Optional<Information<?>> info;
-                        if(infoAnn.staticFirst()) {
-                             info = informationSet.stream().filter(i -> check(raw, infoAnn, i))//i -> i.isPresent() && raw.isAssignableFrom(i.get().getClass())
+                        if (infoAnn.staticFirst()) {
+                            info = informationSet.stream().filter(i -> check(raw, infoAnn, i))//i -> i.isPresent() && raw.isAssignableFrom(i.get().getClass())
                                     .findFirst();
-                            if(!info.isPresent()) {
+                            if (!info.isPresent()) {
                                 info = register.getProvided(from(infoAnn), raw);
                             }
                         } else {
                             info = register.getProvided(from(infoAnn), raw);
-                            if(!info.isPresent()) {
+                            if (!info.isPresent()) {
                                 info = informationSet.stream().filter(i -> check(raw, infoAnn, i))//i -> i.isPresent() && raw.isAssignableFrom(i.get().getClass())
                                         .findFirst();
                             }
@@ -142,19 +141,19 @@ public @interface Info {
 
             Optional<Information<?>> info;
 
-            Reference<?> reference = TypeUtil.toReference(parameter.getType());
+            GenericRepresentation<?> reference = com.github.jonathanxd.iutils.object.TypeUtil.toReference(parameter.getType());
 
-            if(annotation.staticFirst()) {
+            if (annotation.staticFirst()) {
                 info = informationRegister.getInformationList().stream().filter(i -> check(reference, annotation, i))
                         .findFirst();
 
-                if(!info.isPresent()) {
+                if (!info.isPresent()) {
                     info = informationRegister.getProvided(from(annotation), reference);
                 }
             } else {
                 info = informationRegister.getProvided(from(annotation), reference);
 
-                if(!info.isPresent()) {
+                if (!info.isPresent()) {
                     info = informationRegister.getInformationList().stream().filter(i -> check(reference, annotation, i))
                             .findFirst();
                 }
@@ -172,12 +171,12 @@ public @interface Info {
             return new InfoId(annotation.tags(), annotation.type());
         }
 
-        private static boolean check(Reference<?> type, Info annotation, Information<?> info) {
+        private static boolean check(GenericRepresentation<?> type, Info annotation, Information<?> info) {
             if (!info.isPresent())
                 return false;
 
 
-            if (type.compareToAssignable(info.getReference()) == 0) {
+            if (type.compareToAssignable(info.getRepresentation()) == 0) {
 
                 if (annotation == null)
                     return true;
@@ -197,7 +196,7 @@ public @interface Info {
         }
 
 
-        private static Reference<?> getRaw(Parameter parameter) {
+        private static GenericRepresentation<?> getRaw(Parameter parameter) {
 
             AnnotatedType type;
 
@@ -213,7 +212,7 @@ public @interface Info {
                         throw new RuntimeException("Cannot get raw type for type: '" + parameterizedType + "'");
                     }
 
-                    return TypeUtil.toReference(parameterizedType).getRelated()[0];
+                    return com.github.jonathanxd.iutils.object.TypeUtil.toReference(parameterizedType).getRelated()[0];
                 }
 
             }

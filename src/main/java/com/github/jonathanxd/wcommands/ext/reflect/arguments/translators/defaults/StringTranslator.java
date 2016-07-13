@@ -28,7 +28,6 @@
 package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults;
 
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
-import com.github.jonathanxd.wcommands.text.Text;
 
 import java.util.List;
 

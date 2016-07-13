@@ -345,7 +345,9 @@ public class CommandList implements List<CommandSpec> {
 
         Collection<CommandSpec> commandSpecCollection = new ArrayList<>();
 
-        if (this.getwCommandOptional().isPresent()) {
+        Optional<WCommand<?>> wCommand = this.getwCommandOptional();
+
+        if (wCommand.isPresent()) {
 
             int x = 0;
             for (CommandSpec commandSpec : collection) {
@@ -353,11 +355,11 @@ public class CommandList implements List<CommandSpec> {
                 if (maxHandle > -1 && x >= maxHandle)
                     break;
 
-                Optional<CommandSpec> specOptional = this.getwCommandOptional().get().handleRegistrationToTicket(commandSpec, this, ticket);
+                Optional<CommandSpec> specOptional = wCommand.get().handleRegistrationToTicket(commandSpec, this, ticket);
 
 
                 if (specOptional.isPresent()) {
-                    specOptional = this.getwCommandOptional().get().handleRegistration(commandSpec, this, ticket);
+                    specOptional = wCommand.get().handleRegistration(commandSpec, this, ticket);
 
                     if (specOptional.isPresent()) {
                         commandSpecCollection.add(specOptional.get());

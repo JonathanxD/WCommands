@@ -39,6 +39,7 @@ public final class IsOptional {
     public static final IsOptional TRUE = new IsOptional();
     public static final IsOptional FALSE = new IsOptional();
 
-    protected IsOptional() {}
+    protected IsOptional() {
+    }
 
 }

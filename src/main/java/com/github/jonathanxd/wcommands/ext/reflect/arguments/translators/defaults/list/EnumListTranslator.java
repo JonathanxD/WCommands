@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.list;
 
-import com.github.jonathanxd.iutils.object.Reference;
+import com.github.jonathanxd.iutils.object.GenericRepresentation;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.enums.EnumTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 
@@ -41,17 +41,17 @@ import java.util.List;
 public class EnumListTranslator implements Translator<List<Enum>> {
 
     private final Class enumClass;
-    private final Reference<?> reference;
+    private final GenericRepresentation<?> representation;
 
-    public EnumListTranslator(Reference<?> reference) {
-        this.reference = reference;
+    public EnumListTranslator(GenericRepresentation<?> representation) {
+        this.representation = representation;
 
         Class<?> enClass = null;
 
-        if(reference.getRelated().length != 0)
-            enClass = reference.getRelated()[0].getAClass();
+        if (representation.getRelated().length != 0)
+            enClass = representation.getRelated()[0].getAClass();
 
-        if(enClass == null || !Enum.class.isAssignableFrom(enClass))
+        if (enClass == null || !Enum.class.isAssignableFrom(enClass))
             this.enumClass = null;
         else
             this.enumClass = enClass;
@@ -62,13 +62,13 @@ public class EnumListTranslator implements Translator<List<Enum>> {
     @Override
     public boolean isAcceptable(List<String> text) {
 
-        if(enumClass == null)
+        if (enumClass == null)
             return false;
 
         EnumTranslator enumTranslator = new EnumTranslator(/*(Class<? extends Enum>)*/enumClass);
 
-        for(String str : text) {
-            if(!enumTranslator.isAcceptable(Collections.singletonList(str))) {
+        for (String str : text) {
+            if (!enumTranslator.isAcceptable(Collections.singletonList(str))) {
                 return false;
             }
         }
@@ -79,7 +79,7 @@ public class EnumListTranslator implements Translator<List<Enum>> {
     @Override
     public List<Enum> translate(List<String> text) {
 
-        if(enumClass == null) {
+        if (enumClass == null) {
             return Collections.emptyList();
         }
 
@@ -87,7 +87,7 @@ public class EnumListTranslator implements Translator<List<Enum>> {
 
         EnumTranslator enumTranslator = new EnumTranslator(/*(Class<? extends Enum>)*/enumClass);
 
-        for(String str : text) {
+        for (String str : text) {
             enumList.add(enumTranslator.translate(Collections.singletonList(str)));
         }
 

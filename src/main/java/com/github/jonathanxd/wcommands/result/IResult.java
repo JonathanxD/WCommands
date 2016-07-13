@@ -37,6 +37,11 @@ import java.util.Optional;
  */
 public interface IResult<T> {
 
+    @SuppressWarnings("unchecked")
+    static IResult<?> create(Enum<?> id, Handler<?> source, CommandData<?> commandData, Object resultValue) {
+        return new Result<>(id, source, commandData, resultValue);
+    }
+
     Enum<?> getId();
 
     T getResultValue();
@@ -50,11 +55,5 @@ public interface IResult<T> {
     <V extends Enum<V>> Enum<V> getGenId();
 
     <V extends Enum<V>> Enum<V> getGenId(Class<V> clazz);
-
-
-    @SuppressWarnings("unchecked")
-    static IResult<?> create(Enum<?> id, Handler<?> source, CommandData<?> commandData, Object resultValue) {
-        return new Result<>(id, source, commandData, resultValue);
-    }
 
 }

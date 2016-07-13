@@ -46,8 +46,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD})
 public @interface SubCommand {
     /**
-     * The target command of @SubCommand Annotation.
-     * Examples:
+     * The target command of @SubCommand Annotation. Examples:
      *
      * Target SubCommand "money" of Command "give": {@code @{@link SubCommand}({"give", "money"})}
      *
@@ -57,6 +56,7 @@ public @interface SubCommand {
 
     /**
      * SubCommand Specification
+     *
      * @return SubCommand Specification
      */
     Command commandSpec() default @Command;

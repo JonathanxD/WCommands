@@ -137,19 +137,19 @@ public class CommandFactory {
         return new ArgumentSpec<>(id, infinite, checker, predicate, optional, converter);
     }
 
-    private static class All implements Function<List<String>, String> {
-        @Override
-        public String apply(List<String> text) {
-            return text.isEmpty() ? null : text.get(0);
-        }
-    }
-
     public static <H> CommandBuilder<H> commandBuilder() {
         return CommandBuilder.builder();
     }
 
     public static <ID, T> ArgumentBuilder<ID, T> argumentBuilder() {
         return ArgumentBuilder.builder();
+    }
+
+    private static class All implements Function<List<String>, String> {
+        @Override
+        public String apply(List<String> text) {
+            return text.isEmpty() ? null : text.get(0);
+        }
     }
 
 }

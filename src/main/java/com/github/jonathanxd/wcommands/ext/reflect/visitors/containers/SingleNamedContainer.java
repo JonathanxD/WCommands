@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.visitors.containers;
 
-import com.github.jonathanxd.iutils.object.Reference;
+import com.github.jonathanxd.iutils.object.GenericRepresentation;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.annotation.Annotation;
@@ -40,14 +40,14 @@ public class SingleNamedContainer extends NamedContainer {
 
     public SingleNamedContainer(String name, Annotation value, ElementBridge bridge) {
         super(name, value, bridge);
-        try{
+        try {
             bridge.getParameterizedReference();
-        }catch (Throwable t) {
-            throw new IllegalArgumentException("Unsupported element! Type: "+bridge.getMember().getClass(), t);
+        } catch (Throwable t) {
+            throw new IllegalArgumentException("Unsupported element! Type: " + bridge.getMember().getClass(), t);
         }
     }
 
-    public Reference<?> getTypes() {
+    public GenericRepresentation<?> getTypes() {
         return getBridge().getParameterizedReference();
     }
 

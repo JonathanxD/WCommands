@@ -29,7 +29,6 @@ package com.github.jonathanxd.wcommands.ext.reflect.arguments.enums;
 
 import com.github.jonathanxd.wcommands.common.enums.EnumPredicate;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
-import com.github.jonathanxd.wcommands.text.Text;
 
 import java.util.List;
 
@@ -55,8 +54,8 @@ public class EnumTranslator implements Translator<Enum> {
 
         Enum e = predicate.get(text.get(0));
 
-        if(e == null && text != null)
-            throw new IllegalStateException("Cannot get enum ("+enumClass.getCanonicalName()+") constant '"+text+"'");
+        if (e == null && text != null)
+            throw new IllegalStateException("Cannot get enum (" + enumClass.getCanonicalName() + ") constant '" + text + "'");
 
         return e;
     }

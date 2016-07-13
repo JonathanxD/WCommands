@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.reflection.list;
 
-import com.github.jonathanxd.iutils.object.Reference;
+import com.github.jonathanxd.iutils.object.GenericRepresentation;
 import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
@@ -46,7 +46,6 @@ import com.github.jonathanxd.wcommands.result.Results;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by jonathan on 18/03/16.
@@ -61,14 +60,14 @@ public class TestList {
             return sender.hasPerm(data);
         };
 
-        InformationRegister informationRegister = InformationRegister.blankBuilder().with(Sender.class, new Sender(), Reference.aEnd(Sender.class)).build();
+        InformationRegister informationRegister = InformationRegister.blankBuilder().with(Sender.class, new Sender(), GenericRepresentation.aEnd(Sender.class)).build();
 
         Requirements requirements = new Requirements();
         requirements.add(Permission.class, providedRequirement);
 
 
         WCommandCommon wCommandCommon = ReflectionAPI.createWCommand((error, commandSpecs, currentCommand, processed, requirements1, informationRegister1) -> {
-            System.out.println("E -> "+error);
+            System.out.println("E -> " + error);
             return ProcessAction.CONTINUE;
         }, new TestList());
 
@@ -90,29 +89,15 @@ public class TestList {
 
     }
 
-    static class Sender{
-        boolean hasPerm(String perm) {
-            return perm.equals("dup");
-        }
-    }
-
-    class Permission {}
-
-    enum EN {
-        A,
-        B,
-        C
-    }
-
     @Command
     public void myList(@Argument(isArray = true) List<EN> ens) {
-        System.out.println("En: "+ens);
+        System.out.println("En: " + ens);
         EN en = ens.get(0);
     }
 
     @Command
     public void zNamed(@Argument String key) {
-        System.out.println("zNamed = "+key);
+        System.out.println("zNamed = " + key);
     }
 
     @Command
@@ -123,7 +108,7 @@ public class TestList {
 
     @SubCommand({"show"})
     public Result<List<String>> list(@Argument(isArray = true) List<String> stringList) {
-        System.out.println("A List "+stringList);
+        System.out.println("A List " + stringList);
         return new Result<>(IDs.DATA, stringList);
     }
 
@@ -131,11 +116,26 @@ public class TestList {
     public String named(@Argument String name,
                         @Info Results results) {
         System.out.println("named!");
-        System.out.println("Results: "+results.find(IDs.DATA));
+        System.out.println("Results: " + results.find(IDs.DATA));
         return "WM";
+    }
+
+    enum EN {
+        A,
+        B,
+        C
     }
 
     enum IDs {
         DATA
+    }
+
+    static class Sender {
+        boolean hasPerm(String perm) {
+            return perm.equals("dup");
+        }
+    }
+
+    class Permission {
     }
 }

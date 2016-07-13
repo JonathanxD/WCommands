@@ -31,7 +31,6 @@ import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.text.Text;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -84,6 +83,7 @@ public class ArgumentBuilder<ID, T> {
 
     /**
      * COMPATIBILITY
+     *
      * @param predicate COMPATIBILITY
      * @return COMPATIBILITY
      * @see #withPredicate(Predicate)
@@ -97,7 +97,6 @@ public class ArgumentBuilder<ID, T> {
         this.predicate = predicate;
         return this;
     }
-
 
 
     public ArgumentSpec<ID, T> build() {

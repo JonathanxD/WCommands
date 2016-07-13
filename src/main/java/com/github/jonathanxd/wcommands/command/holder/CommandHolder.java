@@ -27,8 +27,8 @@
  */
 package com.github.jonathanxd.wcommands.command.holder;
 
-import com.github.jonathanxd.iutils.extra.IMutableContainer;
-import com.github.jonathanxd.iutils.extra.MutableContainer;
+import com.github.jonathanxd.iutils.containers.IMutableContainer;
+import com.github.jonathanxd.iutils.containers.MutableContainer;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentsHolder;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
@@ -176,7 +176,8 @@ public class CommandHolder implements Matchable<String> {
     }
 
     /**
-     * Recursive loop commandSpec holder and child commandSpec holder &amp; collect filtered CommandHolders
+     * Recursive loop commandSpec holder and child commandSpec holder &amp; collect filtered
+     * CommandHolders
      *
      * @param main            Main commandSpec holder
      * @param holderPredicate Holder predicate
@@ -322,10 +323,11 @@ public class CommandHolder implements Matchable<String> {
 
     /**
      * Create a new CommandHolder with current CommandHolder child commands
-     * @param commandSpec             CommandSpec
+     *
+     * @param commandSpec     CommandSpec
      * @param argumentHolders ArgumentSpec holder
-     * @param isPresent Is present?
-     * @param lastMatching Last matching? (of the group)
+     * @param isPresent       Is present?
+     * @param lastMatching    Last matching? (of the group)
      * @return new CommandHolder
      * @deprecated Old system part, no more child commands!
      */
@@ -339,8 +341,8 @@ public class CommandHolder implements Matchable<String> {
     }
 
     /**
-     * @see EachArguments
      * @return {@link EachArguments}
+     * @see EachArguments
      */
     public EachArguments eachArguments() {
         return eachArguments;
@@ -348,14 +350,16 @@ public class CommandHolder implements Matchable<String> {
 
     /**
      * Return true if is main command
+     *
      * @return true if is main command
      */
     public boolean isMain() {
-        return getParent() ==  null;
+        return getParent() == null;
     }
 
     /**
      * Return parent command holder
+     *
      * @return Parent command holder
      */
     public CommandHolder getParent() {
@@ -372,20 +376,27 @@ public class CommandHolder implements Matchable<String> {
         return commandSpec.matchesIgnoreCase(other);
     }
 
+    @Override
+    public int hashCode() {
+        return getCommandSpec().hashCode();
+    }
+
     /**
      * Each arguments is a simple class to analise argument list
      */
     public class EachArguments {
         /**
          * Consume all arguments as Plain ArgumentSpec
+         *
          * @param argumentConsumer ArgumentSpec consumer
          */
         public void plain(Consumer<List<String>> argumentConsumer) {
-            holder(holder -> argumentConsumer.accept(((ArgumentHolder<?, ?>)holder).getValues()));
+            holder(holder -> argumentConsumer.accept(((ArgumentHolder<?, ?>) holder).getValues()));
         }
 
         /**
          * Consume all ArgumentSpec holder
+         *
          * @param argumentConsumer ArgumentHolder consumer
          */
         public void holder(Consumer<ArgumentHolder> argumentConsumer) {
@@ -393,10 +404,5 @@ public class CommandHolder implements Matchable<String> {
                 argumentConsumer.accept(argumentHolder);
             }
         }
-    }
-
-    @Override
-    public int hashCode() {
-        return getCommandSpec().hashCode();
     }
 }

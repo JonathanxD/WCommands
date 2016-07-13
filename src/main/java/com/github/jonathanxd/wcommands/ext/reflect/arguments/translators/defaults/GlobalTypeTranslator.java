@@ -28,9 +28,9 @@
 package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults;
 
 import com.github.jonathanxd.iutils.caster.Caster;
+import com.github.jonathanxd.iutils.containers.Container;
 import com.github.jonathanxd.iutils.data.ExtraData;
-import com.github.jonathanxd.iutils.extra.Container;
-import com.github.jonathanxd.iutils.object.Reference;
+import com.github.jonathanxd.iutils.object.GenericRepresentation;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.IsOptional;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
@@ -47,14 +47,14 @@ import java.util.Optional;
  */
 public class GlobalTypeTranslator implements Translator<Object> {
 
-    private final Reference<?> type;
+    private final GenericRepresentation<?> type;
     private final boolean isPrimitive;
     private final TranslatorSupport support;
     private final SingleNamedContainer container;
 
     private final boolean isOptional;
 
-    public GlobalTypeTranslator(Reference<?> type, SingleNamedContainer container, TranslatorSupport support, IsOptional isOptional) {
+    public GlobalTypeTranslator(GenericRepresentation<?> type, SingleNamedContainer container, TranslatorSupport support, IsOptional isOptional) {
         this.support = support;
 
         this.container = container;
@@ -73,7 +73,7 @@ public class GlobalTypeTranslator implements Translator<Object> {
 
         if (boxed != null) {
             this.isPrimitive = true;
-            @SuppressWarnings("unchecked") Reference<?> initChange = Reference.a(aType).of(type.getRelated()).build();
+            @SuppressWarnings("unchecked") GenericRepresentation<?> initChange = GenericRepresentation.a(aType).of(type.getRelated()).build();
             this.type = initChange;
         } else {
             this.isPrimitive = false;
@@ -105,18 +105,18 @@ public class GlobalTypeTranslator implements Translator<Object> {
 
             Class<?> testType = type.getAClass();
             Class<?> original = testType;
-            if(Primitive.asBoxed(testType) != null) {
+            if (Primitive.asBoxed(testType) != null) {
                 testType = Primitive.asBoxed(testType);
             }
             if (((type.getRelated().length == 0 && aType.getRelated().length == 0 && aType.getAClass().isAssignableFrom(testType))
                     || aType.compareTo(type) == 0
                     || aType.compareToAssignable(type) == 0)
-                        || (type.getRelated().length > 0
-                        && this.isOptional
-                        && type.getAClass() == Optional.class
-                        && aType.getAClass().isAssignableFrom((testType = type.getRelated()[0].getAClass())))) {
+                    || (type.getRelated().length > 0
+                    && this.isOptional
+                    && type.getAClass() == Optional.class
+                    && aType.getAClass().isAssignableFrom((testType = type.getRelated()[0].getAClass())))) {
 
-                if(testType == null) {
+                if (testType == null) {
                     return;
                 }
 
@@ -134,9 +134,9 @@ public class GlobalTypeTranslator implements Translator<Object> {
                         try {
                             casted = original.cast(translated);
                         } catch (ClassCastException e) {
-                            try{
+                            try {
                                 casted = Caster.cast(translated, original);
-                            }catch (Throwable t) {
+                            } catch (Throwable t) {
                                 casted = translated;
                             }
 

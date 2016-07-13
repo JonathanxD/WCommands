@@ -145,17 +145,9 @@ public class TagUtil {
         return true;
     }
 
-    public enum State {
-        OPEN, CLOSE;
-
-        private boolean toBoolean() {
-            return this == OPEN;
-        }
-    }
-
     private static Tag build(char[] tags, int index, State state) {
 
-        if(state.toBoolean()) {
+        if (state.toBoolean()) {
             return new Tag(tags[0], tags[1], index, -1, null);
         } else {
             return new Tag(tags[0], tags[1], -1, index, null);
@@ -163,10 +155,10 @@ public class TagUtil {
     }
 
     public static TagsData process(String str, char[] tags) {
-        char[][] openClose = new char[tags.length/2][2];
+        char[][] openClose = new char[tags.length / 2][2];
 
 
-        for(int tagPos = 0, x = 0; x < openClose.length; ++x) {
+        for (int tagPos = 0, x = 0; x < openClose.length; ++x) {
             openClose[x][0] = tags[tagPos];
             openClose[x][1] = tags[++tagPos];
             ++tagPos;
@@ -179,14 +171,14 @@ public class TagUtil {
         char lastChar = ' ';
         boolean lastCharDefined = false;
 
-        for(int x = 0; x < charArray.length; ++x) {
+        for (int x = 0; x < charArray.length; ++x) {
             char current = charArray[x];
 
-            if(!lastCharDefined || lastChar != '\\') {
+            if (!lastCharDefined || lastChar != '\\') {
                 Data find = findTag(openClose, current, tagsData);
 
-                if(find != null) {
-                    if(find.state == State.CLOSE) {
+                if (find != null) {
+                    if (find.state == State.CLOSE) {
                         tagsData.up(build(openClose[find.position], x, find.state), charArray);
                     } else {
                         tagsData.up(build(openClose[find.position], x, find.state), charArray);
@@ -204,32 +196,22 @@ public class TagUtil {
     private static String select(char[] chars, int start, int end) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        for(int x = start; x < end; ++x) {
+        for (int x = start; x < end; ++x) {
             stringBuilder.append(chars[x]);
         }
 
         return stringBuilder.toString();
     }
 
-    private static final class Data {
-        private final int position;
-        private final State state;
-
-        private Data(int position, State state) {
-            this.position = position;
-            this.state = state;
-        }
-    }
-
     private static Data findTag(char[][] tags, char c, TagsData tagsData) {
 
-        for(int x = 0; x < tags.length; ++x) {
+        for (int x = 0; x < tags.length; ++x) {
             char[] tag = tags[x];
 
-            if(tag[0] == c) {
-                if(tag[0] == tag[1]) {
+            if (tag[0] == c) {
+                if (tag[0] == tag[1]) {
                     State state = tagsData.lastStateFor(tag[0], tag[1]);
-                    if(state == State.OPEN) {
+                    if (state == State.OPEN) {
                         return new Data(x, State.CLOSE);
                     } else {
                         return new Data(x, State.OPEN);
@@ -238,7 +220,7 @@ public class TagUtil {
                     return new Data(x, State.OPEN);
                 }
 
-            }else if(tag[1] == c){
+            } else if (tag[1] == c) {
                 return new Data(x, State.CLOSE);
             }
         }
@@ -256,6 +238,70 @@ public class TagUtil {
         }
 
         return -1;
+    }
+
+    public static List<String> getSplited(String text, TagsData tagsData) {
+        return getSplited(text, tagsData, ' ', false);
+    }
+
+    public static List<String> getSplited(String text, TagsData tagsData, char alternative, boolean useAlternative) {
+        char[] chars = text.toCharArray();
+
+        List<String> strList = new ArrayList<>();
+
+        StringBuilder sb = new StringBuilder();
+
+        int skip = -1;
+
+        for (int x = 0; x < chars.length; ++x) {
+            if (skip > -1) {
+                --skip;
+                continue;
+            }
+
+            Tag t = tagsData.findForOpenIndex(x);
+
+            if (t != null) {
+                if (sb.length() > 0) {
+                    strList.add(sb.toString());
+                    sb.setLength(0);
+                }
+
+                strList.add(t.getTextBetween());
+
+                skip = t.getCloseIndex() - 1;
+            } else if (useAlternative && chars[x] == alternative) {
+                strList.add(sb.toString());
+                sb.setLength(0);
+            } else {
+                sb.append(chars[x]);
+            }
+
+        }
+
+        if (sb.length() > 0) {
+            strList.add(sb.toString());
+        }
+
+        return strList;
+    }
+
+    public enum State {
+        OPEN, CLOSE;
+
+        private boolean toBoolean() {
+            return this == OPEN;
+        }
+    }
+
+    private static final class Data {
+        private final int position;
+        private final State state;
+
+        private Data(int position, State state) {
+            this.position = position;
+            this.state = state;
+        }
     }
 
     public static class Tag extends Element {
@@ -305,7 +351,6 @@ public class TagUtil {
         }
     }
 
-
     public static final class TagsData {
 
 
@@ -314,18 +359,18 @@ public class TagUtil {
 
         private void up(Tag tag, char[] chars) {
 
-            if(tags.isEmpty() || tags.getLast().getId() != tag.getId()) {
+            if (tags.isEmpty() || tags.getLast().getId() != tag.getId()) {
                 tags.addLast(tag);
-            }else{
+            } else {
                 Tag last = tags.pollLast();
-                String text = select(chars, last.getOpenIndex()+1, tag.getCloseIndex());
+                String text = select(chars, last.getOpenIndex() + 1, tag.getCloseIndex());
                 closedTags.add(new Tag(last.getOpenTag(), last.getCloseTag(), last.getOpenIndex(), tag.getCloseIndex(), text));
             }
         }
 
         public Tag findForOpenIndex(int index) {
             for (Tag tag : closedTags) {
-                if(tag.getOpenIndex() == index) {
+                if (tag.getOpenIndex() == index) {
                     return tag;
                 }
             }
@@ -334,7 +379,7 @@ public class TagUtil {
 
         public Tag findForOpen(char open) {
             for (Tag tag : closedTags) {
-                if(tag.getOpenTag() == open) {
+                if (tag.getOpenTag() == open) {
                     return tag;
                 }
             }
@@ -343,7 +388,7 @@ public class TagUtil {
 
         public Tag findForClose(char close) {
             for (Tag tag : closedTags) {
-                if(tag.getCloseTag() == close) {
+                if (tag.getCloseTag() == close) {
                     return tag;
                 }
             }
@@ -357,7 +402,7 @@ public class TagUtil {
 
                 boolean st = tag.getOpenTag() == unknown;
 
-                if(st || tag.getCloseTag() == unknown) {
+                if (st || tag.getCloseTag() == unknown) {
                     return new Node<Tag, State>(tag, st ? State.OPEN : State.CLOSE);
                 }
             }
@@ -377,9 +422,9 @@ public class TagUtil {
 
             Iterator<Tag> desc = tags.descendingIterator();
 
-            while(desc.hasNext()) {
+            while (desc.hasNext()) {
                 Tag tagInDeque = desc.next();
-                if(tagInDeque.getId() == tag.getId()) {
+                if (tagInDeque.getId() == tag.getId()) {
                     return tagInDeque.getCloseIndex() <= -1 ? State.OPEN : State.CLOSE;
                 }
             }
@@ -389,7 +434,7 @@ public class TagUtil {
 
         @Override
         public String toString() {
-            return "[notClosed="+tags+", closed="+closedTags+"]";
+            return "[notClosed=" + tags + ", closed=" + closedTags + "]";
         }
     }
 
@@ -399,52 +444,6 @@ public class TagUtil {
         private Element(String data) {
             this.data = data;
         }
-    }
-
-    public static List<String> getSplited(String text, TagsData tagsData) {
-        return getSplited(text, tagsData, ' ', false);
-    }
-
-    public static List<String> getSplited(String text, TagsData tagsData, char alternative, boolean useAlternative) {
-        char[] chars = text.toCharArray();
-
-        List<String> strList = new ArrayList<>();
-
-        StringBuilder sb = new StringBuilder();
-
-        int skip = -1;
-
-        for(int x = 0; x < chars.length; ++x) {
-            if(skip > -1) {
-                --skip;
-                continue;
-            }
-
-            Tag t = tagsData.findForOpenIndex(x);
-
-            if(t != null) {
-                if(sb.length() > 0) {
-                    strList.add(sb.toString());
-                    sb.setLength(0);
-                }
-
-                strList.add(t.getTextBetween());
-
-                skip = t.getCloseIndex()-1;
-            } else if(useAlternative && chars[x] == alternative){
-                strList.add(sb.toString());
-                sb.setLength(0);
-            }else {
-                sb.append(chars[x]);
-            }
-
-        }
-
-        if(sb.length() > 0) {
-            strList.add(sb.toString());
-        }
-
-        return strList;
     }
 
 }

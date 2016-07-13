@@ -46,7 +46,7 @@ public class Text implements Matchable<String>, Comparable<Text> {
 
     public static boolean matches(Text text, String other, boolean ignoreCase) {
 
-        if(other == null || text.getPlainString() == null)
+        if (other == null || text.getPlainString() == null)
             return false;
 
         String plain = text.plainString;

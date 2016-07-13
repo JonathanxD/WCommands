@@ -27,8 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.visitors;
 
-import com.github.jonathanxd.iutils.extra.Container;
-import com.github.jonathanxd.wcommands.WCommandCommon;
+import com.github.jonathanxd.iutils.containers.Container;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
@@ -76,14 +75,15 @@ public abstract class AnnotationVisitor<T extends Annotation, C extends NamedCon
      * SubCommands because SubCommands require some command dependencies and SubCommands
      * dependencies.
      *
-     * @param container Container
-     * @param instance  Instance of the source
-     * @param support   Visitor Support
-     * @param commandList    Command List with all registered commands, modifying this list will not affect the WCommandCommon registration
-     * @param parent    Parent caller
+     * @param container   Container
+     * @param instance    Instance of the source
+     * @param support     Visitor Support
+     * @param commandList Command List with all registered commands, modifying this list will not
+     *                    affect the WCommandCommon registration
+     * @param parent      Parent caller
      * @return True to accept and call {@link #process(NamedContainer, InstanceContainer,
-     * AnnotationVisitorSupport, CommandList, TranslatorSupport, ElementType, TreeHead, RegistrationTicket, Optional)}. or False to postpone the
-     * process.
+     * AnnotationVisitorSupport, CommandList, TranslatorSupport, ElementType, TreeHead,
+     * RegistrationTicket, Optional)}. or False to postpone the process.
      */
     public boolean dependencyCheck(C container,
                                    InstanceContainer instance,

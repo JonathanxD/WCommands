@@ -27,33 +27,34 @@
  */
 package com.github.jonathanxd.wcommands.ticket;
 
-import com.github.jonathanxd.iutils.data.ReferenceData;
+import com.github.jonathanxd.iutils.data.RepresentationData;
 import com.github.jonathanxd.wcommands.handler.CommandRegistrationListener;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by jonathan on 26/03/16.
  */
 public interface RegistrationTicket<T> {
 
+    static <T> RegistrationTicket<T> empty(T ticketProvider) {
+        return new Empty<>(ticketProvider);
+    }
+
     T getTicketProvider();
-    ReferenceData getReferenceData();
+
+    RepresentationData getRepresentationData();
 
     void addRegistrationListener(CommandRegistrationListener listener);
+
     void removeRegistrationListener(CommandRegistrationListener listener);
+
     Collection<CommandRegistrationListener> getListeners();
 
     void endRegistration();
 
     boolean isOpenRegistration();
-
-    static <T> RegistrationTicket<T> empty(T ticketProvider) {
-        return new Empty<>(ticketProvider);
-    }
 
     final class Empty<T> implements RegistrationTicket<T> {
 
@@ -69,16 +70,17 @@ public interface RegistrationTicket<T> {
             return ticketProvider;
         }
 
-        @Override
-        public ReferenceData getReferenceData() {
-            return new ReferenceData();
+        public RepresentationData getRepresentationData() {
+            return new RepresentationData();
         }
 
         @Override
-        public void addRegistrationListener(CommandRegistrationListener listener) {}
+        public void addRegistrationListener(CommandRegistrationListener listener) {
+        }
 
         @Override
-        public void removeRegistrationListener(CommandRegistrationListener listener) {}
+        public void removeRegistrationListener(CommandRegistrationListener listener) {
+        }
 
         @Override
         public Collection<CommandRegistrationListener> getListeners() {

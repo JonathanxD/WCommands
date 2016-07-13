@@ -28,7 +28,6 @@
 package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults;
 
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
-import com.github.jonathanxd.wcommands.text.Text;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -49,8 +48,8 @@ public class BooleanTranslator implements Translator<Boolean> {
 
         String text = textList.get(0);
 
-        if(!isAcceptable(textList))
-            throw new IllegalArgumentException("Cannot translate '"+text+"' to Boolean");
+        if (!isAcceptable(textList))
+            throw new IllegalArgumentException("Cannot translate '" + text + "' to Boolean");
 
         return text.equalsIgnoreCase("true") || text.equalsIgnoreCase("yes");
 

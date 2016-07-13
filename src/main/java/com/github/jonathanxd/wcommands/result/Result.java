@@ -60,6 +60,22 @@ public class Result<T> implements IResult<T> {
         this.resultValue = resultValue;
     }
 
+    @SuppressWarnings("unchecked")
+    public static IResult<?> fill(IResult<?> iResult, Enum<?> id, Handler<?> source, CommandData<?> commandData, Object resultValue) {
+
+        Handler<?> fSource = iResult.getSource();
+        CommandData<?> fCommandData = iResult.getCommandData();
+        Object fResultValue = iResult.getResultValue();
+        Enum<?> fId = iResult.getId();
+
+        fSource = fSource != null ? fSource : source;
+        fCommandData = fCommandData != null ? fCommandData : commandData;
+        fResultValue = fResultValue != null ? fResultValue : resultValue;
+        fId = fId != null ? fId : id;
+
+        return new Result<>(fId, fSource, fCommandData, fResultValue);
+    }
+
     @Override
     public Optional<Enum<?>> getBoxedId() {
         return Optional.ofNullable(id);
@@ -98,27 +114,11 @@ public class Result<T> implements IResult<T> {
 
     @Override
     public String toString() {
-        return "Result["+ ToString.toString(this)+"]";
+        return "Result[" + ToString.toString(this) + "]";
     }
 
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : commandData.hashCode();
-    }
-
-    @SuppressWarnings("unchecked")
-    public static IResult<?> fill(IResult<?> iResult, Enum<?> id, Handler<?> source, CommandData<?> commandData, Object resultValue) {
-
-        Handler<?> fSource = iResult.getSource();
-        CommandData<?> fCommandData = iResult.getCommandData();
-        Object fResultValue = iResult.getResultValue();
-        Enum<?> fId = iResult.getId();
-
-        fSource = fSource != null ? fSource : source;
-        fCommandData = fCommandData != null ? fCommandData : commandData;
-        fResultValue = fResultValue != null ? fResultValue : resultValue;
-        fId = fId != null ? fId : id;
-
-        return new Result<>(fId, fSource, fCommandData, fResultValue);
     }
 }

@@ -72,12 +72,12 @@ public class StaticListIterator<E> implements ListIterator<E> {
 
     @Override
     public int nextIndex() {
-        return index+1;
+        return index + 1;
     }
 
     @Override
     public int previousIndex() {
-        return index-1;
+        return index - 1;
     }
 
     @Override

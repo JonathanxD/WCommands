@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.interceptor;
 
-import com.github.jonathanxd.iutils.extra.Container;
+import com.github.jonathanxd.iutils.containers.Container;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.handler.Handler;

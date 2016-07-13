@@ -35,7 +35,7 @@ public class Require {
     @SuppressWarnings("unchecked")
     public static <T> T require(Object value, Class<? extends T> aClass) {
         if (!aClass.isAssignableFrom(value.getClass()))
-            throw new IllegalArgumentException("Invalid value type. Require: '"+aClass.getCanonicalName()+"'. Found: '"+value.getClass().getCanonicalName()+"'");
+            throw new IllegalArgumentException("Invalid value type. Require: '" + aClass.getCanonicalName() + "'. Found: '" + value.getClass().getCanonicalName() + "'");
         return (T) value;
     }
 

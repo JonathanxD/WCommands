@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.visitors.containers;
 
-import com.github.jonathanxd.iutils.extra.Container;
+import com.github.jonathanxd.iutils.containers.Container;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.annotation.Annotation;

@@ -27,11 +27,11 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults;
 
+import com.github.jonathanxd.iutils.containers.Container;
 import com.github.jonathanxd.iutils.data.DataProvider;
 import com.github.jonathanxd.iutils.data.ExtraData;
-import com.github.jonathanxd.iutils.extra.Container;
-import com.github.jonathanxd.iutils.object.Reference;
-import com.github.jonathanxd.wcommands.WCommandCommon;
+import com.github.jonathanxd.iutils.object.GenericRepresentation;
+import com.github.jonathanxd.iutils.object.HolderGenericRepresentation;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
@@ -39,14 +39,14 @@ import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.IsOptional;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
+import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
+import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitor;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.AnnotationVisitorSupport;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.NamedContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.SingleNamedContainer;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeHead;
 import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.TreeNamedContainer;
-import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
-import com.github.jonathanxd.wcommands.ext.reflect.processor.ReflectionCommandProcessor;
 import com.github.jonathanxd.wcommands.factory.ArgumentBuilder;
 import com.github.jonathanxd.wcommands.interceptor.Order;
 import com.github.jonathanxd.wcommands.ticket.RegistrationTicket;
@@ -65,7 +65,7 @@ import java.util.Optional;
                 CommandSpec.class,
                 NamedContainer.class,
                 String.class,
-                Reference.class,
+                GenericRepresentation.class,
                 InstanceContainer.class},
         description = {
                 "Can retrieve and add Translators",
@@ -85,34 +85,34 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
     @Override
     public void visitElementAnnotation(Argument annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket) {
 
-            String name = annotation.id().trim().isEmpty() ? bridge.getName() : annotation.id();
+        String name = annotation.id().trim().isEmpty() ? bridge.getName() : annotation.id();
 
-            if (annotation.isOptional()) {
+        if (annotation.isOptional()) {
 
-                if (bridge.getType() == Optional.class && (annotation.type() == null || annotation.type() == Argument.PR.class) && bridge.directReference() == null) {
-                    throw new RuntimeException("Cannot handle Optional, impossible to determine the Type, use: 'Argument.type()'!");
-                } else {
-                    if (bridge.directReference() == null) {
-                        if (annotation.type() != Argument.PR.class) {
-                            bridge = new ElementBridge(bridge.getMember(), location, Reference.aEnd(annotation.type()));
-                        }
+            if (bridge.getType() == Optional.class && (annotation.type() == null || annotation.type() == Argument.PR.class) && bridge.directReference() == null) {
+                throw new RuntimeException("Cannot handle Optional, impossible to determine the Type, use: 'Argument.type()'!");
+            } else {
+                if (bridge.directReference() == null) {
+                    if (annotation.type() != Argument.PR.class) {
+                        bridge = new ElementBridge(bridge.getMember(), location, GenericRepresentation.aEnd(annotation.type()));
                     }
                 }
             }
+        }
 
-            SingleNamedContainer container = new SingleNamedContainer(name, annotation, bridge);
+        SingleNamedContainer container = new SingleNamedContainer(name, annotation, bridge);
 
-            if(last.isPresent() && last.get() instanceof TreeNamedContainer) {
-                TreeNamedContainer treeNamedContainer = Require.require(last.get(), TreeNamedContainer.class);
+        if (last.isPresent() && last.get() instanceof TreeNamedContainer) {
+            TreeNamedContainer treeNamedContainer = Require.require(last.get(), TreeNamedContainer.class);
 
-                treeNamedContainer.getArgumentContainers().add(container);
+            treeNamedContainer.getArgumentContainers().add(container);
+        } else {
+            if (!current.isPresent()) {
+                current.set(container);
+                last.set(container);
             } else {
-                if(!current.isPresent()) {
-                    current.set(container);
-                    last.set(container);
-                } else {
-                    System.err.println("Failed to get HEAD element!");
-                }
+                System.err.println("Failed to get HEAD element!");
+            }
         }
     }
 
@@ -168,7 +168,7 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
 
         if (argument.setFinal()) {
             argumentSpec1.getData().registerData(ReflectionCommandProcessor.PropSet.FINAL);
-            argumentSpec1.getReferenceData().registerData(Reference.a(Reference.class).hold(argumentContainer.getTypes()).build());
+            argumentSpec1.getReferenceData().registerData(HolderGenericRepresentation.makeHold(GenericRepresentation.a(GenericRepresentation.class).build(), argumentContainer.getTypes()));
         }
 
         return argumentSpec1;

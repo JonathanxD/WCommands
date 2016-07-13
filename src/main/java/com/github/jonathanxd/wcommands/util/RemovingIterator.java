@@ -52,13 +52,12 @@ public class RemovingIterator<E> implements Iterator<E> {
 
     @Override
     public boolean hasNext() {
-        if(currentIter.hasNext())
+        if (currentIter.hasNext())
             return currentIter.hasNext();
-        else
-            if (!elementList.isEmpty()) {
-                currentIter = iteratorSupplier.get();
-                return true;
-            }
+        else if (!elementList.isEmpty()) {
+            currentIter = iteratorSupplier.get();
+            return true;
+        }
 
         return currentIter.hasNext();
     }
@@ -74,7 +73,7 @@ public class RemovingIterator<E> implements Iterator<E> {
     @Override
     public E next() {
 
-        if(hasNext())
+        if (hasNext())
             return (current = currentIter.next());
 
         throw new NoSuchElementException("No more elements!");

@@ -45,8 +45,8 @@ public class AliasList extends ArrayList<Text> {
     }
 
     public boolean anyMatches(String str, boolean ignoreCase) {
-        for(Text text : this) {
-            if(Text.matches(text, str, ignoreCase))
+        for (Text text : this) {
+            if (Text.matches(text, str, ignoreCase))
                 return true;
 
         }

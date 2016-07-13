@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.handler;
 
-import com.github.jonathanxd.iutils.extra.Container;
+import com.github.jonathanxd.iutils.containers.Container;
 
 /**
  * Created by jonathan on 28/02/16.

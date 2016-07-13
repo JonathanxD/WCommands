@@ -53,8 +53,8 @@ public interface CommonHandler extends Handler<CommandHolder> {
         @Override
         public Object handle(CommandData<CommandHolder> commandData, Requirements requirements, InformationRegister informationRegister) {
             Optional<?> opt = commandData.getCommand().getArgValue(id);
-            if(!opt.isPresent()) {
-                throw new IllegalStateException("Cannot find argument (id: '"+id+"')");
+            if (!opt.isPresent()) {
+                throw new IllegalStateException("Cannot find argument (id: '" + id + "')");
             }
             return handle((T) opt.get());
         }
@@ -71,7 +71,7 @@ public interface CommonHandler extends Handler<CommandHolder> {
         @Override
         public Object handle(CommandData<CommandHolder> commandData, Requirements requirements, InformationRegister informationRegister) {
             Object ret = null;
-            for(ArgumentHolder holder : commandData.getCommand().getArguments()) {
+            for (ArgumentHolder holder : commandData.getCommand().getArguments()) {
                 ret = handleAny((ID) holder.getArgumentSpec().getId(), holder.convertValue());
             }
 

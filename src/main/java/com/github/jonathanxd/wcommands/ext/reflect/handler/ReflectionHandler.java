@@ -196,12 +196,12 @@ public class ReflectionHandler implements CommonHandler {
     }
 
     private boolean find(Throwable tt, Class<? extends Throwable> thClass) {
-        if(thClass.isInstance(tt)) {
+        if (thClass.isInstance(tt)) {
             return true;
         }
 
-        while((tt = tt.getCause()) != null) {
-            if(thClass.isInstance(tt)) {
+        while ((tt = tt.getCause()) != null) {
+            if (thClass.isInstance(tt)) {
                 return true;
             }
         }
@@ -227,7 +227,7 @@ public class ReflectionHandler implements CommonHandler {
                 }
             }
 
-            System.err.println("Provided information = '"+register+"'");
+            System.err.println("Provided information = '" + register + "'");
         }
     }
 

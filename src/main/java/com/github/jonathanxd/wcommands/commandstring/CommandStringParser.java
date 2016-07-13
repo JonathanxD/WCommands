@@ -36,6 +36,7 @@ import java.util.List;
 public interface CommandStringParser {
 
     List<String> parse(String[] commandString);
+
     default List<String> parseSingle(String commandString) {
         return parse(commandString.split(" "));
     }

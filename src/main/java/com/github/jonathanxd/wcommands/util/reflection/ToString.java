@@ -44,14 +44,14 @@ public class ToString {
         Class<?> clazz = object.getClass();
 
         for (Field f : clazz.getDeclaredFields()) {
-            if(Modifier.isStatic(f.getModifiers()))
+            if (Modifier.isStatic(f.getModifiers()))
                 continue;
 
             f.setAccessible(true);
             try {
                 Object o = f.get(object);
 
-                if(o != null && object.getClass().isAssignableFrom(o.getClass())) {
+                if (o != null && object.getClass().isAssignableFrom(o.getClass())) {
                     stringJoiner.add(f.getName() + " = { ? }");
                     continue;
                 }

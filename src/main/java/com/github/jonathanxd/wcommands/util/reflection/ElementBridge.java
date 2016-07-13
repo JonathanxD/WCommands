@@ -27,7 +27,8 @@
  */
 package com.github.jonathanxd.wcommands.util.reflection;
 
-import com.github.jonathanxd.iutils.object.Reference;
+import com.github.jonathanxd.iutils.object.GenericRepresentation;
+import com.github.jonathanxd.iutils.object.TypeUtil;
 import com.github.jonathanxd.wcommands.interceptor.Order;
 
 import java.lang.annotation.Annotation;
@@ -49,7 +50,7 @@ public class ElementBridge implements AnnotatedElement {
     private final Class<?> elementClass;
     private final ElementType location;
     private final Order priority;
-    private Reference<?> reference;
+    private GenericRepresentation<?> representation;
 
     public ElementBridge(Object element, ElementType location, Order priority) {
         this.element = element;
@@ -62,16 +63,16 @@ public class ElementBridge implements AnnotatedElement {
         this(element, location, (Order) null);
     }
 
-    public ElementBridge(Object element, ElementType location, Reference<?> reference, Order priority) {
+    public ElementBridge(Object element, ElementType location, GenericRepresentation<?> representation, Order priority) {
         this.element = element;
         this.location = location;
         this.elementClass = this.element.getClass();
-        this.reference = reference;
+        this.representation = representation;
         this.priority = priority;
     }
 
-    public ElementBridge(Object element, ElementType location, Reference<?> reference) {
-        this(element, location, reference, null);
+    public ElementBridge(Object element, ElementType location, GenericRepresentation<?> representation) {
+        this(element, location, representation, null);
     }
 
     public static boolean check(Object[] args, Method method) {
@@ -124,12 +125,12 @@ public class ElementBridge implements AnnotatedElement {
         }
     }
 
-    public Reference<?> directReference() {
-        return reference;
+    public GenericRepresentation<?> directReference() {
+        return representation;
     }
 
-    public Reference<?> getParameterizedReference() {
-        return reference != null ? reference : Reference.aEnd(getType());
+    public GenericRepresentation<?> getParameterizedReference() {
+        return representation != null ? representation : GenericRepresentation.aEnd(getType());
     }
 
     public Class<?> getType() {
@@ -148,7 +149,7 @@ public class ElementBridge implements AnnotatedElement {
                     ParameterizedType type = (ParameterizedType) result;
 
                     try {
-                        this.reference = TypeUtil.toReference(type);
+                        this.representation = TypeUtil.toReference(type);
                     } catch (Exception ignored) {
                     }
 

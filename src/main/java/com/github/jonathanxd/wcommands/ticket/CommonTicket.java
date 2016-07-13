@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ticket;
 
-import com.github.jonathanxd.iutils.data.ReferenceData;
+import com.github.jonathanxd.iutils.data.RepresentationData;
 import com.github.jonathanxd.wcommands.handler.CommandRegistrationListener;
 
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ import java.util.List;
 public final class CommonTicket<T> implements RegistrationTicket<T> {
 
     private final T ticketProvider;
-    private final ReferenceData referenceData = new ReferenceData();
+    private final RepresentationData representationData = new RepresentationData();
     private final List<CommandRegistrationListener> registrationListeners = new ArrayList<>();
     private boolean isOpen = true;
 
@@ -55,8 +55,8 @@ public final class CommonTicket<T> implements RegistrationTicket<T> {
     }
 
     @Override
-    public ReferenceData getReferenceData() {
-        return referenceData;
+    public RepresentationData getRepresentationData() {
+        return representationData;
     }
 
     @Override

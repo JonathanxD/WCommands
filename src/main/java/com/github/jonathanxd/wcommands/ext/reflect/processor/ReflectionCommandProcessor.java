@@ -27,8 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.processor;
 
-import com.github.jonathanxd.iutils.object.Reference;
-import com.github.jonathanxd.wcommands.Register;
+import com.github.jonathanxd.iutils.object.GenericRepresentation;
 import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.commandstring.CommandStringParser;
@@ -99,12 +98,12 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
 
 
     private void initBasics() {
-        addGlobalTranslator(Reference.aEnd(Boolean.class), BooleanTranslator.class);
-        addGlobalTranslator(Reference.aEnd(Number.class), NumberTranslator.class);
-        addGlobalTranslator(Reference.aEnd(String.class), StringTranslator.class);
-        addGlobalTranslator(Reference.aEnd(Enum.class), EnumTranslator.class, Order.SEVENTH);
-        addGlobalTranslator(Reference.referenceTo().a(List.class).of(String.class).build(), StringListTranslator.class);
-        addGlobalTranslator(Reference.referenceTo().a(List.class).of(Enum.class).build(), EnumListTranslator.class);
+        addGlobalTranslator(GenericRepresentation.aEnd(Boolean.class), BooleanTranslator.class);
+        addGlobalTranslator(GenericRepresentation.aEnd(Number.class), NumberTranslator.class);
+        addGlobalTranslator(GenericRepresentation.aEnd(String.class), StringTranslator.class);
+        addGlobalTranslator(GenericRepresentation.aEnd(Enum.class), EnumTranslator.class, Order.SEVENTH);
+        addGlobalTranslator(GenericRepresentation.representationOf().a(List.class).of(String.class).build(), StringListTranslator.class);
+        addGlobalTranslator(GenericRepresentation.representationOf().a(List.class).of(Enum.class).build(), EnumListTranslator.class);
 
         registerVisitor(new CommandVisitor(Command.class));
         registerVisitor(new ArgumentVisitor(Argument.class));
@@ -132,19 +131,19 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
     }
 
     @Override
-    public <T> void addGlobalTranslator(Reference<T> type, Class<? extends Translator<?>> translator, Order order) {
+    public <T> void addGlobalTranslator(GenericRepresentation<T> type, Class<? extends Translator<?>> translator, Order order) {
         translatorList.add(new TypeTranslator<>(type, translator, order));
     }
 
     @Override
-    public <T> void removeGlobalTranslator(Reference<T> type) {
+    public <T> void removeGlobalTranslator(GenericRepresentation<T> type) {
         translatorList.removeIf(t -> t.getType() == type);
     }
 
 
     @SuppressWarnings("unchecked")
     @Override
-    public void forEach(BiConsumer<Reference<?>, Class<? extends Translator<?>>> consumer) {
+    public void forEach(BiConsumer<GenericRepresentation<?>, Class<? extends Translator<?>>> consumer) {
         translatorList.forEach(t -> consumer.accept(t.getType(), t.getTranslator()));
     }
 

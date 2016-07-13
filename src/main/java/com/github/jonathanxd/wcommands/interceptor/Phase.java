@@ -32,13 +32,12 @@ package com.github.jonathanxd.wcommands.interceptor;
  */
 public enum Phase {
     /**
-     * In this phase the command handler wasn't called,
-     * you can change the handler or set to null to prevent handler to be called
+     * In this phase the command handler wasn't called, you can change the handler or set to null to
+     * prevent handler to be called
      */
     PRE_CALL,
     /**
-     * In this phase the command handler was called,
-     * changes to the handler don't do any effects,
+     * In this phase the command handler was called, changes to the handler don't do any effects,
      * you can get the handler triggered.
      */
     POST_CALL
