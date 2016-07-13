@@ -29,13 +29,17 @@ package com.github.jonathanxd.wcommands.arguments;
 
 import com.github.jonathanxd.iutils.data.ExtraData;
 import com.github.jonathanxd.iutils.data.RepresentationData;
+import com.github.jonathanxd.iutils.object.GenericRepresentation;
 import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.text.Text;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import javax.annotation.Nullable;
 
 /**
  * Created by jonathan on 26/02/16.
@@ -64,10 +68,16 @@ public class ArgumentSpec<ID, T> {
      * ArgumentSpec ID to be retrieved later
      */
     private final ID id;
+
     /**
      * True if is an Optional ArgumentSpec (not required)
      */
     private final boolean optional;
+
+    /**
+     *  Argument value type
+     */
+    private final GenericRepresentation<T> valueType;
 
     /**
      * Arrays arguments (List for example)
@@ -78,14 +88,17 @@ public class ArgumentSpec<ID, T> {
      * Converter
      */
     private final Function<List<String>, T> converter;
+
     /**
      * Checker
      */
     private final Supplier<Matchable<String>> checker;
+
     /**
      * Predicate
      */
     private final Predicate<List<String>> predicate;
+
     /**
      * Extra Data's, AdditionalData provided by {@link com.github.jonathanxd.wcommands.ext.Extension}
      * and 2nd/3rd APIs
@@ -99,7 +112,12 @@ public class ArgumentSpec<ID, T> {
     private final RepresentationData referenceData = new RepresentationData();
 
     public ArgumentSpec(ID id, boolean isArray, Supplier<Matchable<String>> checker, Predicate<List<String>> predicateChecker, boolean optional, Function<List<String>, T> converter) {
+        this(id, null, isArray, checker, predicateChecker, optional, converter);
+    }
+
+    public ArgumentSpec(ID id, GenericRepresentation<T> valueType, boolean isArray, Supplier<Matchable<String>> checker, Predicate<List<String>> predicateChecker, boolean optional, Function<List<String>, T> converter) {
         this.id = id;
+        this.valueType = valueType;
         this.isArray = isArray;
         this.checker = checker;
         this.predicate = predicateChecker;
@@ -114,6 +132,22 @@ public class ArgumentSpec<ID, T> {
      */
     public ID getId() {
         return id;
+    }
+
+    /**
+     * Get Argument Value Type
+     * @return Argument value type
+     */
+    public Optional<GenericRepresentation<T>> getValueType() {
+        return Optional.ofNullable(valueType);
+    }
+
+    /**
+     * Get Argument Value Type (Unchecked null)
+     * @return Argument value type
+     */
+    public @Nullable GenericRepresentation<T> getValueTypeUnchecked() {
+        return valueType;
     }
 
     /**

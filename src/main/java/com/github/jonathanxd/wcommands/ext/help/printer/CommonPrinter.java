@@ -31,6 +31,8 @@ import com.github.jonathanxd.iutils.containers.primitivecontainers.IntContainer;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
+import com.github.jonathanxd.wcommands.ext.help.PrintStreamTextPrinter;
+import com.github.jonathanxd.wcommands.ext.help.TextPrinter;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.text.Text;
 
@@ -75,22 +77,29 @@ public class CommonPrinter implements Printer {
 
     public static final PrintStream EMPTY_PRINTER = new EmptyPrinter();
 
-    private final PrintStream stream;
-    private final PrintStream errorStream;
+    private final TextPrinter stream;
+    private final TextPrinter errorStream;
     private final boolean printLabels;
 
     public CommonPrinter(PrintStream stream, PrintStream errorStream, boolean printLabels) {
+        this.stream = new PrintStreamTextPrinter(stream);
+        this.errorStream = new PrintStreamTextPrinter(errorStream);
+        this.printLabels = printLabels;
+    }
+
+
+    public CommonPrinter(TextPrinter stream, TextPrinter errorStream, boolean printLabels) {
         this.stream = stream;
         this.errorStream = errorStream;
         this.printLabels = printLabels;
     }
 
 
-    public static IntContainer print(PrintStream printStream, CommandSpec commandSpec) {
+    public static IntContainer print(TextPrinter printStream, CommandSpec commandSpec) {
         return print(printStream, commandSpec, new IntContainer(0));
     }
 
-    public static IntContainer print(PrintStream printStream, CommandSpec commandSpec, IntContainer intContainer) {
+    public static IntContainer print(TextPrinter printStream, CommandSpec commandSpec, IntContainer intContainer) {
         Map<CommandSpec, List<String>> toPrint = new LinkedHashMap<>();
         print(toPrint, commandSpec, null);
 
@@ -259,13 +268,13 @@ public class CommonPrinter implements Printer {
 
     @Override
     public void printByte(byte b) {
-        stream.write(b);
+        stream.printByte(b);
     }
 
     @Override
     public void printByteArray(byte[] b) {
         try {
-            stream.write(b);
+            stream.printByte(b);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

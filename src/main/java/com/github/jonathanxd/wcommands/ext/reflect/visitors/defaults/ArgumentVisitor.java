@@ -117,6 +117,7 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
     }
 
 
+    @SuppressWarnings("unchecked")
     @Override
     public ArgumentSpec<?, ?> process(SingleNamedContainer argumentContainer, InstanceContainer instance, AnnotationVisitorSupport support, CommandList common, TranslatorSupport translatorSupport, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket, Optional<NamedContainer> parent) {
         Argument argument = (Argument) argumentContainer.get();
@@ -159,17 +160,20 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
             argumentBuilder.withConverter(translator::translate);
         }
 
+        argumentBuilder.withValueType((GenericRepresentation<Object>) argumentContainer.getTypes());
+
 
         argumentBuilder.setOptional(argument.isOptional());
         argumentBuilder.setInfinite(argument.isArray());
-
 
         ArgumentSpec argumentSpec1 = argumentBuilder.build();
 
         if (argument.setFinal()) {
             argumentSpec1.getData().registerData(ReflectionCommandProcessor.PropSet.FINAL);
-            argumentSpec1.getReferenceData().registerData(HolderGenericRepresentation.makeHold(GenericRepresentation.a(GenericRepresentation.class).build(), argumentContainer.getTypes()));
         }
+
+
+        /** @deprecated **/ argumentSpec1.getReferenceData().registerData(HolderGenericRepresentation.makeHold(GenericRepresentation.a(GenericRepresentation.class).build(), argumentContainer.getTypes()));
 
         return argumentSpec1;
 

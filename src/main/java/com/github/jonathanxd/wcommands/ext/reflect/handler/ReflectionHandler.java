@@ -27,6 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.handler;
 
+import com.github.jonathanxd.iutils.exceptions.BiException;
 import com.github.jonathanxd.wcommands.CommonHandler;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentsHolder;
@@ -169,12 +170,14 @@ public class ReflectionHandler implements CommonHandler {
                 } catch (Throwable tt) {
 
                     if (find(tt, NullPointerException.class)) {
-                        System.err.println("Make sure the NullPointerException isn't caused by missing information.");
-                        testInformations(bridge, informationRegister, os);
+                        if(!testInformations(bridge, informationRegister, os)) {
+                            System.err.println("Make sure the NullPointerException aren't caused by missing information.");
+                        }
+
                     }
 
-                    e.printStackTrace();
-                    throw new RuntimeException(tt.getMessage(), tt);
+
+                    throw new BiException(e, tt);
                 }
             }
 
@@ -187,7 +190,7 @@ public class ReflectionHandler implements CommonHandler {
                 @SuppressWarnings("unchecked") Handler<CommandHolder> handler = (Handler<CommandHolder>) instance.get();
                 theReturn = handler.handle(commandData, requirements, informationRegister);
             } else {
-                throw new InvalidCommand("The command '" + commandData.getCommand() + "' for input '" + commandData.getInputArgument() + "' is invalid! Classes has no Executors to run!");
+                throw new InvalidCommand("The command '" + commandData.getCommand() + "' for input '" + commandData.getInputArgument() + "' is invalid (A class is annotated with @Command)! Classes has no Executors to handle commands!");
             }
         }
 
@@ -208,7 +211,10 @@ public class ReflectionHandler implements CommonHandler {
         return false;
     }
 
-    private void testInformations(ElementBridge bridge, InformationRegister register, Object[] passedParameters) {
+    private boolean testInformations(ElementBridge bridge, InformationRegister register, Object[] passedParameters) {
+
+        boolean ok = true;
+
         if (bridge.isMethod()) {
             Method method = (Method) bridge.getMember();
 
@@ -223,12 +229,15 @@ public class ReflectionHandler implements CommonHandler {
 
                     if (o == null) {
                         System.err.println("Information '" + Info.InformationUtil.toString(info) + "' is missing, argument at index '" + x + "' is null!");
+                        ok = false;
                     }
                 }
             }
 
             System.err.println("Provided information = '" + register + "'");
         }
+
+        return ok;
     }
 
     public void test(Requirements requirements, Require[] requires, CommandData<CommandHolder> commandData, InformationRegister informationRegister, Object[] args) {

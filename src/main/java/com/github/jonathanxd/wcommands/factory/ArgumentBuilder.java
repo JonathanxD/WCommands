@@ -27,6 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.factory;
 
+import com.github.jonathanxd.iutils.object.GenericRepresentation;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.text.Text;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
  */
 public class ArgumentBuilder<ID, T> {
     private ID id;
+    private GenericRepresentation<T> valueType;
     private boolean optional = false;
     private boolean isInfinite = false;
     @SuppressWarnings("unchecked")
@@ -58,6 +60,11 @@ public class ArgumentBuilder<ID, T> {
 
     public ArgumentBuilder<ID, T> withId(ID id) {
         this.id = id;
+        return this;
+    }
+
+    public ArgumentBuilder<ID, T> withValueType(GenericRepresentation<T> valueType) {
+        this.valueType = valueType;
         return this;
     }
 
@@ -100,7 +107,7 @@ public class ArgumentBuilder<ID, T> {
 
 
     public ArgumentSpec<ID, T> build() {
-        return new ArgumentSpec<>(id, isInfinite, checker, predicate, optional, converter);
+        return new ArgumentSpec<>(id, valueType, isInfinite, checker, predicate, optional, converter);
     }
 
     private static class All<T> implements Function<List<String>, T> {
