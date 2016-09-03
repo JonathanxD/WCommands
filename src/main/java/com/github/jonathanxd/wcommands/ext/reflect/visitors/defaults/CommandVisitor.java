@@ -89,11 +89,11 @@ public class CommandVisitor extends AnnotationVisitor<Command, TreeNamedContaine
         try {
             ExtraData data = new ExtraData();
 
-            data.registerData(command);
-            data.registerData(command.getBridge());
-            data.registerData(command.getName());
+            data.addData(null, command);
+            data.addData(null, command.getBridge());
+            data.addData(null, command.getName());
 
-            data.registerData(instance);
+            data.addData(null, instance);
 
             handler = (Handler<CommandHolder>) data.construct(commandAnnotation.handler());
         } catch (Throwable ignore) {

@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.infos;
 
-import com.github.jonathanxd.iutils.object.GenericRepresentation;
+import com.github.jonathanxd.iutils.object.TypeInfo;
 
 /**
  * Created by jonathan on 12/03/16.
@@ -37,15 +37,15 @@ public class Information<T> implements Cloneable {
     private static final Information<?> EMPTY = new Information<>(null, null, null);
 
     private final InfoId id;
-    private final GenericRepresentation<?> representation;
+    private final TypeInfo<?> representation;
     private final T info;
     private final Description description;
 
-    public Information(InfoId id, T info, GenericRepresentation<?> representation) {
+    public Information(InfoId id, T info, TypeInfo<?> representation) {
         this(id, representation, info, (Description) null);
     }
 
-    protected Information(InfoId id, GenericRepresentation<?> representation, T info, Description description) {
+    protected Information(InfoId id, TypeInfo<?> representation, T info, Description description) {
         this.id = id;
         this.representation = representation;
         this.info = info;
@@ -55,7 +55,7 @@ public class Information<T> implements Cloneable {
             this.description = description;
     }
 
-    public Information(InfoId id, T info, String description, GenericRepresentation<?> representation) {
+    public Information(InfoId id, T info, String description, TypeInfo<?> representation) {
         this(id, representation, info, new Description(description));
     }
 
@@ -64,7 +64,7 @@ public class Information<T> implements Cloneable {
         return (Information<T>) EMPTY;
     }
 
-    public GenericRepresentation<?> getRepresentation() {
+    public TypeInfo<?> getRepresentation() {
         return representation;
     }
 

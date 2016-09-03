@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators;
 
-import com.github.jonathanxd.iutils.object.GenericRepresentation;
+import com.github.jonathanxd.iutils.object.TypeInfo;
 import com.github.jonathanxd.wcommands.interceptor.Order;
 
 import java.util.Objects;
@@ -36,17 +36,17 @@ import java.util.Objects;
  * Created by jonathan on 28/02/16.
  */
 public class TypeTranslator<T> {
-    private final GenericRepresentation<T> type;
+    private final TypeInfo<T> type;
     private final Class<? extends Translator<?>> translator;
     private final Order order;
 
-    public TypeTranslator(GenericRepresentation<T> type, Class<? extends Translator<?>> translator, Order order) {
+    public TypeTranslator(TypeInfo<T> type, Class<? extends Translator<?>> translator, Order order) {
         this.type = type;
         this.translator = translator;
         this.order = order;
     }
 
-    public GenericRepresentation<T> getType() {
+    public TypeInfo<T> getType() {
         return type;
     }
 

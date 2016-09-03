@@ -28,7 +28,7 @@
 package com.github.jonathanxd.wcommands.processor;
 
 import com.github.jonathanxd.iutils.containers.Container;
-import com.github.jonathanxd.iutils.object.GenericRepresentation;
+import com.github.jonathanxd.iutils.object.TypeInfo;
 import com.github.jonathanxd.wcommands.WCommand;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
@@ -110,7 +110,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
         Optional<Object> optional = informationRegister.getOptional(resultsInfoId);
 
         if (!optional.isPresent() || !(optional.get() instanceof Results)) {
-            informationRegister.register(resultsInfoId, results, "Command call results", GenericRepresentation.aEnd(Results.class));
+            informationRegister.register(resultsInfoId, results, "Command call results", TypeInfo.aEnd(Results.class));
         }
 
 

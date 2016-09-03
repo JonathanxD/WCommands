@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.infos;
 
-import com.github.jonathanxd.iutils.object.GenericRepresentation;
+import com.github.jonathanxd.iutils.object.TypeInfo;
 
 import java.util.Optional;
 
@@ -36,6 +36,6 @@ import java.util.Optional;
  */
 public interface InformationProvider {
 
-    Optional<Information<?>> provide(InfoId requestId, GenericRepresentation<?> requestingType);
+    Optional<Information<?>> provide(InfoId requestId, TypeInfo<?> requestingType);
 
 }

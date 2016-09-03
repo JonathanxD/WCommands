@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.reflection;
 
-import com.github.jonathanxd.iutils.object.GenericRepresentation;
+import com.github.jonathanxd.iutils.object.TypeInfo;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.infos.Info;
@@ -56,14 +56,14 @@ public class TestProvided {
 
         InformationRegister informationRegister = new InformationRegister();
 
-        informationRegister.register(new InfoId("name", String.class), "Name", GenericRepresentation.aEnd(String.class));
+        informationRegister.register(new InfoId("name", String.class), "Name", TypeInfo.aEnd(String.class));
 
         informationRegister.register((requestId, requestingType) -> {
-            if (requestingType.compareTo(GenericRepresentation.aEnd(String.class)) == 0) {
-                return Optional.of(new Information<>(requestId, "Alt", GenericRepresentation.aEnd(String.class)));
+            if (requestingType.compareTo(TypeInfo.aEnd(String.class)) == 0) {
+                return Optional.of(new Information<>(requestId, "Alt", TypeInfo.aEnd(String.class)));
             }
-            if (requestingType.compareToAssignable(GenericRepresentation.a(Collection.class).of(String.class).build()) == 0) {
-                return Optional.of(new Information<Collection<String>>(requestId, Arrays.asList("A", "D", "B"), GenericRepresentation.a(Collection.class).of(String.class).build()));
+            if (requestingType.compareToAssignable(TypeInfo.a(Collection.class).of(String.class).build()) == 0) {
+                return Optional.of(new Information<Collection<String>>(requestId, Arrays.asList("A", "D", "B"), TypeInfo.a(Collection.class).of(String.class).build()));
             }
 
             return Optional.empty();

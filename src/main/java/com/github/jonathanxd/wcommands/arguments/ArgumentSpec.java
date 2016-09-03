@@ -28,8 +28,8 @@
 package com.github.jonathanxd.wcommands.arguments;
 
 import com.github.jonathanxd.iutils.data.ExtraData;
-import com.github.jonathanxd.iutils.data.RepresentationData;
-import com.github.jonathanxd.iutils.object.GenericRepresentation;
+import com.github.jonathanxd.iutils.data.MapData;
+import com.github.jonathanxd.iutils.object.TypeInfo;
 import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.text.Text;
 
@@ -75,9 +75,9 @@ public class ArgumentSpec<ID, T> {
     private final boolean optional;
 
     /**
-     *  Argument value type
+     * Argument value type
      */
-    private final GenericRepresentation<T> valueType;
+    private final TypeInfo<T> valueType;
 
     /**
      * Arrays arguments (List for example)
@@ -106,16 +106,16 @@ public class ArgumentSpec<ID, T> {
     private final ExtraData data = new ExtraData();
 
     /**
-     * Reference Data's, AdditionalData provided by {@link com.github.jonathanxd.wcommands.ext.Extension}
+     * Map Data's, AdditionalData provided by {@link com.github.jonathanxd.wcommands.ext.Extension}
      * and 2nd/3rd APIs
      */
-    private final RepresentationData referenceData = new RepresentationData();
+    private final MapData additionalData = new MapData();
 
     public ArgumentSpec(ID id, boolean isArray, Supplier<Matchable<String>> checker, Predicate<List<String>> predicateChecker, boolean optional, Function<List<String>, T> converter) {
         this(id, null, isArray, checker, predicateChecker, optional, converter);
     }
 
-    public ArgumentSpec(ID id, GenericRepresentation<T> valueType, boolean isArray, Supplier<Matchable<String>> checker, Predicate<List<String>> predicateChecker, boolean optional, Function<List<String>, T> converter) {
+    public ArgumentSpec(ID id, TypeInfo<T> valueType, boolean isArray, Supplier<Matchable<String>> checker, Predicate<List<String>> predicateChecker, boolean optional, Function<List<String>, T> converter) {
         this.id = id;
         this.valueType = valueType;
         this.isArray = isArray;
@@ -136,17 +136,21 @@ public class ArgumentSpec<ID, T> {
 
     /**
      * Get Argument Value Type
+     *
      * @return Argument value type
      */
-    public Optional<GenericRepresentation<T>> getValueType() {
+    public Optional<TypeInfo<T>> getValueType() {
         return Optional.ofNullable(valueType);
     }
 
     /**
      * Get Argument Value Type (Unchecked null)
+     *
      * @return Argument value type
      */
-    public @Nullable GenericRepresentation<T> getValueTypeUnchecked() {
+    public
+    @Nullable
+    TypeInfo<T> getValueTypeUnchecked() {
         return valueType;
     }
 
@@ -209,8 +213,8 @@ public class ArgumentSpec<ID, T> {
      *
      * @return Reference Data (Additional Data)
      */
-    public RepresentationData getReferenceData() {
-        return referenceData;
+    public MapData getAdditionalData() {
+        return this.additionalData;
     }
 
     @Override

@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.list;
 
-import com.github.jonathanxd.iutils.object.GenericRepresentation;
+import com.github.jonathanxd.iutils.object.TypeInfo;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.enums.EnumTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 
@@ -41,9 +41,9 @@ import java.util.List;
 public class EnumListTranslator implements Translator<List<Enum>> {
 
     private final Class enumClass;
-    private final GenericRepresentation<?> representation;
+    private final TypeInfo<?> representation;
 
-    public EnumListTranslator(GenericRepresentation<?> representation) {
+    public EnumListTranslator(TypeInfo<?> representation) {
         this.representation = representation;
 
         Class<?> enClass = null;

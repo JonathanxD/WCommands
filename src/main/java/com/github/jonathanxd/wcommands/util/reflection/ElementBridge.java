@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.util.reflection;
 
-import com.github.jonathanxd.iutils.object.GenericRepresentation;
+import com.github.jonathanxd.iutils.object.TypeInfo;
 import com.github.jonathanxd.iutils.object.TypeUtil;
 import com.github.jonathanxd.wcommands.interceptor.Order;
 
@@ -50,7 +50,7 @@ public class ElementBridge implements AnnotatedElement {
     private final Class<?> elementClass;
     private final ElementType location;
     private final Order priority;
-    private GenericRepresentation<?> representation;
+    private TypeInfo<?> representation;
 
     public ElementBridge(Object element, ElementType location, Order priority) {
         this.element = element;
@@ -63,7 +63,7 @@ public class ElementBridge implements AnnotatedElement {
         this(element, location, (Order) null);
     }
 
-    public ElementBridge(Object element, ElementType location, GenericRepresentation<?> representation, Order priority) {
+    public ElementBridge(Object element, ElementType location, TypeInfo<?> representation, Order priority) {
         this.element = element;
         this.location = location;
         this.elementClass = this.element.getClass();
@@ -71,7 +71,7 @@ public class ElementBridge implements AnnotatedElement {
         this.priority = priority;
     }
 
-    public ElementBridge(Object element, ElementType location, GenericRepresentation<?> representation) {
+    public ElementBridge(Object element, ElementType location, TypeInfo<?> representation) {
         this(element, location, representation, null);
     }
 
@@ -125,12 +125,12 @@ public class ElementBridge implements AnnotatedElement {
         }
     }
 
-    public GenericRepresentation<?> directReference() {
+    public TypeInfo<?> directReference() {
         return representation;
     }
 
-    public GenericRepresentation<?> getParameterizedReference() {
-        return representation != null ? representation : GenericRepresentation.aEnd(getType());
+    public TypeInfo<?> getParameterizedReference() {
+        return representation != null ? representation : TypeInfo.aEnd(getType());
     }
 
     public Class<?> getType() {

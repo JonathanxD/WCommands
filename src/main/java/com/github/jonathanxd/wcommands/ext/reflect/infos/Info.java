@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.infos;
 
-import com.github.jonathanxd.iutils.object.GenericRepresentation;
+import com.github.jonathanxd.iutils.object.TypeInfo;
 import com.github.jonathanxd.wcommands.infos.InfoId;
 import com.github.jonathanxd.wcommands.infos.Information;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
@@ -93,7 +93,7 @@ public @interface Info {
                 if ((infoAnn = parameter.getAnnotation(Info.class)) != null) {
 
                     if (parameter.getType() == Information.class) {
-                        GenericRepresentation<?> raw = getRaw(parameter);
+                        TypeInfo<?> raw = getRaw(parameter);
 
                         Objects.requireNonNull(raw, "Cannot get Raw Type!");
 
@@ -141,7 +141,7 @@ public @interface Info {
 
             Optional<Information<?>> info;
 
-            GenericRepresentation<?> reference = com.github.jonathanxd.iutils.object.TypeUtil.toReference(parameter.getType());
+            TypeInfo<?> reference = com.github.jonathanxd.iutils.object.TypeUtil.toReference(parameter.getType());
 
             if (annotation.staticFirst()) {
                 info = informationRegister.getInformationList().stream().filter(i -> check(reference, annotation, i))
@@ -171,7 +171,7 @@ public @interface Info {
             return new InfoId(annotation.tags(), annotation.type());
         }
 
-        private static boolean check(GenericRepresentation<?> type, Info annotation, Information<?> info) {
+        private static boolean check(TypeInfo<?> type, Info annotation, Information<?> info) {
             if (!info.isPresent())
                 return false;
 
@@ -196,7 +196,7 @@ public @interface Info {
         }
 
 
-        private static GenericRepresentation<?> getRaw(Parameter parameter) {
+        private static TypeInfo<?> getRaw(Parameter parameter) {
 
             AnnotatedType type;
 

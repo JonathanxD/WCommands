@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.visitors.containers;
 
-import com.github.jonathanxd.iutils.object.GenericRepresentation;
+import com.github.jonathanxd.iutils.object.TypeInfo;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.annotation.Annotation;
@@ -47,7 +47,7 @@ public class SingleNamedContainer extends NamedContainer {
         }
     }
 
-    public GenericRepresentation<?> getTypes() {
+    public TypeInfo<?> getTypes() {
         return getBridge().getParameterizedReference();
     }
 

@@ -30,7 +30,7 @@ package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaul
 import com.github.jonathanxd.iutils.caster.Caster;
 import com.github.jonathanxd.iutils.containers.Container;
 import com.github.jonathanxd.iutils.data.ExtraData;
-import com.github.jonathanxd.iutils.object.GenericRepresentation;
+import com.github.jonathanxd.iutils.object.TypeInfo;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.IsOptional;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
@@ -47,14 +47,14 @@ import java.util.Optional;
  */
 public class GlobalTypeTranslator implements Translator<Object> {
 
-    private final GenericRepresentation<?> type;
+    private final TypeInfo<?> type;
     private final boolean isPrimitive;
     private final TranslatorSupport support;
     private final SingleNamedContainer container;
 
     private final boolean isOptional;
 
-    public GlobalTypeTranslator(GenericRepresentation<?> type, SingleNamedContainer container, TranslatorSupport support, IsOptional isOptional) {
+    public GlobalTypeTranslator(TypeInfo<?> type, SingleNamedContainer container, TranslatorSupport support, IsOptional isOptional) {
         this.support = support;
 
         this.container = container;
@@ -73,7 +73,7 @@ public class GlobalTypeTranslator implements Translator<Object> {
 
         if (boxed != null) {
             this.isPrimitive = true;
-            @SuppressWarnings("unchecked") GenericRepresentation<?> initChange = GenericRepresentation.a(aType).of(type.getRelated()).build();
+            @SuppressWarnings("unchecked") TypeInfo<?> initChange = TypeInfo.a(aType).of(type.getRelated()).build();
             this.type = initChange;
         } else {
             this.isPrimitive = false;
@@ -122,9 +122,9 @@ public class GlobalTypeTranslator implements Translator<Object> {
 
                 ExtraData data = new ExtraData();
 
-                data.registerData(type);
-                data.registerData(testType);
-                data.registerData(this);
+                data.addData(null, type);
+                data.addData(null, testType);
+                data.addData(null, this);
 
                 Translator<?> aTranslator = (Translator<?>) data.construct(translator);
                 try {

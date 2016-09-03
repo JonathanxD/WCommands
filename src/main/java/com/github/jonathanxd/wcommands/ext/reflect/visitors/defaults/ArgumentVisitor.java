@@ -30,8 +30,7 @@ package com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults;
 import com.github.jonathanxd.iutils.containers.Container;
 import com.github.jonathanxd.iutils.data.DataProvider;
 import com.github.jonathanxd.iutils.data.ExtraData;
-import com.github.jonathanxd.iutils.object.GenericRepresentation;
-import com.github.jonathanxd.iutils.object.HolderGenericRepresentation;
+import com.github.jonathanxd.iutils.object.TypeInfo;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
@@ -65,7 +64,7 @@ import java.util.Optional;
                 CommandSpec.class,
                 NamedContainer.class,
                 String.class,
-                GenericRepresentation.class,
+                TypeInfo.class,
                 InstanceContainer.class},
         description = {
                 "Can retrieve and add Translators",
@@ -94,7 +93,7 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
             } else {
                 if (bridge.directReference() == null) {
                     if (annotation.type() != Argument.PR.class) {
-                        bridge = new ElementBridge(bridge.getMember(), location, GenericRepresentation.aEnd(annotation.type()));
+                        bridge = new ElementBridge(bridge.getMember(), location, TypeInfo.aEnd(annotation.type()));
                     }
                 }
             }
@@ -131,18 +130,18 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
 
         Translator<?> translator = null;
         try {
-            data.registerData((TranslatorSupport) translatorSupport);
+            data.addData(null, (TranslatorSupport) translatorSupport);
 
             if (parent.isPresent()) {
-                data.registerData(parent.get());
+                data.addData(null, parent.get());
             }
 
-            data.registerData(IsOptional.TRUE);
-            data.registerData(argumentContainer);
-            data.registerData(argumentContainer.getName());
-            data.registerData(argumentContainer.getTypes());
+            data.addData(null, IsOptional.TRUE);
+            data.addData(null, argumentContainer);
+            data.addData(null, argumentContainer.getName());
+            data.addData(null, argumentContainer.getTypes());
             try {
-                data.registerData(instance);
+                data.addData(null, instance);
             } catch (Exception e) {
                 if (parent.isPresent())
                     throw new RuntimeException("Parent missing!");
@@ -160,7 +159,7 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
             argumentBuilder.withConverter(translator::translate);
         }
 
-        argumentBuilder.withValueType((GenericRepresentation<Object>) argumentContainer.getTypes());
+        argumentBuilder.withValueType((TypeInfo<Object>) argumentContainer.getTypes());
 
 
         argumentBuilder.setOptional(argument.isOptional());
@@ -169,11 +168,11 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
         ArgumentSpec argumentSpec1 = argumentBuilder.build();
 
         if (argument.setFinal()) {
-            argumentSpec1.getData().registerData(ReflectionCommandProcessor.PropSet.FINAL);
+            argumentSpec1.getData().addData(null, ReflectionCommandProcessor.PropSet.FINAL);
         }
 
 
-        /** @deprecated **/ argumentSpec1.getReferenceData().registerData(HolderGenericRepresentation.makeHold(GenericRepresentation.a(GenericRepresentation.class).build(), argumentContainer.getTypes()));
+        /** @deprecated **/ argumentSpec1.getAdditionalData().registerData(TypeInfo.a(TypeInfo.class).build(), argumentContainer.getTypes());
 
         return argumentSpec1;
 

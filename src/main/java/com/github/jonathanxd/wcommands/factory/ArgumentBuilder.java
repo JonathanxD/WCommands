@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.factory;
 
-import com.github.jonathanxd.iutils.object.GenericRepresentation;
+import com.github.jonathanxd.iutils.object.TypeInfo;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.text.Text;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  */
 public class ArgumentBuilder<ID, T> {
     private ID id;
-    private GenericRepresentation<T> valueType;
+    private TypeInfo<T> valueType;
     private boolean optional = false;
     private boolean isInfinite = false;
     @SuppressWarnings("unchecked")
@@ -63,7 +63,7 @@ public class ArgumentBuilder<ID, T> {
         return this;
     }
 
-    public ArgumentBuilder<ID, T> withValueType(GenericRepresentation<T> valueType) {
+    public ArgumentBuilder<ID, T> withValueType(TypeInfo<T> valueType) {
         this.valueType = valueType;
         return this;
     }

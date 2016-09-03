@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ticket;
 
-import com.github.jonathanxd.iutils.data.RepresentationData;
+import com.github.jonathanxd.iutils.data.MapData;
 import com.github.jonathanxd.wcommands.handler.CommandRegistrationListener;
 
 import java.util.Collection;
@@ -44,7 +44,7 @@ public interface RegistrationTicket<T> {
 
     T getTicketProvider();
 
-    RepresentationData getRepresentationData();
+    MapData getAdditionalData();
 
     void addRegistrationListener(CommandRegistrationListener listener);
 
@@ -70,8 +70,8 @@ public interface RegistrationTicket<T> {
             return ticketProvider;
         }
 
-        public RepresentationData getRepresentationData() {
-            return new RepresentationData();
+        public MapData getAdditionalData() {
+            return new MapData();
         }
 
         @Override

@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.infos;
 
-import com.github.jonathanxd.iutils.object.GenericRepresentation;
+import com.github.jonathanxd.iutils.object.TypeInfo;
 import com.github.jonathanxd.iutils.optional.Require;
 import com.github.jonathanxd.wcommands.WCommand;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
@@ -50,13 +50,13 @@ public class InformationRegister {
 
     public static InformationBuilder builder(WCommand<?> wCommand) {
         InformationBuilder builder = blankBuilder();
-        builder.with(WCommand.WCOMMAND_INFOID, wCommand, GenericRepresentation.aEnd(WCommand.class));
+        builder.with(WCommand.WCOMMAND_INFOID, wCommand, TypeInfo.aEnd(WCommand.class));
         return builder;
     }
 
     public static InformationBuilder builderWithList(WCommand<?> wCommand) {
         InformationBuilder builder = blankBuilder();
-        builder.with(CommandList.COMMANDLIST_INFOID, wCommand.getCommandList(), GenericRepresentation.aEnd(CommandList.class));
+        builder.with(CommandList.COMMANDLIST_INFOID, wCommand.getCommandList(), TypeInfo.aEnd(CommandList.class));
         return builder;
     }
 
@@ -65,11 +65,11 @@ public class InformationRegister {
     }
 
 
-    public <T> void register(InfoId informationId, T information, GenericRepresentation<?> reference) {
+    public <T> void register(InfoId informationId, T information, TypeInfo<?> reference) {
         informationList.add(new Information<>(informationId, information, reference));
     }
 
-    public <T> void register(InfoId informationId, T information, String description, GenericRepresentation<?> reference) {
+    public <T> void register(InfoId informationId, T information, String description, TypeInfo<?> reference) {
         informationList.add(new Information<>(informationId, information, description, reference));
     }
 
@@ -81,7 +81,7 @@ public class InformationRegister {
         getById(informationId).ifPresent(info -> informationList.remove(info));
     }
 
-    public Optional<Information<?>> getProvided(InfoId infoId, GenericRepresentation<?> requestingType) {
+    public Optional<Information<?>> getProvided(InfoId infoId, TypeInfo<?> requestingType) {
 
         for (InformationProvider informationProvider : informationProviders) {
             Optional<Information<?>> provide = informationProvider.provide(infoId, requestingType);
@@ -195,14 +195,14 @@ public class InformationRegister {
 
         }
 
-        private static <T> Information<?> buildSimple(Class<?> type, String tag, T o, String description, GenericRepresentation<?> reference) {
+        private static <T> Information<?> buildSimple(Class<?> type, String tag, T o, String description, TypeInfo<?> reference) {
             if (tag == null)
                 return build(type, (String[]) null, o, description, reference);
             else
                 return build(type, new String[]{tag}, o, description, reference);
         }
 
-        private static <T> Information<?> build(Class<?> type, String[] tag, T o, String description, GenericRepresentation<?> reference) {
+        private static <T> Information<?> build(Class<?> type, String[] tag, T o, String description, TypeInfo<?> reference) {
 
             Class<?> oClass = o.getClass();
 
@@ -216,21 +216,21 @@ public class InformationRegister {
         }
 
         public <T> InformationBuilder with(T informationValue) {
-            informationSet.add(build(null, null, informationValue, null, GenericRepresentation.aEnd(informationValue.getClass())));
+            informationSet.add(build(null, null, informationValue, null, TypeInfo.aEnd(informationValue.getClass())));
             return this;
         }
 
-        public <T> InformationBuilder with(T informationValue, GenericRepresentation<?> reference) {
+        public <T> InformationBuilder with(T informationValue, TypeInfo<?> reference) {
             informationSet.add(build(null, null, informationValue, null, reference));
             return this;
         }
 
         public <T> InformationBuilder with(T informationValue, String description) {
-            informationSet.add(build(null, null, informationValue, description, GenericRepresentation.aEnd(informationValue.getClass())));
+            informationSet.add(build(null, null, informationValue, description, TypeInfo.aEnd(informationValue.getClass())));
             return this;
         }
 
-        public <T> InformationBuilder with(T informationValue, String description, GenericRepresentation<?> reference) {
+        public <T> InformationBuilder with(T informationValue, String description, TypeInfo<?> reference) {
             informationSet.add(build(null, null, informationValue, description, reference));
             return this;
         }
@@ -238,58 +238,58 @@ public class InformationRegister {
         //////////////////////////////////////////////////////////////////////////////////////
 
         public <T> InformationBuilder with(String informationString, T informationValue) {
-            informationSet.add(buildSimple(null, informationString, informationValue, null, GenericRepresentation.aEnd(informationValue.getClass())));
+            informationSet.add(buildSimple(null, informationString, informationValue, null, TypeInfo.aEnd(informationValue.getClass())));
             return this;
         }
 
-        public <T> InformationBuilder with(String informationString, T informationValue, GenericRepresentation<?> reference) {
+        public <T> InformationBuilder with(String informationString, T informationValue, TypeInfo<?> reference) {
             informationSet.add(buildSimple(null, informationString, informationValue, null, reference));
             return this;
         }
 
         public <T> InformationBuilder with(String informationString, T informationValue, String description) {
-            informationSet.add(buildSimple(null, informationString, informationValue, description, GenericRepresentation.aEnd(informationValue.getClass())));
+            informationSet.add(buildSimple(null, informationString, informationValue, description, TypeInfo.aEnd(informationValue.getClass())));
             return this;
         }
 
-        public <T> InformationBuilder with(String informationString, T informationValue, String description, GenericRepresentation<?> reference) {
+        public <T> InformationBuilder with(String informationString, T informationValue, String description, TypeInfo<?> reference) {
             informationSet.add(buildSimple(null, informationString, informationValue, description, reference));
             return this;
         }
 
         public <T> InformationBuilder with(Class<?> idType, T informationValue) {
-            informationSet.add(build(idType, null, informationValue, null, GenericRepresentation.aEnd(informationValue.getClass())));
+            informationSet.add(build(idType, null, informationValue, null, TypeInfo.aEnd(informationValue.getClass())));
             return this;
         }
 
-        public <T> InformationBuilder with(Class<?> idType, T informationValue, GenericRepresentation<?> reference) {
+        public <T> InformationBuilder with(Class<?> idType, T informationValue, TypeInfo<?> reference) {
             informationSet.add(build(idType, null, informationValue, null, reference));
             return this;
         }
 
-        public <T> InformationBuilder with(Class<?> idType, T informationValue, String description, GenericRepresentation<?> reference) {
+        public <T> InformationBuilder with(Class<?> idType, T informationValue, String description, TypeInfo<?> reference) {
             informationSet.add(build(idType, null, informationValue, description, reference));
             return this;
         }
 
-        public <T> InformationBuilder with(Class<?> idType, String tag, T informationValue, String description, GenericRepresentation<?> reference) {
+        public <T> InformationBuilder with(Class<?> idType, String tag, T informationValue, String description, TypeInfo<?> reference) {
             informationSet.add(buildSimple(idType, tag, informationValue, description, reference));
             return this;
         }
 
-        public <T> InformationBuilder with(Class<?> idType, String[] tag, T informationValue, String description, GenericRepresentation<?> reference) {
+        public <T> InformationBuilder with(Class<?> idType, String[] tag, T informationValue, String description, TypeInfo<?> reference) {
             informationSet.add(build(idType, tag, informationValue, description, reference));
             return this;
         }
 
         //////////////////////////////////////////////////////////////////////////////////////
 
-        public <T> InformationBuilder with(InfoId informationId, T informationValue, GenericRepresentation<?> reference) {
+        public <T> InformationBuilder with(InfoId informationId, T informationValue, TypeInfo<?> reference) {
             informationSet.add(new Information<>(informationId, informationValue, reference));
             return this;
         }
 
-        public <T> InformationBuilder with(InfoId informationId, T informationValue, String description, GenericRepresentation<?> reference) {
+        public <T> InformationBuilder with(InfoId informationId, T informationValue, String description, TypeInfo<?> reference) {
             informationSet.add(new Information<>(informationId, informationValue, description, reference));
             return this;
         }
