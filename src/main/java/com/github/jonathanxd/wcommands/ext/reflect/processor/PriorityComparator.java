@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -37,9 +37,6 @@ import java.lang.annotation.Annotation;
 import java.util.Comparator;
 import java.util.Optional;
 
-/**
- * Created by jonathan on 11/03/16.
- */
 public class PriorityComparator implements Comparator<ElementBridge> {
 
     private final AnnotationVisitors visitors;

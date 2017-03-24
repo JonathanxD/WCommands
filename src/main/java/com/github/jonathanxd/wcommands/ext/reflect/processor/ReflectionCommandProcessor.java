@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.processor;
 
-import com.github.jonathanxd.iutils.object.TypeInfo;
+import com.github.jonathanxd.iutils.type.TypeInfo;
 import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.commandstring.CommandStringParser;
@@ -66,10 +66,6 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.function.BiConsumer;
 
-/**
- * Created by jonathan on 27/02/16.
- */
-
 public class ReflectionCommandProcessor extends WCommandCommon implements TranslatorSupport, AnnotationVisitorSupport {
 
     private final TranslatorList translatorList = new TranslatorList();
@@ -98,12 +94,12 @@ public class ReflectionCommandProcessor extends WCommandCommon implements Transl
 
 
     private void initBasics() {
-        addGlobalTranslator(TypeInfo.aEnd(Boolean.class), BooleanTranslator.class);
-        addGlobalTranslator(TypeInfo.aEnd(Number.class), NumberTranslator.class);
-        addGlobalTranslator(TypeInfo.aEnd(String.class), StringTranslator.class);
-        addGlobalTranslator(TypeInfo.aEnd(Enum.class), EnumTranslator.class, Order.SEVENTH);
-        addGlobalTranslator(TypeInfo.representationOf().a(List.class).of(String.class).build(), StringListTranslator.class);
-        addGlobalTranslator(TypeInfo.representationOf().a(List.class).of(Enum.class).build(), EnumListTranslator.class);
+        addGlobalTranslator(TypeInfo.of(Boolean.class), BooleanTranslator.class);
+        addGlobalTranslator(TypeInfo.of(Number.class), NumberTranslator.class);
+        addGlobalTranslator(TypeInfo.of(String.class), StringTranslator.class);
+        addGlobalTranslator(TypeInfo.of(Enum.class), EnumTranslator.class, Order.SEVENTH);
+        addGlobalTranslator(TypeInfo.builder().a(List.class).of(String.class).build(), StringListTranslator.class);
+        addGlobalTranslator(TypeInfo.builder().a(List.class).of(Enum.class).build(), EnumListTranslator.class);
 
         registerVisitor(new CommandVisitor(Command.class));
         registerVisitor(new ArgumentVisitor(Argument.class));

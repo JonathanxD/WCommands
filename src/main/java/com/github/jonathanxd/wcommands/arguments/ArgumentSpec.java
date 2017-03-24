@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,9 +27,8 @@
  */
 package com.github.jonathanxd.wcommands.arguments;
 
-import com.github.jonathanxd.iutils.data.ExtraData;
-import com.github.jonathanxd.iutils.data.MapData;
-import com.github.jonathanxd.iutils.object.TypeInfo;
+import com.github.jonathanxd.iutils.data.Data;
+import com.github.jonathanxd.iutils.type.TypeInfo;
 import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.text.Text;
 
@@ -39,25 +38,19 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javax.annotation.Nullable;
-
-/**
- * Created by jonathan on 26/02/16.
- */
-
 /**
  * ArgumentSpec specification.
  *
  * Arguments is held in {@link com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder} and
  * stored in {@link Arguments}
  *
- * Arguments have:
+ * Arguments may have:
  *
- * A Converter, Converter translate {@link Text} representation to {@link Object} representation.
+ * A Converter that translate {@link Text} representation to {@link Object} representation.
  *
- * A Checker, Checker is a {@link Matchable} supplier, normally Supplied Matchable is {@link Text}.
+ * A Checker that checks if the input {@link Text} matches the argument name.
  *
- * A Predicate, Predicate is a {@link String} provider
+ * A Predicate that validates the provided argument {@link String}.
  *
  * @param <ID> ID Type of ArgumentSpec
  * @param <T>  Value Type
@@ -103,13 +96,13 @@ public class ArgumentSpec<ID, T> {
      * Extra Data's, AdditionalData provided by {@link com.github.jonathanxd.wcommands.ext.Extension}
      * and 2nd/3rd APIs
      */
-    private final ExtraData data = new ExtraData();
+    private final Data data = new Data();
 
     /**
      * Map Data's, AdditionalData provided by {@link com.github.jonathanxd.wcommands.ext.Extension}
      * and 2nd/3rd APIs
      */
-    private final MapData additionalData = new MapData();
+    private final Data additionalData = new Data();
 
     public ArgumentSpec(ID id, boolean isArray, Supplier<Matchable<String>> checker, Predicate<List<String>> predicateChecker, boolean optional, Function<List<String>, T> converter) {
         this(id, null, isArray, checker, predicateChecker, optional, converter);
@@ -148,9 +141,7 @@ public class ArgumentSpec<ID, T> {
      *
      * @return Argument value type
      */
-    public
-    @Nullable
-    TypeInfo<T> getValueTypeUnchecked() {
+    public TypeInfo<T> getValueTypeUnchecked() {
         return valueType;
     }
 
@@ -204,8 +195,8 @@ public class ArgumentSpec<ID, T> {
      *
      * @return Extra Data (Additional Data)
      */
-    public ExtraData getData() {
-        return data;
+    public Data getData() {
+        return this.data;
     }
 
     /**
@@ -213,7 +204,7 @@ public class ArgumentSpec<ID, T> {
      *
      * @return Reference Data (Additional Data)
      */
-    public MapData getAdditionalData() {
+    public Data getAdditionalData() {
         return this.additionalData;
     }
 

@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -30,10 +30,6 @@ package com.github.jonathanxd.wcommands.common.enums;
 import com.github.jonathanxd.wcommands.text.Text;
 
 import java.util.function.Function;
-
-/**
- * Created by jonathan on 28/02/16.
- */
 
 /**
  * Convert enums

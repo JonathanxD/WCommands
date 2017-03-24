@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -30,9 +30,6 @@ package com.github.jonathanxd.wcommands.ext.help;
 import java.io.IOException;
 import java.io.PrintStream;
 
-/**
- * Created by jonathan on 13/07/16.
- */
 public class PrintStreamTextPrinter extends PrintStream implements TextPrinter {
     public PrintStreamTextPrinter(PrintStream parent) {
         super(parent);

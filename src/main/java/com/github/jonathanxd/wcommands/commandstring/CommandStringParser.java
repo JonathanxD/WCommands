@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -30,7 +30,7 @@ package com.github.jonathanxd.wcommands.commandstring;
 import java.util.List;
 
 /**
- * Created by jonathan on 19/03/16.
+ * A class that can parse an argument Array or Argument string and convert to argument list.
  */
 @FunctionalInterface
 public interface CommandStringParser {

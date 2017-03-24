@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,16 +27,14 @@
  */
 package com.github.jonathanxd.wcommands.handler;
 
-import com.github.jonathanxd.iutils.annotations.Immutable;
-import com.github.jonathanxd.iutils.arrays.JwArray;
+import com.github.jonathanxd.iutils.annotation.Immutable;
 import com.github.jonathanxd.wcommands.WCommand;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.handler.registration.RegistrationHandleResult;
 import com.github.jonathanxd.wcommands.ticket.RegistrationTicket;
 
-/**
- * Created by jonathan on 21/03/16.
- */
+import java.util.List;
+
 public interface CommandRegistrationListener {
 
     default void onStart(WCommand<?> manager, RegistrationTicket<?> ticket) {
@@ -52,7 +50,7 @@ public interface CommandRegistrationListener {
      * @return a {@link RegistrationHandleResult} with the specifications or null if your handle
      * command does nothing!
      */
-    RegistrationHandleResult handle(@Immutable JwArray<RegistrationHandleResult> registrationHandleResults, @Immutable CommandList targetList, WCommand<?> manager, RegistrationTicket<?> ticket);
+    RegistrationHandleResult handle(@Immutable List<RegistrationHandleResult> registrationHandleResults, @Immutable CommandList targetList, WCommand<?> manager, RegistrationTicket<?> ticket);
 
     default void onEnd(RegistrationTicket<?> ticket) {
 

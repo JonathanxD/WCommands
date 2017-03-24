@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,43 +27,58 @@
  */
 package com.github.jonathanxd.wcommands.util;
 
-import com.github.jonathanxd.iutils.containers.BaseContainer;
-import com.github.jonathanxd.iutils.containers.Container;
+import com.github.jonathanxd.iutils.container.BaseContainer;
+import com.github.jonathanxd.iutils.container.MutableContainer;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
-/**
- * Created by jonathan on 27/02/16.
- */
-public class StaticContainer<T> extends Container<T> {
+public class StaticContainer<T> extends MutableContainer<T> {
 
-    public StaticContainer(Container<T> container) {
+    private boolean isInit = false;
+
+    public StaticContainer(MutableContainer<T> container) {
         super(container.get());
+        this.isInit = true;
     }
 
-
     @Override
-    public void apply(T value) {
+    public <R> R map(Function<T, R> function) {
+        if(!isInit)
+            return super.map(function);
+
         throw new UnsupportedOperationException("Immutable container!");
     }
 
     @Override
     public void set(T value) {
+        if(!isInit) {
+            super.set(value);
+            return;
+        }
+
         throw new UnsupportedOperationException("Immutable container!");
     }
 
+
     @Override
-    public void setApplier(BiFunction<BaseContainer<T>, T, T> applier) {
+    public void setMapper(BiFunction<BaseContainer<T>, T, T> mapper) {
+        if(!isInit) {
+            super.setMapper(mapper);
+            return;
+        }
+
         throw new UnsupportedOperationException("Immutable container!");
     }
 
     @Override
     public void setValue(T value) {
+        if(!isInit) {
+            super.setValue(value);
+            return;
+        }
+
         throw new UnsupportedOperationException("Immutable container!");
     }
 
-    @Override
-    public boolean isMutable() {
-        return false;
-    }
 }

@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.help.printer;
 
-import com.github.jonathanxd.iutils.containers.primitivecontainers.IntContainer;
+import com.github.jonathanxd.iutils.container.primitivecontainers.IntContainer;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
@@ -45,10 +45,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
-
-/**
- * Created by jonathan on 12/03/16.
- */
 
 /*
  Regex to match prints:
@@ -103,14 +99,14 @@ public class CommonPrinter implements Printer {
         Map<CommandSpec, List<String>> toPrint = new LinkedHashMap<>();
         print(toPrint, commandSpec, null);
 
-        appendDescriptions(toPrint, intContainer);
+        CommonPrinter.appendDescriptions(toPrint, intContainer);
 
         toPrint.values().forEach(l -> l.forEach(printStream::println));
 
         return intContainer;
     }
 
-    private static IntContainer appendDescriptions(Map<CommandSpec, List<String>> toPrint, IntContainer container) {
+    private static void appendDescriptions(Map<CommandSpec, List<String>> toPrint, IntContainer container) {
 
         toPrint.values().forEach(v -> v.forEach(str -> {
             if (container.get() < str.length()) {
@@ -132,7 +128,6 @@ public class CommonPrinter implements Printer {
             }
         }));
 
-        return container;
     }
 
     public static void print(Map<CommandSpec, List<String>> toPrint, CommandSpec commandSpec, String lastLine) {

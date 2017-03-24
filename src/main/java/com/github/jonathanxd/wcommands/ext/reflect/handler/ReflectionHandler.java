@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,7 +27,6 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.handler;
 
-import com.github.jonathanxd.iutils.exceptions.BiException;
 import com.github.jonathanxd.wcommands.CommonHandler;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentsHolder;
@@ -52,9 +51,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Created by jonathan on 27/02/16.
- */
 public class ReflectionHandler implements CommonHandler {
 
     private final InstanceContainer instance;
@@ -103,7 +99,7 @@ public class ReflectionHandler implements CommonHandler {
                     test(requirements, requires, commandData, informationRegister, new Object[]{value});
                     //) { throw Exception };
 
-                    boolean force = argumentHolder.get().getArgumentSpec().getData().findData(ReflectionCommandProcessor.PropSet.FINAL.getClass());
+                    boolean force = argumentHolder.get().getArgumentSpec().getData().contains(ReflectionCommandProcessor.PropSet.FINAL);
 
                     if (arg.isPresent()) {
                         bridge.setValue(instance.get(), value, true, force);
@@ -170,14 +166,15 @@ public class ReflectionHandler implements CommonHandler {
                 } catch (Throwable tt) {
 
                     if (find(tt, NullPointerException.class)) {
-                        if(!testInformations(bridge, informationRegister, os)) {
+                        if (!testInformations(bridge, informationRegister, os)) {
                             System.err.println("Make sure the NullPointerException aren't caused by missing information.");
                         }
 
                     }
 
+                    e.addSuppressed(tt);
 
-                    throw new BiException(e, tt);
+                    throw new RuntimeException(e);
                 }
             }
 
@@ -249,8 +246,8 @@ public class ReflectionHandler implements CommonHandler {
             Information<?> subject = Information.empty();
 
             Info infoSubject = require.subject();
-            if (infoSubject.type() != Object.class || infoSubject.tags().length > 0) {
-                Optional<Information<?>> byId = informationRegister.getById(new InfoId(infoSubject.tags(), infoSubject.type()));
+            if (infoSubject.id() != Object.class || infoSubject.tags().length > 0) {
+                Optional<Information<?>> byId = informationRegister.getById(new InfoId(infoSubject.tags(), infoSubject.id()));
 
                 if (byId.isPresent()) {
                     subject = byId.get();

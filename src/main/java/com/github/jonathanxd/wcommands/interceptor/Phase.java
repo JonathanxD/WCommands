@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,9 +27,6 @@
  */
 package com.github.jonathanxd.wcommands.interceptor;
 
-/**
- * Created by jonathan on 27/02/16.
- */
 public enum Phase {
     /**
      * In this phase the command handler wasn't called, you can change the handler or set to null to

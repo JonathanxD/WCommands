@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults.list;
 
-import com.github.jonathanxd.iutils.object.TypeInfo;
+import com.github.jonathanxd.iutils.type.TypeInfo;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.enums.EnumTranslator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 
@@ -35,9 +35,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by jonathan on 20/03/16.
- */
 public class EnumListTranslator implements Translator<List<Enum>> {
 
     private final Class enumClass;
@@ -49,7 +46,7 @@ public class EnumListTranslator implements Translator<List<Enum>> {
         Class<?> enClass = null;
 
         if (representation.getRelated().length != 0)
-            enClass = representation.getRelated()[0].getAClass();
+            enClass = representation.getRelated()[0].getTypeClass();
 
         if (enClass == null || !Enum.class.isAssignableFrom(enClass))
             this.enumClass = null;

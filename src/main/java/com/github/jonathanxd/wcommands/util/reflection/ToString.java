@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -32,9 +32,6 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.StringJoiner;
 
-/**
- * Created by jonathan on 19/03/16.
- */
 public class ToString {
 
     public static String toString(Object object) {

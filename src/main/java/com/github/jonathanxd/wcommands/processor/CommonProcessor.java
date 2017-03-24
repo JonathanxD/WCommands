@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,8 +27,9 @@
  */
 package com.github.jonathanxd.wcommands.processor;
 
-import com.github.jonathanxd.iutils.containers.Container;
-import com.github.jonathanxd.iutils.object.TypeInfo;
+import com.github.jonathanxd.iutils.container.ImmutableContainer;
+import com.github.jonathanxd.iutils.container.MutableContainer;
+import com.github.jonathanxd.iutils.type.TypeInfo;
 import com.github.jonathanxd.wcommands.WCommand;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
@@ -50,7 +51,6 @@ import com.github.jonathanxd.wcommands.interceptor.Phase;
 import com.github.jonathanxd.wcommands.result.IResult;
 import com.github.jonathanxd.wcommands.result.Result;
 import com.github.jonathanxd.wcommands.result.Results;
-import com.github.jonathanxd.wcommands.util.StaticContainer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,10 +58,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
-
-/**
- * Created by jonathan on 26/02/16.
- */
 
 /**
  * TODO: Rewrite
@@ -110,7 +106,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
         Optional<Object> optional = informationRegister.getOptional(resultsInfoId);
 
         if (!optional.isPresent() || !(optional.get() instanceof Results)) {
-            informationRegister.register(resultsInfoId, results, "Command call results", TypeInfo.aEnd(Results.class));
+            informationRegister.register(resultsInfoId, results, "Command call results", TypeInfo.of(Results.class));
         }
 
 
@@ -124,7 +120,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                 Handler<CommandHolder> handler = holder.getCommandSpec().getDefaultHandler();
 
 
-                Container<Handler<CommandHolder>> handlerContainer = new Container<>(handler);
+                MutableContainer<Handler<CommandHolder>> handlerContainer = new MutableContainer<>(handler);
 
                 // PRE CALL MODIFICATIONS
                 phasePreCall.forEach(interceptor -> interceptor.intercept(data, handlerContainer));
@@ -133,8 +129,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
                     result = handlerContainer.get().handle(data, requirements, informationRegister);
                 }
 
-
-                StaticContainer<Handler<CommandHolder>> staticContainer = new StaticContainer<>(handlerContainer);
+                ImmutableContainer<Handler<CommandHolder>> staticContainer = ImmutableContainer.of(handlerContainer.get());
                 // POST CALL MONITORING
                 phasePostCall.forEach(interceptor -> interceptor.intercept(data, staticContainer));
 
@@ -223,7 +218,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
                         ArgumentsHolder argumentHolders = parseArguments(argIter, commandSpec, parent != null ? parent.getCommandSpec() : null, commandSpecs, requirements, informationRegister);
 
-                        CommandHolder holder = new CommandHolder(commandSpec, parent, argumentHolders, true, last);
+                        CommandHolder holder = new CommandHolder(commandSpec, parent, argumentHolders, last);
 
                         commandDatas.add(new CommandData<>(argument, holder, parent));
 
@@ -236,7 +231,7 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
 
                         if (size == commandDatas.size()) {
                             commandDatas.remove(commandDatas.size() - 1);
-                            commandDatas.add(new CommandData<>(argument, new CommandHolder(commandSpec, parent, argumentHolders, true, true), parent));
+                            commandDatas.add(new CommandData<>(argument, new CommandHolder(commandSpec, parent, argumentHolders, true), parent));
                         }
 
                         commandSpecIterator = commandSpecs.iterator();
@@ -271,15 +266,6 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
             }
         }
 
-        // give xp [number]
-        // give item [number]
-
-        // give xp 15
-        // |  | || ||
-        // CMD --- ARG
-
-        // give item STONE | jump to 15
-        //
         private ArgumentsHolder parseArguments(ListIterator<String> argumentIter, CommandSpec commandSpec, CommandSpec parent, CommandList commandSpecs, Requirements requirements, InformationRegister informationRegister) throws ProcessingError {
             ArgumentsHolder argumentHolders = new ArgumentsHolder();
 

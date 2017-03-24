@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -36,9 +36,6 @@ import com.github.jonathanxd.wcommands.result.Results;
 
 import java.util.List;
 
-/**
- * Created by jonathan on 26/02/16.
- */
 public interface Processor<T> {
 
     T process(List<String> arguments, CommandList commands, ErrorHandler<T> errorHandler, Requirements requirements, InformationRegister informationRegister);

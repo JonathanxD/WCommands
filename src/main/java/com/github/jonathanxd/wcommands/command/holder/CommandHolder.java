@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,8 +27,8 @@
  */
 package com.github.jonathanxd.wcommands.command.holder;
 
-import com.github.jonathanxd.iutils.containers.IMutableContainer;
-import com.github.jonathanxd.iutils.containers.MutableContainer;
+import com.github.jonathanxd.iutils.container.IMutableContainer;
+import com.github.jonathanxd.iutils.container.MutableContainer;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentHolder;
 import com.github.jonathanxd.wcommands.arguments.holder.ArgumentsHolder;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
@@ -36,20 +36,9 @@ import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.text.Text;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-/**
- * Created by jonathan on 24/02/16.
- */
 
 /**
  * {@link CommandSpec} commandSpec holder
@@ -80,23 +69,9 @@ public class CommandHolder implements Matchable<String> {
     private final ArgumentsHolder argumentsHolder;
 
     /**
-     * Is CommandSpec present (always true)
-     */
-    @Deprecated
-    private final boolean isPresent;
-
-    /**
      * Last matching (indicates a last commandSpec matched for the group)
      */
     private final boolean lastMatching;
-
-    /**
-     * Child parsed commands
-     *
-     * @deprecated Old System part, now all commands are stored separately.
-     */
-    @Deprecated
-    private final List<CommandHolder> subCommands = new ArrayList<>();
 
     /**
      * Each argument utility
@@ -106,18 +81,13 @@ public class CommandHolder implements Matchable<String> {
     private final EachArguments eachArguments = new EachArguments();
 
     public CommandHolder(CommandSpec commandSpec, ArgumentsHolder arguments, CommandHolder parent) {
-        this(commandSpec, false, arguments, parent);
+        this(commandSpec, parent, arguments, false);
     }
 
-    public CommandHolder(CommandSpec commandSpec, boolean isPresent, ArgumentsHolder arguments, CommandHolder parent) {
-        this(commandSpec, parent, arguments, isPresent, false);
-    }
-
-    public CommandHolder(CommandSpec commandSpec, CommandHolder parent, ArgumentsHolder arguments, boolean isPresent, boolean lastMatching) {
+    public CommandHolder(CommandSpec commandSpec, CommandHolder parent, ArgumentsHolder arguments, boolean lastMatching) {
         this.commandSpec = commandSpec;
         this.parent = parent;
         this.argumentsHolder = arguments;
-        this.isPresent = isPresent;
         this.lastMatching = lastMatching;
     }
 
@@ -159,48 +129,17 @@ public class CommandHolder implements Matchable<String> {
                 .append("commandSpec=");
         appendable.append(holder.getCommandSpec().getName().getPlainString());
         //CommandSpec.toAppendable(holder.getCommandSpec(), appendable);
+        if (holder.getParent() != null) {
+            appendable.append(',').append("parent=");
+            toAppendable(holder.getParent(), appendable);
+        }
         appendable.append(',')
-                .append("isPresent=").append(String.valueOf(holder.isPresent()))
-                .append(',')
                 .append("lastMatching=").append(String.valueOf(holder.isLastMatching()))
                 .append(',')
-                .append("child=[|");
-        for (CommandHolder subCommand : holder.getSubCommands()) {
-            toAppendable(subCommand, appendable);
-        }
-        appendable.append("|]")
                 .append('}')
                 .append(',');
 
         return appendable;
-    }
-
-    /**
-     * Recursive loop commandSpec holder and child commandSpec holder &amp; collect filtered
-     * CommandHolders
-     *
-     * @param main            Main commandSpec holder
-     * @param holderPredicate Holder predicate
-     * @param commandHolders  List of commandSpec Holders (Nullable)
-     * @return Filtered set of CommandHolders
-     */
-    public static Set<CommandHolder> recursive(CommandHolder main, Predicate<CommandHolder> holderPredicate, Set<CommandHolder> commandHolders) {
-        if (commandHolders == null)
-            commandHolders = new HashSet<>();
-
-        if (holderPredicate.test(main)) {
-            commandHolders.add(main);
-        }
-
-        for (CommandHolder holder : main.getSubCommands()) {
-            if (holderPredicate.test(holder)) {
-                commandHolders.add(holder);
-            }
-            recursive(holder, holderPredicate, commandHolders);
-
-        }
-
-        return commandHolders;
     }
 
     public boolean isLastMatching() {
@@ -290,54 +229,9 @@ public class CommandHolder implements Matchable<String> {
         return argumentsHolder;
     }
 
-    /**
-     * True if is present (always true)
-     *
-     * @return True if is present (always true)
-     * @deprecated Normally the List of commandSpec only contains Present commands
-     */
-    @Deprecated
-    public boolean isPresent() {
-        return isPresent;
-    }
-
-    @Deprecated
-    public List<CommandHolder> getSubCommands() {
-        return subCommands;
-    }
-
-    @Deprecated
-    public List<CommandHolder> allPresent() {
-        return subCommands.stream().filter(CommandHolder::isPresent).collect(Collectors.toList());
-    }
-
-    @Deprecated
-    public Collection<CommandHolder> allMatching() {
-        return this.isLastMatching() ? Collections.singletonList(this) : recursive(this, CommandHolder::isLastMatching, null);
-    }
-
     @Override
     public String toString() {
         return toString(this);
-    }
-
-    /**
-     * Create a new CommandHolder with current CommandHolder child commands
-     *
-     * @param commandSpec     CommandSpec
-     * @param argumentHolders ArgumentSpec holder
-     * @param isPresent       Is present?
-     * @param lastMatching    Last matching? (of the group)
-     * @return new CommandHolder
-     * @deprecated Old system part, no more child commands!
-     */
-    @Deprecated
-    public CommandHolder newWith(CommandSpec commandSpec, ArgumentsHolder argumentHolders, boolean isPresent, boolean lastMatching) {
-        CommandHolder holder = new CommandHolder(commandSpec, parent, argumentHolders, isPresent, lastMatching);
-
-        holder.subCommands.addAll(this.subCommands);
-
-        return holder;
     }
 
     /**

@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,10 +27,10 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.defaults;
 
-import com.github.jonathanxd.iutils.caster.Caster;
-import com.github.jonathanxd.iutils.containers.Container;
-import com.github.jonathanxd.iutils.data.ExtraData;
-import com.github.jonathanxd.iutils.object.TypeInfo;
+import com.github.jonathanxd.iutils.container.MutableContainer;
+import com.github.jonathanxd.iutils.data.Data;
+import com.github.jonathanxd.iutils.data.DataReflect;
+import com.github.jonathanxd.iutils.type.TypeInfo;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.IsOptional;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Translator;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
@@ -42,9 +42,6 @@ import java.util.List;
 import java.util.Optional;
 
 
-/**
- * Created by jonathan on 27/02/16.
- */
 public class GlobalTypeTranslator implements Translator<Object> {
 
     private final TypeInfo<?> type;
@@ -59,13 +56,13 @@ public class GlobalTypeTranslator implements Translator<Object> {
 
         this.container = container;
 
-        Class<?> aType = type.getAClass();
+        Class<?> aType = type.getTypeClass();
 
         this.isOptional = isOptional != null && isOptional == IsOptional.TRUE;
 
         if (this.isOptional) {
-            if (type.getAClass() == Optional.class) {
-                aType = type.getRelated()[0].getAClass();
+            if (type.getTypeClass() == Optional.class) {
+                aType = type.getRelated()[0].getTypeClass();
             }
         }
 
@@ -73,7 +70,7 @@ public class GlobalTypeTranslator implements Translator<Object> {
 
         if (boxed != null) {
             this.isPrimitive = true;
-            @SuppressWarnings("unchecked") TypeInfo<?> initChange = TypeInfo.a(aType).of(type.getRelated()).build();
+            @SuppressWarnings("unchecked") TypeInfo<?> initChange = TypeInfo.builderOf(aType).of(type.getRelated()).build();
             this.type = initChange;
         } else {
             this.isPrimitive = false;
@@ -96,37 +93,37 @@ public class GlobalTypeTranslator implements Translator<Object> {
     @Override
     public Object translate(List<String> text) {
 
-        Container<Object> objectContainer = new Container<>(null);
+        MutableContainer<Object> objectContainer = new MutableContainer<>(null);
 
         support.forEach((aType, translator) -> {
 
             if (objectContainer.isPresent() && objectContainer.get() != null)
                 return;
 
-            Class<?> testType = type.getAClass();
+            Class<?> testType = type.getTypeClass();
             Class<?> original = testType;
             if (Primitive.asBoxed(testType) != null) {
                 testType = Primitive.asBoxed(testType);
             }
-            if (((type.getRelated().length == 0 && aType.getRelated().length == 0 && aType.getAClass().isAssignableFrom(testType))
+            if (((type.getRelated().length == 0 && aType.getRelated().length == 0 && aType.getTypeClass().isAssignableFrom(testType))
                     || aType.compareTo(type) == 0
-                    || aType.compareToAssignable(type) == 0)
+                    || aType.isAssignableFrom(type))
                     || (type.getRelated().length > 0
                     && this.isOptional
-                    && type.getAClass() == Optional.class
-                    && aType.getAClass().isAssignableFrom((testType = type.getRelated()[0].getAClass())))) {
+                    && type.getTypeClass() == Optional.class
+                    && aType.getTypeClass().isAssignableFrom((testType = type.getRelated()[0].getTypeClass())))) {
 
                 if (testType == null) {
                     return;
                 }
 
-                ExtraData data = new ExtraData();
+                Data data = new Data();
 
-                data.addData(null, type);
-                data.addData(null, testType);
-                data.addData(null, this);
+                data.set("type", type);
+                data.set("testType", testType);
+                data.set("translator", this);
 
-                Translator<?> aTranslator = (Translator<?>) data.construct(translator);
+                Translator<?> aTranslator = (Translator<?>) DataReflect.construct(translator, data);
                 try {
                     if (aTranslator.isAcceptable(text)) {
                         Object casted;
@@ -135,7 +132,7 @@ public class GlobalTypeTranslator implements Translator<Object> {
                             casted = original.cast(translated);
                         } catch (ClassCastException e) {
                             try {
-                                casted = Caster.cast(translated, original);
+                                casted = original.cast(translated);
                             } catch (Throwable t) {
                                 casted = translated;
                             }

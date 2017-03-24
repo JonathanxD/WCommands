@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,12 +27,11 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults;
 
-import com.github.jonathanxd.iutils.containers.Container;
-import com.github.jonathanxd.iutils.data.DataProvider;
-import com.github.jonathanxd.iutils.data.ExtraData;
-import com.github.jonathanxd.iutils.object.TypeInfo;
+import com.github.jonathanxd.iutils.container.MutableContainer;
+import com.github.jonathanxd.iutils.data.Data;
+import com.github.jonathanxd.iutils.data.DataReflect;
+import com.github.jonathanxd.iutils.type.TypeInfo;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
-import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.IsOptional;
@@ -55,26 +54,6 @@ import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 import java.lang.annotation.ElementType;
 import java.util.Optional;
 
-/**
- * Created by jonathan on 29/02/16.
- */
-@DataProvider(
-        value = {
-                TranslatorSupport.class,
-                CommandSpec.class,
-                NamedContainer.class,
-                String.class,
-                TypeInfo.class,
-                InstanceContainer.class},
-        description = {
-                "Can retrieve and add Translators",
-                "Can inspect and Modify CommandSpec related",
-                "Named container",
-                "Name of Argument",
-                "Reference to Types & generics",
-                "Container of Object instance",
-                "----------- NEED REVIEW"})
-
 public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedContainer, ArgumentSpec<?, ?>> {
 
     public ArgumentVisitor(Class<Argument> annotationClass) {
@@ -82,18 +61,18 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
     }
 
     @Override
-    public void visitElementAnnotation(Argument annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket) {
+    public void visitElementAnnotation(Argument annotation, MutableContainer<NamedContainer> current, MutableContainer<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket) {
 
         String name = annotation.id().trim().isEmpty() ? bridge.getName() : annotation.id();
 
         if (annotation.isOptional()) {
 
-            if (bridge.getType() == Optional.class && (annotation.type() == null || annotation.type() == Argument.PR.class) && bridge.directReference() == null) {
+            if (bridge.getType() == Optional.class && annotation.type() == Argument.PR.class && bridge.directReference() == null) {
                 throw new RuntimeException("Cannot handle Optional, impossible to determine the Type, use: 'Argument.type()'!");
             } else {
                 if (bridge.directReference() == null) {
                     if (annotation.type() != Argument.PR.class) {
-                        bridge = new ElementBridge(bridge.getMember(), location, TypeInfo.aEnd(annotation.type()));
+                        bridge = new ElementBridge(bridge.getMember(), location, TypeInfo.of(annotation.type()));
                     }
                 }
             }
@@ -126,29 +105,29 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
         argumentBuilder.withId(argumentContainer.getName());
 
 
-        ExtraData data = new ExtraData();
+        Data data = new Data();
 
         Translator<?> translator = null;
         try {
-            data.addData(null, (TranslatorSupport) translatorSupport);
+            data.set("translatorSupport", (TranslatorSupport) translatorSupport);
 
             if (parent.isPresent()) {
-                data.addData(null, parent.get());
+                data.set("parent", parent.get());
             }
 
-            data.addData(null, IsOptional.TRUE);
-            data.addData(null, argumentContainer);
-            data.addData(null, argumentContainer.getName());
-            data.addData(null, argumentContainer.getTypes());
+            data.set("isOptional", IsOptional.TRUE);
+            data.set("argumentContainer", argumentContainer);
+            data.set("argumentContainer.name", argumentContainer.getName());
+            data.set("argumentContainer.types", argumentContainer.getType());
             try {
-                data.addData(null, instance);
+                data.set("translator", instance);
             } catch (Exception e) {
                 if (parent.isPresent())
                     throw new RuntimeException("Parent missing!");
             }
 
 
-            translator = (Translator<?>) data.construct(argument.translator());
+            translator = (Translator<?>) DataReflect.construct(argument.translator(), data);
         } catch (Throwable ignored) {
             ignored.printStackTrace();
         }
@@ -159,7 +138,7 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
             argumentBuilder.withConverter(translator::translate);
         }
 
-        argumentBuilder.withValueType((TypeInfo<Object>) argumentContainer.getTypes());
+        argumentBuilder.withValueType((TypeInfo<Object>) argumentContainer.getType());
 
 
         argumentBuilder.setOptional(argument.isOptional());
@@ -168,11 +147,9 @@ public class ArgumentVisitor extends AnnotationVisitor<Argument, SingleNamedCont
         ArgumentSpec argumentSpec1 = argumentBuilder.build();
 
         if (argument.setFinal()) {
-            argumentSpec1.getData().addData(null, ReflectionCommandProcessor.PropSet.FINAL);
+            argumentSpec1.getData().set(ReflectionCommandProcessor.PropSet.FINAL, true);
         }
 
-
-        /** @deprecated **/ argumentSpec1.getAdditionalData().registerData(TypeInfo.a(TypeInfo.class).build(), argumentContainer.getTypes());
 
         return argumentSpec1;
 

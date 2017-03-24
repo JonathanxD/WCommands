@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -47,10 +47,10 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.annotation.Nonnull;
-
 /**
- * Created by jonathan on 23/02/16.
+ * List with all command specifications.
+ *
+ * TODO: Documentation
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class CommandList implements List<CommandSpec> {
@@ -61,19 +61,19 @@ public class CommandList implements List<CommandSpec> {
     private final Optional<WCommand<?>> wCommandOptional;
     private final Object holdingObject;
 
-    public CommandList(@Nonnull Object holdingObject) {
+    public CommandList(Object holdingObject) {
         this(new ArrayList<>(), holdingObject);
     }
 
-    public CommandList(WCommand<?> wCommand, @Nonnull Object holdingObject) {
+    public CommandList(WCommand<?> wCommand, Object holdingObject) {
         this(new ArrayList<>(), Optional.ofNullable(wCommand), holdingObject);
     }
 
-    public CommandList(List<CommandSpec> list, @Nonnull Object holdingObject) {
+    public CommandList(List<CommandSpec> list, Object holdingObject) {
         this(list, Optional.empty(), holdingObject);
     }
 
-    public CommandList(List<CommandSpec> list, Optional<WCommand<?>> wCommandOptional, @Nonnull Object holdingObject) {
+    public CommandList(List<CommandSpec> list, Optional<WCommand<?>> wCommandOptional, Object holdingObject) {
         this.commandSpecs = list;
         this.wCommandOptional = wCommandOptional;
         this.holdingObject = Objects.requireNonNull(holdingObject, "Please don't create a CommandList with empty holdingObject");
@@ -359,7 +359,7 @@ public class CommandList implements List<CommandSpec> {
 
 
                 if (specOptional.isPresent()) {
-                    specOptional = wCommand.get().handleRegistration(commandSpec, this, ticket);
+                    specOptional = wCommand.get().handleRegistrationToTicket(commandSpec, this, ticket);
 
                     if (specOptional.isPresent()) {
                         commandSpecCollection.add(specOptional.get());

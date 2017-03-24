@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.reflection.list;
 
-import com.github.jonathanxd.iutils.object.TypeInfo;
+import com.github.jonathanxd.iutils.type.TypeInfo;
 import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.Argument;
@@ -47,9 +47,6 @@ import org.junit.Test;
 
 import java.util.List;
 
-/**
- * Created by jonathan on 18/03/16.
- */
 public class TestList {
 
     @Test
@@ -60,7 +57,7 @@ public class TestList {
             return sender.hasPerm(data);
         };
 
-        InformationRegister informationRegister = InformationRegister.blankBuilder().with(Sender.class, new Sender(), TypeInfo.aEnd(Sender.class)).build();
+        InformationRegister informationRegister = InformationRegister.blankBuilder().with(Sender.class, new Sender(), TypeInfo.of(Sender.class)).build();
 
         Requirements requirements = new Requirements();
         requirements.add(Permission.class, providedRequirement);

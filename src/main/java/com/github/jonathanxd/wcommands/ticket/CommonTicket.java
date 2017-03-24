@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ticket;
 
-import com.github.jonathanxd.iutils.data.MapData;
+import com.github.jonathanxd.iutils.data.Data;
 import com.github.jonathanxd.wcommands.handler.CommandRegistrationListener;
 
 import java.util.ArrayList;
@@ -35,13 +35,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by jonathan on 26/03/16.
- */
 public final class CommonTicket<T> implements RegistrationTicket<T> {
 
     private final T ticketProvider;
-    private final MapData additionalData = new MapData();
+    private final Data additionalData = new Data();
     private final List<CommandRegistrationListener> registrationListeners = new ArrayList<>();
     private boolean isOpen = true;
 
@@ -55,7 +52,7 @@ public final class CommonTicket<T> implements RegistrationTicket<T> {
     }
 
     @Override
-    public MapData getAdditionalData() {
+    public Data getAdditionalData() {
         return additionalData;
     }
 

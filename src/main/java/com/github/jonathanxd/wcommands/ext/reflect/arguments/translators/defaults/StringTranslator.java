@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -31,9 +31,6 @@ import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.Transla
 
 import java.util.List;
 
-/**
- * Created by jonathan on 27/02/16.
- */
 public class StringTranslator implements Translator<String> {
 
     @Override

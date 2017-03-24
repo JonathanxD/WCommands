@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,8 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.command;
 
-import com.github.jonathanxd.iutils.annotations.Immutable;
-import com.github.jonathanxd.iutils.reflection.RClass;
+import com.github.jonathanxd.iutils.annotation.Immutable;
 import com.github.jonathanxd.iutils.reflection.Reflection;
 import com.github.jonathanxd.wcommands.WCommand;
 import com.github.jonathanxd.wcommands.arguments.Arguments;
@@ -48,10 +47,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-/**
- * Created by jonathan on 26/02/16.
- */
 
 /**
  * CommandSpec Specification
@@ -109,7 +104,9 @@ public class CommandSpec implements Matchable<String> {
     /**
      * List of commands
      *
-     * Doesn't modify field name, if you want to modify see method {@link
+     * Developer note:
+     *
+     * Don't modify the field name, if you want to modify see method {@link
      * #withHandledCommandList(WCommand, CommandSpec, RegistrationTicket)}
      */
     private final CommandList subCommands = new CommandList(this);
@@ -198,8 +195,8 @@ public class CommandSpec implements Matchable<String> {
     public static CommandSpec withHandledCommandList(WCommand<?> wCommand, CommandSpec commandSpec, RegistrationTicket<?> ticket) {
         CommandSpec newCommandSpec = new CommandSpec(commandSpec.getName(), commandSpec.getDescription(), commandSpec.getArguments(), commandSpec.isOptional(), commandSpec.getPrefix(), commandSpec.getSuffix(), commandSpec.getDefaultHandler());
         try {
-            //--------------------------------------------------------------------------------|SUB COMMANDS FIELD HERE|
-            Reflection.changeFinalField(RClass.getRClass(newCommandSpec.getClass(), newCommandSpec), "subCommands", new CommandList(wCommand, newCommandSpec));
+            //----------------------------------------------------------------------------------------|SUB COMMANDS FIELD HERE|
+            Reflection.changeFinalField(newCommandSpec.getClass(), newCommandSpec, "subCommands", new CommandList(wCommand, newCommandSpec));
         } catch (Exception e) {
             throw new RuntimeException("Cannot convert command", e);
         }

@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,8 +27,8 @@
  */
 package com.github.jonathanxd.wcommands.infos;
 
-import com.github.jonathanxd.iutils.object.TypeInfo;
 import com.github.jonathanxd.iutils.optional.Require;
+import com.github.jonathanxd.iutils.type.TypeInfo;
 import com.github.jonathanxd.wcommands.WCommand;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.util.reflection.ToString;
@@ -39,9 +39,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-/**
- * Created by jonathan on 12/03/16.
- */
 public class InformationRegister {
 
     Set<Information<?>> informationList = new HashSet<>();
@@ -50,13 +47,13 @@ public class InformationRegister {
 
     public static InformationBuilder builder(WCommand<?> wCommand) {
         InformationBuilder builder = blankBuilder();
-        builder.with(WCommand.WCOMMAND_INFOID, wCommand, TypeInfo.aEnd(WCommand.class));
+        builder.with(WCommand.WCOMMAND_INFOID, wCommand, TypeInfo.of(WCommand.class));
         return builder;
     }
 
     public static InformationBuilder builderWithList(WCommand<?> wCommand) {
         InformationBuilder builder = blankBuilder();
-        builder.with(CommandList.COMMANDLIST_INFOID, wCommand.getCommandList(), TypeInfo.aEnd(CommandList.class));
+        builder.with(CommandList.COMMANDLIST_INFOID, wCommand.getCommandList(), TypeInfo.of(CommandList.class));
         return builder;
     }
 
@@ -216,7 +213,7 @@ public class InformationRegister {
         }
 
         public <T> InformationBuilder with(T informationValue) {
-            informationSet.add(build(null, null, informationValue, null, TypeInfo.aEnd(informationValue.getClass())));
+            informationSet.add(build(null, null, informationValue, null, TypeInfo.of(informationValue.getClass())));
             return this;
         }
 
@@ -226,7 +223,7 @@ public class InformationRegister {
         }
 
         public <T> InformationBuilder with(T informationValue, String description) {
-            informationSet.add(build(null, null, informationValue, description, TypeInfo.aEnd(informationValue.getClass())));
+            informationSet.add(build(null, null, informationValue, description, TypeInfo.of(informationValue.getClass())));
             return this;
         }
 
@@ -238,7 +235,7 @@ public class InformationRegister {
         //////////////////////////////////////////////////////////////////////////////////////
 
         public <T> InformationBuilder with(String informationString, T informationValue) {
-            informationSet.add(buildSimple(null, informationString, informationValue, null, TypeInfo.aEnd(informationValue.getClass())));
+            informationSet.add(buildSimple(null, informationString, informationValue, null, TypeInfo.of(informationValue.getClass())));
             return this;
         }
 
@@ -248,7 +245,7 @@ public class InformationRegister {
         }
 
         public <T> InformationBuilder with(String informationString, T informationValue, String description) {
-            informationSet.add(buildSimple(null, informationString, informationValue, description, TypeInfo.aEnd(informationValue.getClass())));
+            informationSet.add(buildSimple(null, informationString, informationValue, description, TypeInfo.of(informationValue.getClass())));
             return this;
         }
 
@@ -258,7 +255,7 @@ public class InformationRegister {
         }
 
         public <T> InformationBuilder with(Class<?> idType, T informationValue) {
-            informationSet.add(build(idType, null, informationValue, null, TypeInfo.aEnd(informationValue.getClass())));
+            informationSet.add(build(idType, null, informationValue, null, TypeInfo.of(informationValue.getClass())));
             return this;
         }
 

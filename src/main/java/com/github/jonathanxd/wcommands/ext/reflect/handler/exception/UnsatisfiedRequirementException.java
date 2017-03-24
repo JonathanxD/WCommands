@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,9 +27,6 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.handler.exception;
 
-/**
- * Created by jonathan on 18/03/16.
- */
 public class UnsatisfiedRequirementException extends RuntimeException {
 
     private final Class<?> type;

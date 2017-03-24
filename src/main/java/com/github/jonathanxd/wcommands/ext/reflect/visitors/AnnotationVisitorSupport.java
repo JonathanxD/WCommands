@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -32,9 +32,6 @@ import com.github.jonathanxd.wcommands.ext.reflect.visitors.containers.NamedCont
 import java.lang.annotation.Annotation;
 import java.util.Optional;
 
-/**
- * Created by jonathan on 29/02/16.
- */
 public interface AnnotationVisitorSupport {
 
     boolean registerVisitor(AnnotationVisitor<?, ?, ?> annotationVisitor);

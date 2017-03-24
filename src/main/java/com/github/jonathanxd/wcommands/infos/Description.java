@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,31 +27,26 @@
  */
 package com.github.jonathanxd.wcommands.infos;
 
-import com.github.jonathanxd.iutils.annotations.Immutable;
-import com.github.jonathanxd.iutils.optional.Require;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+
+import jdk.nashorn.internal.ir.annotations.Immutable;
 
 /**
- * Created by jonathan on 12/03/16.
- */
-
-/**
- * Description class is used to register descriptions. Normally the description will be provided by
- * registration (as description provided by registration {@link #getProvidedByRegistration()}) and
- * {@link com.github.jonathanxd.wcommands.ext.reflect.infos.Info} annotation (as unknown source
- * {@link #getProvidedByUnknownSource()}).
+ * Description representation. Normally the description is provided by registration (as description
+ * provided by registration {@link #getProvidedByRegistration()}) or via {@link
+ * com.github.jonathanxd.wcommands.ext.reflect.infos.Info} annotation (as unknown source {@link
+ * #getProvidedByUnknownSource()}).
  */
 public class Description implements Cloneable {
 
-    public final Optional<String> providedByRegistration;
-    public final List<String> providedByUnknownSource = new ArrayList<>();
+    private final String providedByRegistration;
+    private final List<String> providedByUnknownSource = new ArrayList<>();
+    private final List<String> providedByUnknownSourceUnmod = Collections.unmodifiableList(this.providedByUnknownSource);
 
     public Description(String providedByRegistration) {
-        this.providedByRegistration = Optional.ofNullable(providedByRegistration);
+        this.providedByRegistration = providedByRegistration;
     }
 
     /**
@@ -69,7 +64,7 @@ public class Description implements Cloneable {
      * @return Return true if has description provided by registration
      */
     public boolean hasProvidedByRegistration() {
-        return providedByRegistration.isPresent();
+        return this.getProvidedByRegistration() != null;
     }
 
     /**
@@ -79,7 +74,7 @@ public class Description implements Cloneable {
      * @throws IllegalStateException If the description is not provided by registration.
      */
     public String getProvidedByRegistration() {
-        return Require.require(providedByRegistration);
+        return this.providedByRegistration;
     }
 
     /**
@@ -89,7 +84,7 @@ public class Description implements Cloneable {
      */
     @Immutable
     public List<String> getProvidedByUnknownSource() {
-        return Collections.unmodifiableList(providedByUnknownSource);
+        return this.providedByUnknownSourceUnmod;
     }
 
     /**
@@ -108,7 +103,7 @@ public class Description implements Cloneable {
     @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
     public Description clone() {
-        Description description = new Description(this.providedByRegistration.orElse(null));
+        Description description = new Description(this.providedByRegistration);
         description.providedByUnknownSource.addAll(this.getProvidedByUnknownSource());
         return description;
     }

@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.reflection;
 
-import com.github.jonathanxd.iutils.object.TypeInfo;
+import com.github.jonathanxd.iutils.type.TypeInfo;
 import com.github.jonathanxd.wcommands.ext.reflect.ReflectionAPI;
 import com.github.jonathanxd.wcommands.ext.reflect.commands.Command;
 import com.github.jonathanxd.wcommands.ext.reflect.infos.Info;
@@ -43,9 +43,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
-/**
- * Created by jonathan on 03/04/16.
- */
 public class TestProvided {
 
     @Test
@@ -56,14 +53,14 @@ public class TestProvided {
 
         InformationRegister informationRegister = new InformationRegister();
 
-        informationRegister.register(new InfoId("name", String.class), "Name", TypeInfo.aEnd(String.class));
+        informationRegister.register(new InfoId("name", String.class), "Name", TypeInfo.of(String.class));
 
         informationRegister.register((requestId, requestingType) -> {
-            if (requestingType.compareTo(TypeInfo.aEnd(String.class)) == 0) {
-                return Optional.of(new Information<>(requestId, "Alt", TypeInfo.aEnd(String.class)));
+            if (requestingType.compareTo(TypeInfo.of(String.class)) == 0) {
+                return Optional.of(new Information<>(requestId, "Alt", TypeInfo.of(String.class)));
             }
-            if (requestingType.compareToAssignable(TypeInfo.a(Collection.class).of(String.class).build()) == 0) {
-                return Optional.of(new Information<Collection<String>>(requestId, Arrays.asList("A", "D", "B"), TypeInfo.a(Collection.class).of(String.class).build()));
+            if (requestingType.isAssignableFrom(TypeInfo.builderOf(Collection.class).of(String.class).build())) {
+                return Optional.of(new Information<Collection<String>>(requestId, Arrays.asList("A", "D", "B"), TypeInfo.builderOf(Collection.class).of(String.class).build()));
             }
 
             return Optional.empty();

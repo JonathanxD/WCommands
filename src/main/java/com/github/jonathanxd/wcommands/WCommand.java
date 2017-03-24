@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,9 +27,7 @@
  */
 package com.github.jonathanxd.wcommands;
 
-import com.github.jonathanxd.iutils.annotations.Immutable;
-import com.github.jonathanxd.iutils.arrays.ImmutableJwArray;
-import com.github.jonathanxd.iutils.arrays.JwArray;
+import com.github.jonathanxd.iutils.annotation.Immutable;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.commandstring.CommandStringParser;
 import com.github.jonathanxd.wcommands.commandstring.CommonCommandStringParser;
@@ -50,15 +48,13 @@ import com.github.jonathanxd.wcommands.processor.Processor;
 import com.github.jonathanxd.wcommands.result.Results;
 import com.github.jonathanxd.wcommands.ticket.RegistrationTicket;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Created by jonathan on 26/02/16.
- */
 public class WCommand<T> {
 
     public static final InfoId WCOMMAND_INFOID = new InfoId(new String[]{"Manager", "WCommand"}, WCommand.class);
@@ -355,7 +351,7 @@ public class WCommand<T> {
 
         targetList = targetList.toUnmodifiable();
 
-        JwArray<RegistrationHandleResult> results = new JwArray<>();
+        List<RegistrationHandleResult> results = new ArrayList<>();
 
         RegistrationHandleResult main = RegistrationHandleResult.newInstance(commandSpec, null, RegistrationHandleResult.Action.ACCEPT);
 
@@ -364,9 +360,9 @@ public class WCommand<T> {
             RegistrationHandleResult result;
 
             if (results.isEmpty()) {
-                result = handler.handle(new ImmutableJwArray<>(main), targetList, this, ticket);
+                result = handler.handle(Collections.singletonList(main), targetList, this, ticket);
             } else {
-                result = handler.handle(new ImmutableJwArray<>(results), targetList, this, ticket);
+                result = handler.handle(Collections.unmodifiableList(results), targetList, this, ticket);
             }
 
             if (result != null) {
@@ -385,7 +381,7 @@ public class WCommand<T> {
             return Optional.of(commandSpec);
         }
 
-        RegistrationHandleResult result = results.getFirst();
+        RegistrationHandleResult result = results.get(0);
 
         switch (result.getAction()) {
             case ACCEPT: {
@@ -407,65 +403,5 @@ public class WCommand<T> {
         return Optional.of(commandSpec);
     }
 
-    /**
-     * Handle command registration
-     *
-     * @param commandSpec CommandSpec
-     */
-    @Deprecated
-    public Optional<CommandSpec> handleRegistration(CommandSpec commandSpec, CommandList targetList, RegistrationTicket<?> ticket) {
 
-        targetList = targetList.toUnmodifiable();
-
-        JwArray<RegistrationHandleResult> results = new JwArray<>();
-
-        RegistrationHandleResult main = RegistrationHandleResult.newInstance(commandSpec, null, RegistrationHandleResult.Action.ACCEPT);
-
-        for (CommandRegistrationListener handler : getCommandRegistrationListeners()) {
-
-            RegistrationHandleResult result;
-
-            if (results.isEmpty()) {
-                result = handler.handle(new ImmutableJwArray<>(main), targetList, this, ticket);
-            } else {
-                result = handler.handle(new ImmutableJwArray<>(results), targetList, this, ticket);
-            }
-
-            if (result != null) {
-                result = RegistrationHandleResult.applyTo(commandSpec, result);
-                results.add(result);
-                main = null;
-            } else {
-                if (results.isEmpty() && main != null) {
-                    results.add(main);
-                    main = null;
-                }
-            }
-        }
-
-        if (results.isEmpty()) {
-            return Optional.of(commandSpec);
-        }
-
-        RegistrationHandleResult result = results.getFirst();
-
-        switch (result.getAction()) {
-            case ACCEPT: {
-                return Optional.of(commandSpec);
-            }
-            case CANCEL: {
-                return Optional.empty();
-            }
-            case MODIFY: {
-
-                if (!result.getModifiedCommandSpec().isPresent()) {
-                    throw new RuntimeException("RegistrationHandleResult with Action 'MODIFY' has empty modified command spec");
-                }
-
-                return Optional.of(result.getModifiedCommandSpec().get());
-            }
-        }
-
-        return Optional.of(commandSpec);
-    }
 }

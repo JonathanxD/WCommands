@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,8 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.processor;
 
-import com.github.jonathanxd.iutils.annotations.NotNull;
-import com.github.jonathanxd.iutils.containers.Container;
+import com.github.jonathanxd.iutils.container.MutableContainer;
 import com.github.jonathanxd.wcommands.Register;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
@@ -64,9 +63,6 @@ import java.util.StringJoiner;
 import java.util.TreeSet;
 import java.util.function.Function;
 
-/**
- * Created by jonathan on 26/03/16.
- */
 public class ReflectionRegister<T> extends Register<T> {
     private final ReflectionCommandProcessor wCommand;
 
@@ -90,7 +86,7 @@ public class ReflectionRegister<T> extends Register<T> {
         addCommands(instance, instance.getClass());
     }
 
-    public void addCommandFromClass(Class<?> clazz, Function<Class<?>, @NotNull Object> instanceCreator) {
+    public void addCommandFromClass(Class<?> clazz, Function<Class<?>, Object> instanceCreator) {
         ClassExplorer.explore(clazz, aClass -> addCommands(instanceCreator.apply(aClass)));
     }
 
@@ -196,8 +192,8 @@ public class ReflectionRegister<T> extends Register<T> {
     private NamedContainer processWrapper(ElementBridge bridge, TreeHead treeHead) {
         Annotation[] annotations = bridge.getDeclaredAnnotations();
 
-        Container<NamedContainer> theContainer = new Container<>(null);
-        Container<NamedContainer> last = new Container<>(null);
+        MutableContainer<NamedContainer> theContainer = new MutableContainer<>(null);
+        MutableContainer<NamedContainer> last = new MutableContainer<>(null);
 
         for (Annotation annotation : annotations) {
 
@@ -232,12 +228,12 @@ public class ReflectionRegister<T> extends Register<T> {
     }
 
     @SuppressWarnings("unchecked")
-    private <C extends NamedContainer, T> T helpTo(AnnotationVisitor<?, C, T> t, NamedContainer named, InstanceContainer instance, TreeHead treeHead, CommandList commandList) {
+    private <C extends NamedContainer, X> X helpTo(AnnotationVisitor<?, C, X> t, NamedContainer named, InstanceContainer instance, TreeHead treeHead, CommandList commandList) {
         return t.process((C) named, instance, wCommand, commandList, wCommand, named.getBridge().getLocation(), treeHead, getTicket(), Optional.empty());
     }
 
     @SuppressWarnings("unchecked")
-    private <C extends NamedContainer, T> boolean helpToCheck(AnnotationVisitor<?, C, T> t, NamedContainer named, InstanceContainer instance, TreeHead treeHead, CommandList registeredCommands) {
+    private <C extends NamedContainer, X> boolean helpToCheck(AnnotationVisitor<?, C, X> t, NamedContainer named, InstanceContainer instance, TreeHead treeHead, CommandList registeredCommands) {
         return t.dependencyCheck((C) named, instance, wCommand, registeredCommands, wCommand, named.getBridge().getLocation(), treeHead, getTicket(), Optional.empty());
     }
 

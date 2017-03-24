@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,15 +27,13 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.arguments.translators;
 
-import com.github.jonathanxd.iutils.object.TypeInfo;
+import com.github.jonathanxd.iutils.type.TypeInfo;
 import com.github.jonathanxd.wcommands.interceptor.Order;
 
 import java.util.Objects;
 
-/**
- * Created by jonathan on 28/02/16.
- */
 public class TypeTranslator<T> {
+
     private final TypeInfo<T> type;
     private final Class<? extends Translator<?>> translator;
     private final Order order;

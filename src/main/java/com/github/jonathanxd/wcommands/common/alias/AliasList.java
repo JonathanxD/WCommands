@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Created by jonathan on 24/02/16.
+ * List of all command aliases
  */
 public class AliasList extends ArrayList<Text> {
     public AliasList() {
@@ -44,6 +44,13 @@ public class AliasList extends ArrayList<Text> {
         super(c);
     }
 
+    /**
+     * Returns true if any alias match the input string {@code str}.
+     *
+     * @param str        Alias string.
+     * @param ignoreCase Ignore case.
+     * @return True if any alias match the input string {@code str}.
+     */
     public boolean anyMatches(String str, boolean ignoreCase) {
         for (Text text : this) {
             if (Text.matches(text, str, ignoreCase))
@@ -53,10 +60,21 @@ public class AliasList extends ArrayList<Text> {
         return false;
     }
 
+    /**
+     * Returns true if any alias match the input string {@code str}.
+     *
+     * @param str Alias string.
+     * @return True if any alias match the input string {@code str}.
+     */
     public boolean anyMatches(String str) {
-        return anyMatches(str, false);
+        return this.anyMatches(str, false);
     }
 
+    /**
+     * Create a copy of this alias list.
+     *
+     * @return Copy of this alias list.
+     */
     public AliasList copy() {
         return new AliasList(this);
     }

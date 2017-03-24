@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -42,9 +42,6 @@ import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 
 import java.util.List;
 
-/**
- * Created by jonathan on 12/03/16.
- */
 public class HelperErrorHandler implements ErrorHandler<List<CommandData<CommandHolder>>> {
     private final Printer printer;
 

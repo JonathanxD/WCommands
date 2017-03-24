@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -39,9 +39,6 @@ import com.github.jonathanxd.wcommands.result.Results;
 
 import org.junit.Test;
 
-/**
- * Created by jonathan on 18/03/16.
- */
 public class TestReq {
 
     @Test
@@ -74,7 +71,7 @@ public class TestReq {
     class Permission {}
 
     @Command
-    @Require(type = Permission.class, data = "dup", subject = @Info(type = Sender.class))
+    @Require(type = Permission.class, data = "dup", subject = @Info(id = Sender.class))
     public String test1() {
         System.out.println("TEST WITH PERM");
         return "AAB";

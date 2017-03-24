@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,7 +27,8 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.infos;
 
-import com.github.jonathanxd.iutils.object.TypeInfo;
+import com.github.jonathanxd.iutils.type.TypeInfo;
+import com.github.jonathanxd.iutils.type.TypeUtil;
 import com.github.jonathanxd.wcommands.infos.InfoId;
 import com.github.jonathanxd.wcommands.infos.Information;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
@@ -47,21 +48,18 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Created by jonathan on 12/03/16.
- */
-@Target(ElementType.PARAMETER)
-@Retention(RetentionPolicy.RUNTIME)
-/**
  * Description for 'InformationRegister' in parameters.
  * You can use @Info annotation for Information if wan't to set description
  *
  * @see com.github.jonathanxd.wcommands.infos.Description
  */
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Info {
 
     String[] tags() default "";
 
-    Class<?> type() default Object.class;
+    Class<?> id() default Object.class;
 
     /**
      * Default: True
@@ -141,7 +139,7 @@ public @interface Info {
 
             Optional<Information<?>> info;
 
-            TypeInfo<?> reference = com.github.jonathanxd.iutils.object.TypeUtil.toReference(parameter.getType());
+            TypeInfo<?> reference = TypeUtil.toTypeInfo(parameter.getType());
 
             if (annotation.staticFirst()) {
                 info = informationRegister.getInformationList().stream().filter(i -> check(reference, annotation, i))
@@ -168,7 +166,7 @@ public @interface Info {
         }
 
         private static InfoId from(Info annotation) {
-            return new InfoId(annotation.tags(), annotation.type());
+            return new InfoId(annotation.tags(), annotation.id());
         }
 
         private static boolean check(TypeInfo<?> type, Info annotation, Information<?> info) {
@@ -176,13 +174,13 @@ public @interface Info {
                 return false;
 
 
-            if (type.compareToAssignable(info.getRepresentation()) == 0) {
+            if (type.isAssignableFrom(info.getRepresentation())) {
 
                 if (annotation == null)
                     return true;
 
                 if (isEmpty(annotation.tags()) || info.getId().matchesAny(annotation.tags())) {
-                    if (annotation.type() == null || annotation.type().isAssignableFrom(info.getId().getIdentification())) {
+                    if (annotation.id().isAssignableFrom(info.getId().getIdentification())) {
                         return true;
                     }
                 }
@@ -212,7 +210,7 @@ public @interface Info {
                         throw new RuntimeException("Cannot get raw type for type: '" + parameterizedType + "'");
                     }
 
-                    return com.github.jonathanxd.iutils.object.TypeUtil.toReference(parameterizedType).getRelated()[0];
+                    return TypeUtil.toTypeInfo(parameterizedType).getRelated()[0];
                 }
 
             }
@@ -226,7 +224,7 @@ public @interface Info {
 
             sb.append("tags=(").append(Arrays.toString(info.tags())).append(')');
             sb.append(',').append(' ');
-            sb.append("type=(").append(info.type().getSimpleName()).append(')');
+            sb.append("type=(").append(info.id().getSimpleName()).append(')');
             sb.append(',').append(' ');
             sb.append("description=(").append(info.description()).append(')');
 

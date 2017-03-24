@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,8 +27,8 @@
  */
 package com.github.jonathanxd.wcommands.util.reflection;
 
-import com.github.jonathanxd.iutils.object.TypeInfo;
-import com.github.jonathanxd.iutils.object.TypeUtil;
+import com.github.jonathanxd.iutils.type.TypeInfo;
+import com.github.jonathanxd.iutils.type.TypeUtil;
 import com.github.jonathanxd.wcommands.interceptor.Order;
 
 import java.lang.annotation.Annotation;
@@ -41,9 +41,6 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 
-/**
- * Created by jonathan on 27/02/16.
- */
 public class ElementBridge implements AnnotatedElement {
 
     private final Object element;
@@ -95,7 +92,11 @@ public class ElementBridge implements AnnotatedElement {
                     test = Primitive.asBoxed(test);
                 }
 
-                if (type == null || test == null || !type.isAssignableFrom(test)) {
+                if ((type == null
+                        || test == null
+                        || !Number.class.isAssignableFrom(type)
+                        || !Number.class.isAssignableFrom(test))
+                        && (type == null || test == null || !type.isAssignableFrom(test))) {
                     return false;
                 }
 
@@ -130,7 +131,7 @@ public class ElementBridge implements AnnotatedElement {
     }
 
     public TypeInfo<?> getParameterizedReference() {
-        return representation != null ? representation : TypeInfo.aEnd(getType());
+        return representation != null ? representation : TypeInfo.of(getType());
     }
 
     public Class<?> getType() {
@@ -149,7 +150,7 @@ public class ElementBridge implements AnnotatedElement {
                     ParameterizedType type = (ParameterizedType) result;
 
                     try {
-                        this.representation = TypeUtil.toReference(type);
+                        this.representation = TypeUtil.toTypeInfo(type);
                     } catch (Exception ignored) {
                     }
 

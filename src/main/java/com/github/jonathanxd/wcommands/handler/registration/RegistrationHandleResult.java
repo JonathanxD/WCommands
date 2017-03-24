@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -33,12 +33,6 @@ import com.github.jonathanxd.wcommands.util.reflection.ToString;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import javax.annotation.Nullable;
-
-/**
- * Created by jonathan on 21/03/16.
- */
 
 /**
  *
@@ -91,7 +85,7 @@ public class RegistrationHandleResult {
      * @param action      Action
      * @return Return instance with known values
      */
-    public static RegistrationHandleResult newInstance(@Nullable CommandSpec original, @Nullable CommandSpec commandSpec, Action action) {
+    public static RegistrationHandleResult newInstance(CommandSpec original, CommandSpec commandSpec, Action action) {
         return new RegistrationHandleResult(original, commandSpec, action);
     }
 

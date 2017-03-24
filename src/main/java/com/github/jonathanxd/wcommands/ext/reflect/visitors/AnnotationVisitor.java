@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.visitors;
 
-import com.github.jonathanxd.iutils.containers.Container;
+import com.github.jonathanxd.iutils.container.MutableContainer;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
 import com.github.jonathanxd.wcommands.ext.reflect.handler.InstanceContainer;
@@ -41,9 +41,6 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.util.Optional;
 
-/**
- * Created by jonathan on 29/02/16.
- */
 public abstract class AnnotationVisitor<T extends Annotation, C extends NamedContainer, V> implements Comparable<AnnotationVisitor<?, ?, ?>> {
 
     protected final Class<T> annotationClass;
@@ -62,11 +59,21 @@ public abstract class AnnotationVisitor<T extends Annotation, C extends NamedCon
      * @param last       Last Container
      * @param bridge     Element Bridge
      */
-    public void visitElementAnnotation(T annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket) {
+    public void visitElementAnnotation(T annotation, MutableContainer<NamedContainer> current, MutableContainer<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket) {
 
     }
 
-    public void visitElementArguments(T annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, RegistrationTicket<?> ticket) {
+    /**
+     * Called When the Annotation is found on the code
+     *
+     * You need to manually set the Containers!
+     *
+     * @param annotation Annotation
+     * @param current    Current Container
+     * @param last       Last Container
+     * @param bridge     Element Bridge
+     */
+    public void visitElementArguments(T annotation, MutableContainer<NamedContainer> current, MutableContainer<NamedContainer> last, ElementBridge bridge, ElementType location, RegistrationTicket<?> ticket) {
 
     }
 

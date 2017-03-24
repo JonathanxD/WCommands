@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -26,10 +26,6 @@
  *      THE SOFTWARE.
  */
 package com.github.jonathanxd.wcommands.ext;
-
-/**
- * Created by jonathan on 28/02/16.
- */
 
 /**
  * Extension APIs is a Base-Dependent API provided by the authors as part of main project

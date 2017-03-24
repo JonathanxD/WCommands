@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -31,9 +31,6 @@ import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.infos.InformationRegister;
 import com.github.jonathanxd.wcommands.infos.requirements.Requirements;
 
-/**
- * Created by jonathan on 26/02/16.
- */
 public interface Handler<T> {
 
     Object handle(CommandData<T> commandData, Requirements requirements, InformationRegister informationRegister);

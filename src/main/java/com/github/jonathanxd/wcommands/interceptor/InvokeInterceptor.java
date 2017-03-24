@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,17 +27,18 @@
  */
 package com.github.jonathanxd.wcommands.interceptor;
 
-import com.github.jonathanxd.iutils.containers.Container;
+import com.github.jonathanxd.iutils.container.BaseContainer;
+import com.github.jonathanxd.iutils.container.MutableContainer;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
 import com.github.jonathanxd.wcommands.data.CommandData;
 import com.github.jonathanxd.wcommands.handler.Handler;
 
 /**
- * Created by jonathan on 27/02/16.
+ * Command invocation interception.
  */
 public interface InvokeInterceptor {
 
-    void intercept(CommandData<CommandHolder> commandData, Container<Handler<CommandHolder>> handler);
+    void intercept(CommandData<CommandHolder> commandData, BaseContainer<Handler<CommandHolder>> handler);
 
     default Phase phase() {
         return Phase.PRE_CALL;

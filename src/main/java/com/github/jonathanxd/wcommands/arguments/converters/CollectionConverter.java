@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -33,11 +33,21 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 /**
- * Created by jonathan on 12/03/16.
+ * Collection converter, this converter will search the provided argument list in the collection and
+ * return the matching element of type {@link T}.
+ *
+ * @param <T> Result type.
  */
 public class CollectionConverter<T> implements Function<List<String>, T> {
 
+    /**
+     * Collection
+     */
     private final Collection<T> collection;
+
+    /**
+     * Predicate to match elements of the {@link #collection collection}.
+     */
     private final BiPredicate<T, List<String>> predicate;
 
     public CollectionConverter(Collection<T> collection, BiPredicate<T, List<String>> predicate) {

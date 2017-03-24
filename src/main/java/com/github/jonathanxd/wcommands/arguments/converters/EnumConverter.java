@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -32,10 +32,19 @@ import com.github.jonathanxd.wcommands.common.enums.EnumPredicate;
 import java.util.function.Function;
 
 /**
- * Created by jonathan on 12/03/16.
+ * Enum conversion, convert from {@link String argument string} to {@link Enum} of type {@link
+ * #enumClass}.
  */
 public class EnumConverter implements Function<String, Object> {
+
+    /**
+     * Enum class
+     */
     private final Class<? extends Enum> enumClass;
+
+    /**
+     * Predicate to match enum
+     */
     private final EnumPredicate predicate;
 
     public EnumConverter(Class<? extends Enum> enumClass) {

@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -43,9 +43,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 
-/**
- * Created by jonathan on 11/03/16.
- */
 public class TestNewInformationAPI {
 
     public static void main(String[] args) {
@@ -59,7 +56,7 @@ public class TestNewInformationAPI {
         processor.registerRegistrationHandler((registrationHandleResults, targetList, manager, ticket) -> {
             System.out.println("Results: " + registrationHandleResults + " Manager: " + manager);
 
-            RegistrationHandleResult result = registrationHandleResults.getLast();
+            RegistrationHandleResult result = registrationHandleResults.get(registrationHandleResults.size() - 1);
             Optional<CommandSpec> commandSpecOpt = result.getResult();
 
             if (commandSpecOpt.isPresent()) {
@@ -91,8 +88,8 @@ public class TestNewInformationAPI {
 
     @Command(desc = "Send a private message!")
     public void pm(@Argument String message,
-                   @Info(type = Sender.class, description = "etc") Entity en,
-                   @Info(type = Receiver.class) Entity receiver) {
+                   @Info(id = Sender.class, description = "etc") Entity en,
+                   @Info(id = Receiver.class) Entity receiver) {
         System.out.println(en.getName() + " send message " + message + " to " + receiver.getName());
     }
 

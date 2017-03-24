@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -33,9 +33,6 @@ import java.lang.annotation.Annotation;
 import java.util.Optional;
 import java.util.TreeSet;
 
-/**
- * Created by jonathan on 29/02/16.
- */
 public class AnnotationVisitors extends TreeSet<AnnotationVisitor<?, ?, ?>> {
 
     public AnnotationVisitors() {

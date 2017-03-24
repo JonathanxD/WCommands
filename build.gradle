@@ -1,86 +1,48 @@
 plugins {
     id 'com.github.hierynomus.license' version '0.11.0'
     id 'com.github.johnrengelman.shadow' version '1.2.3'
-    id 'net.researchgate.release' version '2.3.4'
 }
 
 group 'com.github.jonathanxd'
-version '2.3.3-SNAPSHOT'
+version '3.0-SNAPSHOT'
 
+apply plugin: "idea"
+apply plugin: 'java'
+apply plugin: 'license'
+apply plugin: 'maven'
+apply plugin: 'com.github.johnrengelman.shadow'
 
-allprojects {
-    apply plugin: "idea"
-    apply plugin: 'java'
-    apply plugin: 'license'
-    apply plugin: 'maven'
-    apply plugin: 'com.github.johnrengelman.shadow'
-    apply plugin: 'net.researchgate.release'
-
-    license {
-        header rootProject.file("LICENSE_HEADER")
-    }
+license {
+    header rootProject.file("LICENSE_HEADER")
 }
 
 defaultTasks 'licenseFormat', 'build', 'test', 'jar', 'shadowJar'
 
 sourceCompatibility = 1.8
 
-sourceSets {
-    main {
-        java {
-            srcDirs 'src/main/java'
-        }        
-        resources {
-            srcDirs 'src/main/resources'
-        }
-    }
-    test {
-        java {
-            srcDirs = ['src/test/java']
-        }
-        resources {
-            srcDirs = ['src/test/resources']
-        }
-    }
-}
-
 // Tasks
-allprojects {
-    jar {
-        from "$rootProject.rootDir/LICENSE"
-
-        manifest {
-            attributes 'Implementation-Title': baseName,
-                    'Implementation-Version': version
-        }
-    }
-}
-
-/*
-
 jar {
-    from "LICENSE"
+    from "$rootProject.rootDir/LICENSE"
 
     manifest {
-        attributes 'Implementation-Title': 'TextLexer',
+        attributes 'Implementation-Title': baseName,
                 'Implementation-Version': version
     }
-}*/
-allprojects {
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
+}
 
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
-        from javadoc.destinationDir
-    }
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
 
-    artifacts {
-        archives sourcesJar
-        archives javadocJar
-    }
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }
 
 subprojects {
@@ -91,25 +53,18 @@ subprojects {
     }
 }
 
-allprojects{
-    dependencies {
-        compile 'com.github.JonathanxD:JwIUtils:2.6.3'
-        compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
-        testCompile group: 'junit', name:'junit', version: '4.11'
-    }
+dependencies {
+    compile 'com.github.JonathanxD:JwIUtils:4.1.0d'
+    testCompile group: 'junit', name:'junit', version: '4.11'
 }
 
-allprojects{
-    repositories {
-        mavenCentral()
-        maven { url "https://jitpack.io" }
-    }
+repositories {
+    mavenCentral()
+    maven { url "https://jitpack.io" }
 }
 
-allprojects {
-    test {
-        useJUnit()
-    }
+test {
+    useJUnit()
 }
 
 
@@ -137,10 +92,4 @@ license {
     mapping {
         java = 'SLASHSTAR_STYLE'
     }
-}
-
-release {
-    preTagCommitMessage = 'Pre tag commit: '
-    tagCommitMessage = 'Creating tag: '
-    newVersionCommitMessage = 'Version Commit: '
 }

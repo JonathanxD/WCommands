@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,8 +27,9 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults;
 
-import com.github.jonathanxd.iutils.containers.Container;
-import com.github.jonathanxd.iutils.data.ExtraData;
+import com.github.jonathanxd.iutils.container.MutableContainer;
+import com.github.jonathanxd.iutils.data.Data;
+import com.github.jonathanxd.iutils.data.DataReflect;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
@@ -54,9 +55,6 @@ import java.lang.annotation.ElementType;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Created by jonathan on 29/02/16.
- */
 public class CommandVisitor extends AnnotationVisitor<Command, TreeNamedContainer, CommandSpec> {
 
     public CommandVisitor(Class<Command> annotationClass) {
@@ -64,7 +62,7 @@ public class CommandVisitor extends AnnotationVisitor<Command, TreeNamedContaine
     }
 
     @Override
-    public void visitElementAnnotation(Command annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket) {
+    public void visitElementAnnotation(Command annotation, MutableContainer<NamedContainer> current, MutableContainer<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket) {
         String name = annotation.name().trim().isEmpty() ? bridge.getName() : annotation.name();
         Common.visit(name, annotation, current, last, bridge, location, treeHead);
     }
@@ -87,15 +85,15 @@ public class CommandVisitor extends AnnotationVisitor<Command, TreeNamedContaine
         Handler<CommandHolder> handler = null;
 
         try {
-            ExtraData data = new ExtraData();
+            Data data = new Data();
 
-            data.addData(null, command);
-            data.addData(null, command.getBridge());
-            data.addData(null, command.getName());
+            data.set("command", command);
+            data.set("bridge", command.getBridge());
+            data.set("name", command.getName());
 
-            data.addData(null, instance);
+            data.set("provider", instance);
 
-            handler = (Handler<CommandHolder>) data.construct(commandAnnotation.handler());
+            handler = (Handler<CommandHolder>) DataReflect.construct(commandAnnotation.handler(), data);
         } catch (Throwable ignore) {
             ignore.printStackTrace();
         }
@@ -127,7 +125,7 @@ public class CommandVisitor extends AnnotationVisitor<Command, TreeNamedContaine
     }
 
     public static final class Common {
-        public static void visit(String nameResolved, Annotation annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead) {
+        public static void visit(String nameResolved, Annotation annotation, MutableContainer<NamedContainer> current, MutableContainer<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead) {
 
             TreeNamedContainer treeNamedContainer;
 

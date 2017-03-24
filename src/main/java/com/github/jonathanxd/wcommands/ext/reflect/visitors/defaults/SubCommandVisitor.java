@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.visitors.defaults;
 
-import com.github.jonathanxd.iutils.containers.Container;
+import com.github.jonathanxd.iutils.container.MutableContainer;
 import com.github.jonathanxd.wcommands.command.CommandSpec;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.ext.reflect.arguments.translators.TranslatorSupport;
@@ -49,9 +49,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Created by jonathan on 29/02/16.
- */
 public class SubCommandVisitor extends AnnotationVisitor<SubCommand, TreeNamedContainer, CommandSpec> {
 
     public SubCommandVisitor(Class<SubCommand> annotationClass) {
@@ -59,26 +56,12 @@ public class SubCommandVisitor extends AnnotationVisitor<SubCommand, TreeNamedCo
     }
 
     @Override
-    public void visitElementAnnotation(SubCommand annotation, Container<NamedContainer> current, Container<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket) {
+    public void visitElementAnnotation(SubCommand annotation, MutableContainer<NamedContainer> current, MutableContainer<NamedContainer> last, ElementBridge bridge, ElementType location, TreeHead treeHead, RegistrationTicket<?> ticket) {
         Command commandAnnotation = annotation.commandSpec();
 
         String name = commandAnnotation.name().trim().isEmpty() ? bridge.getName() : commandAnnotation.name();
 
         CommandVisitor.Common.visit(name, annotation, current, last, bridge, location, treeHead);
-
-        /*if (!current.isPresent()) {
-
-            current.set(new TreeNamedContainer(name, annotation, bridge));
-            last.set(current.get());
-
-        } else {
-            last.set(new TreeNamedContainer(name, annotation, bridge));
-
-            TreeNamedContainer container = Require.require(current.get(), TreeNamedContainer.class);
-            TreeNamedContainer lastTree = Require.require(last.get(), TreeNamedContainer.class);
-
-            container.getChild().add(lastTree);
-        }*/
 
     }
 

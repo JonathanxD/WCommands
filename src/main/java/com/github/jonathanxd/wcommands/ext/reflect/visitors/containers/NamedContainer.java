@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,15 +27,12 @@
  */
 package com.github.jonathanxd.wcommands.ext.reflect.visitors.containers;
 
-import com.github.jonathanxd.iutils.containers.Container;
+import com.github.jonathanxd.iutils.container.MutableContainer;
 import com.github.jonathanxd.wcommands.util.reflection.ElementBridge;
 
 import java.lang.annotation.Annotation;
 
-/**
- * Created by jonathan on 27/02/16.
- */
-public class NamedContainer extends Container<Annotation> {
+public class NamedContainer extends MutableContainer<Annotation> {
 
     private final String name;
     private final ElementBridge bridge;

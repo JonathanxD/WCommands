@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -32,7 +32,10 @@ import java.util.Collection;
 import java.util.function.Function;
 
 /**
- * Created by jonathan on 24/02/16.
+ * An matchable object is an object that can matches a value of type {@link T}.
+ *
+ * TODO: DOCUMENTATION
+ * @param <T> Type
  */
 public interface Matchable<T> {
 

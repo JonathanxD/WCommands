@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -30,13 +30,14 @@ package com.github.jonathanxd.wcommands.data;
 import com.github.jonathanxd.wcommands.util.reflection.ToString;
 
 /**
- * Created by jonathan on 26/02/16.
+ * Todo: Documentation
+ * Todo: Remove generic type {@link C}
+ *
+ * @param <C> Command type
  */
 public class CommandData<C> {
 
     private final String inputArgument;
-    //private final CommandSpec command;
-    //private final Arguments arguments;
     private final C command;
     private final C parent;
 

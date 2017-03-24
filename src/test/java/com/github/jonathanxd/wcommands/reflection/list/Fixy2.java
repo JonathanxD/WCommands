@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -39,14 +39,11 @@ import org.junit.Test;
 
 import java.util.List;
 
-/**
- * Created by jonathan on 24/03/16.
- */
 public class Fixy2 {
     @Command(prefix = "--")
     public void high(@Argument(id = "high", isArray = true) List<String> highs,
-                     @Info(type = Fixy.class) Fixy fixy,
-                     @Info(type = Fixy2.class) Fixy2 fixy2) {
+                     @Info(id = Fixy.class) Fixy fixy,
+                     @Info(id = Fixy2.class) Fixy2 fixy2) {
 
         System.out.println("Highs: "+highs);
         System.out.println("Fixy: "+fixy);
@@ -55,7 +52,7 @@ public class Fixy2 {
 
     @Command(prefix = "--")
     public void low(@Argument(id = "low", isArray = true) List<String> lows,
-                    @Info(type = Fixy.class) Fixy fixy) {
+                    @Info(id = Fixy.class) Fixy fixy) {
 
         System.out.println("Lows: "+lows);
         System.out.println("Fixy: "+fixy);

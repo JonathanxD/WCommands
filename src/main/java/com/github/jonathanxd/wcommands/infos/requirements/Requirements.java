@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2016 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2017 TheRealBuggy/JonathanxD (https://github.com/JonathanxD/ & https://github.com/TheRealBuggy/) <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,6 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.infos.requirements;
 
+import com.github.jonathanxd.iutils.function.stream.BiStreams;
 import com.github.jonathanxd.iutils.function.stream.MapStream;
 import com.github.jonathanxd.iutils.object.Node;
 import com.github.jonathanxd.wcommands.command.holder.CommandHolder;
@@ -38,9 +39,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Created by jonathan on 18/03/16.
- */
 public class Requirements {
     //@Require(type = Permission.class, tags = {"smp.lithium"})
     private final Map<Class<?>, ProvidedRequirement> providedRequirementMap = new HashMap<>();
@@ -67,7 +65,7 @@ public class Requirements {
         if (providedRequirementMap.containsKey(type)) {
             opt = Optional.of(new Node<>(null, providedRequirementMap.get(type)));
         } else {
-            opt = MapStream.of(providedRequirementMap).filter((mapType, req) -> mapType.isAssignableFrom(type)).findFirst();
+            opt = BiStreams.mapStream(providedRequirementMap).filter((mapType, req) -> mapType.isAssignableFrom(type)).findFirst();
         }
 
         return opt.isPresent() && opt.get().getValue().test(data, arguments, commandData, informationRegister, subject);
