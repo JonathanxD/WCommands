@@ -92,26 +92,6 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
     @Override
     public Results invokeCommands(List<CommandData<CommandHolder>> object, Interceptors interceptors, Requirements requirements, InformationRegister informationRegister) {
 
-        object = new ArrayList<>(object);
-
-        object.sort((o1, o2) -> {
-            CommandHolder o1Command = o1.getCommand();
-            CommandHolder o2Command = o2.getCommand();
-
-            if(o1Command.isMain() && o2Command.isMain()
-                    || (o1.getParent() != null && o2.getParent() != null && o1.getParent().getCommandSpec() == o2.getParent().getCommandSpec())) {
-                int sort = Integer.compare(o1Command.getCommandSpec().getPriority(), o2Command.getCommandSpec().getPriority());
-
-                if(sort == 0)
-                    return 1;
-
-                return sort;
-            }
-
-            return 1;
-        });
-
-
         Results results = new Results();
 
         Interceptors phasePreCall = interceptors.getPhase(Phase.PRE_CALL);
