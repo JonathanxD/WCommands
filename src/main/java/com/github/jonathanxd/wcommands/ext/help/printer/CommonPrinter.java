@@ -166,10 +166,13 @@ public class CommonPrinter implements Printer {
 
     public static String command(CommandSpec commandSpec) {
 
+        String prefix = commandSpec.getPrefix() != null ? commandSpec.getPrefix() : "";
+        String suffix = commandSpec.getSuffix() != null ? commandSpec.getSuffix() : "";
+
         if (commandSpec.isOptional()) {
-            return commandSpec.getName().getPlainString() + "?";
+            return prefix + commandSpec.getName().getPlainString() + suffix + "?";
         } else {
-            return commandSpec.getName().getPlainString();
+            return prefix + commandSpec.getName().getPlainString() + suffix;
         }
     }
 
