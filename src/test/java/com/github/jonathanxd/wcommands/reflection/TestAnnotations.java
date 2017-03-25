@@ -58,15 +58,8 @@ public class TestAnnotations {
 
         commandCommon.getRegister(new CommonTicket<>(this)).addCommands(testAnnotations, TestAnnotations.class);
 
-        commandCommon.processAndInvoke("--allowUpper", "true", "--daemon", "--rail", "false");
+        commandCommon.processAndInvoke("assertOptions", "--allowUpper", "true", "--daemon", "--rail", "false");
 
-        System.out.println("Allow Upper? "+testAnnotations.allowUpper);
-        System.out.println("Is Daemon? "+testAnnotations.daemon);
-        System.out.println("Rail? "+testAnnotations.rail);
-
-        Assert.assertEquals(testAnnotations.allowUpper, true);
-        Assert.assertEquals(testAnnotations.daemon, true);
-        Assert.assertEquals(testAnnotations.rail, false);
     }
 
     @Command(prefix = "--")
@@ -80,6 +73,18 @@ public class TestAnnotations {
     @Command(prefix = "--")
     @Argument
     public boolean rail = true;
+
+    @Command(priority = 1)
+    public void assertOptions() {
+        System.out.println("Allow Upper? "+this.allowUpper);
+        System.out.println("Is Daemon? "+this.daemon);
+        System.out.println("Rail? "+this.rail);
+
+        Assert.assertEquals(this.allowUpper, true);
+        Assert.assertEquals(this.daemon, true);
+        Assert.assertEquals(this.rail, false);
+
+    }
 
     public static class MyErrorHandler implements ErrorHandler {
 

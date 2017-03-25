@@ -41,6 +41,14 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD})
 @Repeatable(Commands.class)
 public @interface Command {
+
+    /**
+     * Command priority.
+     *
+     * @return Command priority.
+     */
+    int priority() default 0;
+
     /**
      * Name of the command, if you don't define the name it will be determined by Reflection (like
      * Field name and Method name).

@@ -76,6 +76,7 @@ public class CommandVisitor extends AnnotationVisitor<Command, TreeNamedContaine
 
         CommandBuilder<CommandHolder> commandBuilder = CommandBuilder.builder();
 
+        commandBuilder.withPriority(commandAnnotation.priority());
         commandBuilder.withName(Text.of(command.getName()));
         commandBuilder.withPrefix(commandAnnotation.prefix());
         commandBuilder.withSuffix(commandAnnotation.suffix());

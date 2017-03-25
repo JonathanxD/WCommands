@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class CommandBuilder<H> {
+    private int priority = 0;
     private Text name;
     private String description = "";
     private String prefix = "";
@@ -54,6 +55,11 @@ public class CommandBuilder<H> {
 
     public static <H> CommandBuilder<H> builder() {
         return new CommandBuilder<>();
+    }
+
+    public CommandBuilder<H> withPriority(int priority) {
+        this.priority = priority;
+        return this;
     }
 
     public CommandBuilder<H> withName(Text name) {
@@ -142,20 +148,24 @@ public class CommandBuilder<H> {
 
     @Deprecated
     public CommandSpec build() {
-        return new CommandSpec(Objects.requireNonNull(name),
-                description,
+        return new CommandSpec(
+                this.priority,
+                Objects.requireNonNull(name),
+                this.description,
                 Objects.requireNonNull(arguments),
-                isOptional,
+                this.isOptional,
                 Objects.requireNonNull(prefix),
                 Objects.requireNonNull(suffix),
                 Objects.requireNonNull(handler)).addSubs(preChilds, RegistrationTicket.empty(this));
     }
 
     public CommandSpec build(RegistrationTicket<?> ticket) {
-        return new CommandSpec(Objects.requireNonNull(name),
-                description,
+        return new CommandSpec(
+                this.priority,
+                Objects.requireNonNull(name),
+                this.description,
                 Objects.requireNonNull(arguments),
-                isOptional,
+                this.isOptional,
                 Objects.requireNonNull(prefix),
                 Objects.requireNonNull(suffix),
                 Objects.requireNonNull(handler)).addSubs(preChilds, ticket);

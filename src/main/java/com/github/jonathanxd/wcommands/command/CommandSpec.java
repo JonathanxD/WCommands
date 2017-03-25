@@ -54,7 +54,12 @@ import java.util.stream.Collectors;
  */
 public class CommandSpec implements Matchable<String> {
 
-    public static final CommandSpec EMPTY = new CommandSpec(null, null, null, false, null, null, null);
+    public static final CommandSpec EMPTY = new CommandSpec(0, null, null, null, false, null, null, null);
+
+    /**
+     * Command priority.
+     */
+    private final int priority;
 
     /**
      * CommandSpec Name
@@ -122,6 +127,23 @@ public class CommandSpec implements Matchable<String> {
      * @param defaultHandler CommandSpec handler
      */
     public CommandSpec(Text name, String description, Arguments arguments, @Deprecated boolean isOptional, String prefix, String suffix, Handler defaultHandler) {
+        this(0, name, description, arguments, isOptional, prefix, suffix, defaultHandler);
+    }
+
+    /**
+     * Create a new CommandSpec instance
+     *
+     * @param priority Command priority
+     * @param name           Name of command
+     * @param description    Description of command
+     * @param arguments      Arguments
+     * @param isOptional     Is Optional??
+     * @param prefix         Prefix
+     * @param suffix         Suffix
+     * @param defaultHandler CommandSpec handler
+     */
+    public CommandSpec(int priority, Text name, String description, Arguments arguments, @Deprecated boolean isOptional, String prefix, String suffix, Handler defaultHandler) {
+        this.priority = priority;
         this.name = name;
         this.description = description;
         this.arguments = arguments;
@@ -130,6 +152,7 @@ public class CommandSpec implements Matchable<String> {
         this.suffix = suffix;
         this.defaultHandler = defaultHandler;
     }
+
 
     public static CommandSpec empty() {
         return EMPTY;
@@ -192,7 +215,7 @@ public class CommandSpec implements Matchable<String> {
     }
 
     public static CommandSpec withHandledCommandList(WCommand<?> wCommand, CommandSpec commandSpec, RegistrationTicket<?> ticket) {
-        CommandSpec newCommandSpec = new CommandSpec(commandSpec.getName(), commandSpec.getDescription(), commandSpec.getArguments(), commandSpec.isOptional(), commandSpec.getPrefix(), commandSpec.getSuffix(), commandSpec.getDefaultHandler());
+        CommandSpec newCommandSpec = new CommandSpec(commandSpec.getPriority(), commandSpec.getName(), commandSpec.getDescription(), commandSpec.getArguments(), commandSpec.isOptional(), commandSpec.getPrefix(), commandSpec.getSuffix(), commandSpec.getDefaultHandler());
 
         newCommandSpec.addSubs(new CommandList(wCommand, newCommandSpec), ticket);
 
@@ -359,6 +382,14 @@ public class CommandSpec implements Matchable<String> {
     }
 
     /**
+     * Gets command priority.
+     * @return Command priority
+     */
+    public int getPriority() {
+        return this.priority;
+    }
+
+    /**
      * Get command name
      *
      * @return command name
@@ -472,4 +503,5 @@ public class CommandSpec implements Matchable<String> {
         return textOptional.isPresent() || super.equals(obj);
 
     }
+
 }
