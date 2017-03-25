@@ -27,7 +27,6 @@
  */
 package com.github.jonathanxd.wcommands.helperapi;
 
-import com.github.jonathanxd.wcommands.WCommandCommon;
 import com.github.jonathanxd.wcommands.common.command.CommandList;
 import com.github.jonathanxd.wcommands.ext.help.HelperAPI;
 import com.github.jonathanxd.wcommands.ext.help.error.HelperErrorHandler;
@@ -66,7 +65,7 @@ public class TestHelper {
     @SubCommand(value = {"say", "hello"}, commandSpec = @Command(isOptional = true))
     public void special(@Info(description = "Message sender") Information<Sender> sender) {
         System.out.println(String.format("Hello %s <3", sender.get().name));
-        System.out.println("Description: "+sender.getDescription().getProvidedByUnknownSource());
+        System.out.println("Description: " + sender.getDescription().getProvidedByUnknownSource());
     }
 
     @SubCommand(value = "say", commandSpec = @Command(isOptional = true))
@@ -80,12 +79,12 @@ public class TestHelper {
     }
 
     @SubCommand(value = "say", commandSpec = @Command(desc = "Say Hi"))
-    public void hi()  {
+    public void hi() {
         System.out.println("Hi");
     }
 
     @SubCommand(value = {"say", "hi"}, commandSpec = @Command(desc = "Say Ultra"))
-    public void ultra()  {
+    public void ultra() {
         System.out.println("Ultra");
     }
 

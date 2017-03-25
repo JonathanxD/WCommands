@@ -28,7 +28,6 @@
 package com.github.jonathanxd.wcommands.command;
 
 import com.github.jonathanxd.iutils.annotation.Immutable;
-import com.github.jonathanxd.iutils.reflection.Reflection;
 import com.github.jonathanxd.wcommands.WCommand;
 import com.github.jonathanxd.wcommands.arguments.Arguments;
 import com.github.jonathanxd.wcommands.common.Matchable;
@@ -194,12 +193,8 @@ public class CommandSpec implements Matchable<String> {
 
     public static CommandSpec withHandledCommandList(WCommand<?> wCommand, CommandSpec commandSpec, RegistrationTicket<?> ticket) {
         CommandSpec newCommandSpec = new CommandSpec(commandSpec.getName(), commandSpec.getDescription(), commandSpec.getArguments(), commandSpec.isOptional(), commandSpec.getPrefix(), commandSpec.getSuffix(), commandSpec.getDefaultHandler());
-        try {
-            //----------------------------------------------------------------------------------------|SUB COMMANDS FIELD HERE|
-            Reflection.changeFinalField(newCommandSpec.getClass(), newCommandSpec, "subCommands", new CommandList(wCommand, newCommandSpec));
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot convert command", e);
-        }
+
+        newCommandSpec.addSubs(new CommandList(wCommand, newCommandSpec), ticket);
 
         if (commandSpec.getSubCommands().size() > 0) {
             for (CommandSpec childCommandSpec : commandSpec.getSubCommands()) {

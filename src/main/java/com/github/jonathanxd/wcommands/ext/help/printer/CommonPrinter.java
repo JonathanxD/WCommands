@@ -178,10 +178,13 @@ public class CommonPrinter implements Printer {
     }
 
     public static String argument(ArgumentSpec<?, ?> argumentSpec) {
+
+        String type = argumentSpec.getValueType().map(typeInfo -> ": " + typeInfo.toString()).orElse("");
+
         if (argumentSpec.isOptional()) {
-            return "<" + argumentSpec.getId() + ">";
+            return "<" + argumentSpec.getId() + type + ">";
         } else {
-            return "[" + argumentSpec.getId() + "]";
+            return "[" + argumentSpec.getId() + type + "]";
         }
     }
 

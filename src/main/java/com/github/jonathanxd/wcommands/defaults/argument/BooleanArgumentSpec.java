@@ -27,6 +27,7 @@
  */
 package com.github.jonathanxd.wcommands.defaults.argument;
 
+import com.github.jonathanxd.iutils.type.TypeInfo;
 import com.github.jonathanxd.wcommands.arguments.ArgumentSpec;
 import com.github.jonathanxd.wcommands.common.Matchable;
 import com.github.jonathanxd.wcommands.text.Text;
@@ -43,6 +44,6 @@ public class BooleanArgumentSpec<ID> extends ArgumentSpec<ID, Boolean> {
     private static final Supplier<Matchable<String>> BOOLEAN_CHECKER = () -> Text.of("(true|false)", true, true);
 
     public BooleanArgumentSpec(ID id, boolean optional, boolean infinite) {
-        super(id, infinite, BOOLEAN_CHECKER, s -> true, optional, d -> d.isEmpty() ? false : Boolean.valueOf(d.get(0)));
+        super(id, TypeInfo.of(Boolean.TYPE), infinite, BOOLEAN_CHECKER, s -> true, optional, d -> d.isEmpty() ? false : Boolean.valueOf(d.get(0)));
     }
 }

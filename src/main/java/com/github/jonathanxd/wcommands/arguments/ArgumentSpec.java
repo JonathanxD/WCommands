@@ -142,7 +142,7 @@ public class ArgumentSpec<ID, T> {
      * @return Argument value type
      */
     public TypeInfo<T> getValueTypeUnchecked() {
-        return valueType;
+        return this.valueType;
     }
 
     /**
