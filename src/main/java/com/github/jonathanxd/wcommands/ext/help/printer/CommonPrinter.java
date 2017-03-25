@@ -134,7 +134,10 @@ public class CommonPrinter implements Printer {
 
         String tag = lastLine == null ? "-> " : repeat('-', lastLine.length() - 2) + "'> ";
 
-        String myLastLine = tag.concat(commandSpec.getName().getPlainString());
+        String prefix = commandSpec.getPrefix() != null ? commandSpec.getPrefix() : "";
+        String suffix = commandSpec.getSuffix() != null ? commandSpec.getSuffix() : "";
+
+        String myLastLine = tag.concat(prefix + commandSpec.getName().getPlainString() + suffix);
 
         toPrint.put(commandSpec, getWithAll(commandSpec, myLastLine));
 
