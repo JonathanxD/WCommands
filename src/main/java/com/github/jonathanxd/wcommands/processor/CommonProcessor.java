@@ -98,7 +98,8 @@ public class CommonProcessor implements Processor<List<CommandData<CommandHolder
             CommandHolder o1Command = o1.getCommand();
             CommandHolder o2Command = o2.getCommand();
 
-            if(o1Command.isMain() && o2Command.isMain() || o1.getParent().getCommandSpec() == o2.getParent().getCommandSpec()) {
+            if(o1Command.isMain() && o2Command.isMain()
+                    || (o1.getParent() != null && o2.getParent() != null && o1.getParent().getCommandSpec() == o2.getParent().getCommandSpec())) {
                 int sort = Integer.compare(o1Command.getCommandSpec().getPriority(), o2Command.getCommandSpec().getPriority());
 
                 if(sort == 0)
