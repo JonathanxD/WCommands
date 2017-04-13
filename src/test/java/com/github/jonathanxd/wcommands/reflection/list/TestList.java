@@ -76,13 +76,13 @@ public class TestList {
 
         wCommandCommon.processAndInvoke(requirements, informationRegister, "show", "list", "a", "b", "c", "named", "Xy", "zNamed", "Hh");
 
-        /*wCommandCommon.processAndInvoke(requirements, informationRegister, "show", "list", "a", "b", "c", "&", "zNamed", "Xy");
+        wCommandCommon.processAndInvoke(requirements, informationRegister, "show", "list", "a", "b", "c", "&", "zNamed", "Xy");
 
         Results results3 = wCommandCommon.processAndInvoke(requirements, informationRegister, "show", "named", "Xy");
 
-        System.out.println("Results: "+results);
+        System.out.println("Results: "+results3);
 
-        Results results2 = wCommandCommon.processAndInvoke(requirements, informationRegister, "myList", "A", "B", "C");*/
+        Results results2 = wCommandCommon.processAndInvoke(requirements, informationRegister, "myList", "A", "B", "C");
 
     }
 
